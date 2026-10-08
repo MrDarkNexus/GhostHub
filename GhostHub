@@ -1,0 +1,566 @@
+-- // GHOSTHUB V2.0 - PART 1/2 (PEARL×NEØ) \\ --
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+if playerGui:FindFirstChild("GhostHubUI") then
+    playerGui.GhostHubUI:Destroy()
+end
+
+local themes = {
+    ["Beyaz"] = { MainBg = Color3.fromRGB(15, 15, 20), TopBar = Color3.fromRGB(22, 22, 30), SideMenu = Color3.fromRGB(18, 18, 25), Accent = Color3.fromRGB(255, 255, 255) },
+    ["Aqua"] = { MainBg = Color3.fromRGB(15, 20, 22), TopBar = Color3.fromRGB(20, 28, 32), SideMenu = Color3.fromRGB(18, 24, 28), Accent = Color3.fromRGB(0, 255, 200) },
+    ["Green"] = { MainBg = Color3.fromRGB(15, 22, 18), TopBar = Color3.fromRGB(20, 32, 25), SideMenu = Color3.fromRGB(18, 28, 22), Accent = Color3.fromRGB(0, 255, 100) },
+    ["Su Yeşili"] = { MainBg = Color3.fromRGB(15, 22, 18), TopBar = Color3.fromRGB(20, 32, 25), SideMenu = Color3.fromRGB(18, 28, 22), Accent = Color3.fromRGB(0, 255, 128) },
+    ["Açık Mavi"] = { MainBg = Color3.fromRGB(15, 18, 25), TopBar = Color3.fromRGB(22, 28, 40), SideMenu = Color3.fromRGB(18, 23, 33), Accent = Color3.fromRGB(100, 180, 255) }
+}
+local activeTheme = themes["Beyaz"]
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GhostHubUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local openButton = Instance.new("TextButton")
+openButton.Name = "OpenButton"
+openButton.Size = UDim2.new(0, 110, 0, 35)
+openButton.Position = UDim2.new(0, 20, 0, 20)
+openButton.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+openButton.Text = "GhostHub: AÇ"
+openButton.TextColor3 = Color3.fromRGB(0, 255, 128)
+openButton.TextSize = 12
+openButton.Font = Enum.Font.GothamBold
+openButton.Visible = false
+openButton.Parent = screenGui
+
+local openButtonCorner = Instance.new("UICorner")
+openButtonCorner.CornerRadius = UDim.new(0, 6)
+openButtonCorner.Parent = openButton
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 680, 0, 440)
+mainFrame.Position = UDim2.new(0.5, -340, 0.5, -220)
+mainFrame.BackgroundColor3 = activeTheme.MainBg
+mainFrame.BorderSizePixel = 0
+mainFrame.ClipsDescendants = true
+mainFrame.Parent = screenGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 10)
+mainCorner.Parent = mainFrame
+
+local topBar = Instance.new("Frame")
+topBar.Size = UDim2.new(1, 0, 0, 45)
+topBar.BackgroundColor3 = activeTheme.TopBar
+topBar.BorderSizePixel = 0
+topBar.Parent = mainFrame
+
+local topBarCorner = Instance.new("UICorner")
+topBarCorner.CornerRadius = UDim.new(0, 10)
+topBarCorner.Parent = topBar
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(0, 360, 1, 0)
+titleLabel.Position = UDim2.new(0, 15, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = player.Name .. " | GHOSTHUB V2.0"
+titleLabel.TextColor3 = activeTheme.Accent
+titleLabel.TextSize = 15
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = topBar
+
+-- 🔍 Özel İşlevli Arama Motoru Kutusu
+local searchBox = Instance.new("TextBox")
+searchBox.Size = UDim2.new(0, 200, 0, 30)
+searchBox.Position = UDim2.new(1, -215, 0, 7)
+searchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+searchBox.PlaceholderText = "Hub içinde ara..."
+searchBox.Text = ""
+searchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+searchBox.PlaceholderColor3 = Color3.fromRGB(140, 140, 160)
+searchBox.TextSize = 12
+searchBox.Font = Enum.Font.Gotham
+searchBox.Parent = topBar
+
+local searchCorner = Instance.new("UICorner")
+searchCorner.CornerRadius = UDim.new(0, 6)
+searchCorner.Parent = searchBox
+
+local isLocked = false
+local isVisible = true
+
+local function toggleUI()
+    isVisible = not isVisible
+    mainFrame.Visible = isVisible
+    openButton.Visible = not isVisible
+end
+
+openButton.MouseButton1Click:Connect(toggleUI)
+
+local dragging, dragInput, dragStart, startPos
+
+topBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if not isLocked then
+            dragging = true
+            dragStart = input.Position
+            startPos = mainFrame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if dragging and dragInput and not isLocked then
+        local delta = dragInput.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+local sideMenu = Instance.new("ScrollingFrame")
+sideMenu.Size = UDim2.new(0, 160, 1, -45)
+sideMenu.Position = UDim2.new(0, 0, 0, 45)
+sideMenu.BackgroundColor3 = activeTheme.SideMenu
+sideMenu.BorderSizePixel = 0
+sideMenu.CanvasSize = UDim2.new(0, 0, 0, 500)
+sideMenu.ScrollBarThickness = 2
+sideMenu.Parent = mainFrame
+
+local function createTabButton(name, posY)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -12, 0, 32)
+    btn.Position = UDim2.new(0, 6, 0, posY)
+    btn.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    btn.TextSize = 12
+    btn.Font = Enum.Font.GothamMedium
+    btn.Parent = sideMenu
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = btn
+    return btn
+end
+
+-- Havalı Sekme İsimleri
+local btnMain = createTabButton("🚪 Main", 10)
+local btnExploits = createTabButton("🌟 Exploits", 48)
+local btnMines = createTabButton("⛏️ Mines", 86)
+local btnOutdoors = createTabButton("🌲 OutDoors", 124)
+local btnArchives = createTabButton("📜 Archives", 162)
+local btnStairWell = createTabButton("🪜 StairWell", 200)
+local btnMisc = createTabButton("🔮 Misc", 238)
+local btnVisuals = createTabButton("👁️ Visuals (ESP)", 276)
+local btnThemes = createTabButton("🎨 Temalar", 314)
+local btnSettings = createTabButton("⚙ Settings", 352)
+local btnCredits = createTabButton("⭐ Credits", 390)
+
+local contentArea = Instance.new("Frame")
+contentArea.Size = UDim2.new(1, -170, 1, -55)
+contentArea.Position = UDim2.new(0, 165, 0, 50)
+contentArea.BackgroundTransparency = 1
+contentArea.Parent = mainFrame
+
+local function createContainer(name)
+    local page = Instance.new("ScrollingFrame")
+    page.Name = name
+    page.Size = UDim2.new(1, 0, 1, 0)
+    page.BackgroundTransparency = 1
+    page.Visible = false
+    page.CanvasSize = UDim2.new(0, 0, 0, 600)
+    page.ScrollBarThickness = 4
+    page.Parent = contentArea
+    return page
+end
+
+local pageMain = createContainer("MainPage")
+local pageExploits = createContainer("ExploitsPage")
+local pageMines = createContainer("MinesPage")
+local pageOutdoors = createContainer("OutdoorsPage")
+local pageArchives = createContainer("ArchivesPage")
+local pageStairWell = createContainer("StairWellPage")
+local pageMisc = createContainer("MiscPage")
+local pageVisuals = createContainer("VisualsPage")
+local pageThemes = createContainer("ThemesPage")
+local pageSettings = createContainer("SettingsPage")
+local pageCredits = createContainer("CreditsPage")
+
+pageMain.Visible = true
+
+local function switchPage(activePage)
+    pageMain.Visible = (pageMain == activePage)
+    pageExploits.Visible = (pageExploits == activePage)
+    pageMines.Visible = (pageMines == activePage)
+    pageOutdoors.Visible = (pageOutdoors == activePage)
+    pageArchives.Visible = (pageArchives == activePage)
+    pageStairWell.Visible = (pageStairWell == activePage)
+    pageMisc.Visible = (pageMisc == activePage)
+    pageVisuals.Visible = (pageVisuals == activePage)
+    pageThemes.Visible = (pageThemes == activePage)
+    pageSettings.Visible = (pageSettings == activePage)
+    pageCredits.Visible = (pageCredits == activePage)
+end
+
+btnMain.MouseButton1Click:Connect(function() switchPage(pageMain) end)
+btnExploits.MouseButton1Click:Connect(function() switchPage(pageExploits) end)
+btnMines.MouseButton1Click:Connect(function() switchPage(pageMines) end)
+btnOutdoors.MouseButton1Click:Connect(function() switchPage(pageOutdoors) end)
+btnArchives.MouseButton1Click:Connect(function() switchPage(pageArchives) end)
+btnStairWell.MouseButton1Click:Connect(function() switchPage(pageStairWell) end)
+btnMisc.MouseButton1Click:Connect(function() switchPage(pageMisc) end)
+btnVisuals.MouseButton1Click:Connect(function() switchPage(pageVisuals) end)
+btnThemes.MouseButton1Click:Connect(function() switchPage(pageThemes) end)
+btnSettings.MouseButton1Click:Connect(function() switchPage(pageSettings) end)
+btnCredits.MouseButton1Click:Connect(function() switchPage(pageCredits) end)
+
+local function applyTheme(tName)
+    local tData = themes[tName]
+    if tData then
+        activeTheme = tData
+        mainFrame.BackgroundColor3 = tData.MainBg
+        topBar.BackgroundColor3 = tData.TopBar
+        sideMenu.BackgroundColor3 = tData.SideMenu
+        titleLabel.TextColor3 = tData.Accent
+    end
+end
+
+local themeY = 15
+for tName, _ in pairs(themes) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -20, 0, 35)
+    btn.Position = UDim2.new(0, 10, 0, themeY)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    btn.Text = "Tema: " .. tName
+    btn.TextColor3 = Color3.fromRGB(240, 240, 240)
+    btn.TextSize = 13
+    btn.Font = Enum.Font.GothamMedium
+    btn.Parent = pageThemes
+    
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, 6)
+    c.Parent = btn
+    
+    btn.MouseButton1Click:Connect(function() applyTheme(tName) end)
+    themeY = themeY + 42
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
+        toggleUI()
+    end
+end)
+-- // GHOSTHUB V2.0 - PART 2/2 (PEARL×NEØ) \\ --
+
+-- ⏳ 10 Saniye Bekleme ve Yüklenme Bildirimi (Starter Notification)
+print("GhostHub V2.0: 10 Saniye Bekleyiniz...")
+task.wait(10)
+print("GhostHub Başarıyla Yüklendi!")
+
+-- Ekran üstü şık bildirim (Opsiyonel görsel bilgi)
+local starterNotify = Instance.new("TextLabel")
+starterNotify.Size = UDim2.new(0, 300, 0, 40)
+starterNotify.Position = UDim2.new(0.5, -150, 0, 15)
+starterNotify.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
+starterNotify.TextColor3 = Color3.fromRGB(0, 255, 128)
+starterNotify.TextSize = 13
+starterNotify.Font = Enum.Font.GothamBold
+starterNotify.Text = "GhostHub Başarıyla Yüklendi!"
+starterNotify.ZIndex = 999
+starterNotify.Parent = screenGui
+
+local snCorner = Instance.new("UICorner")
+snCorner.CornerRadius = UDim.new(0, 8)
+snCorner.Parent = starterNotify
+
+-- 3 saniye sonra bildirimi yavaşça yok et
+task.spawn(function()
+    task.wait(3)
+    for i = 1, 10 do
+        starterNotify.TextTransparency = i / 10
+        starterNotify.TextStrokeTransparency = i / 10
+        starterNotify.BackgroundTransparency = i / 10
+        task.wait(0.05)
+    end
+    starterNotify:Destroy()
+end)
+
+local isVisible = true
+local isTweening = false
+
+local function toggleUI()
+    if isTweening then return end
+    isTweening = true
+    
+    isVisible = not isVisible
+    
+    if isVisible then
+        mainFrame.Visible = true
+        mainFrame.Size = UDim2.new(0, 0, 0, 0)
+        mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        TweenService:Create(mainFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 680, 0, 440),
+            Position = UDim2.new(0.5, -340, 0.5, -220)
+        }):Play()
+        openButton.Visible = false
+    else
+        TweenService:Create(mainFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 0, 0, 0),
+            Position = UDim2.new(0.5, 0, 0.5, 0)
+        }):Play()
+        task.wait(0.12)
+        mainFrame.Visible = false
+        openButton.Visible = true
+    end
+    
+    isTweening = false
+end
+
+-- ==========================================
+-- 🛡️ ARCHIVES: ANTI-DRONE
+-- ==========================================
+local antiDroneActive = false
+_G.AntiDrone = false
+
+local btnAntiDrone = Instance.new("TextButton")
+btnAntiDrone.Size = UDim2.new(1, -20, 0, 35)
+btnAntiDrone.Position = UDim2.new(0, 10, 0, 15) -- Archives sekmesindeki ilk sıra
+btnAntiDrone.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+btnAntiDrone.Text = "anti drone: kapali"
+btnAntiDrone.TextColor3 = Color3.fromRGB(240, 240, 240)
+btnAntiDrone.TextSize = 13
+btnAntiDrone.Font = Enum.Font.GothamMedium
+btnAntiDrone.Parent = pageArchives
+
+local adCorner = Instance.new("UICorner")
+adCorner.CornerRadius = UDim.new(0, 6)
+adCorner.Parent = btnAntiDrone
+
+task.spawn(function()
+    while task.wait(0.2) do
+        if _G.AntiDrone then
+            pcall(function()
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if v.Name == "Drone" then
+                        if v:IsA("BasePart") then
+                            v.CanTouch = false
+                            v.CanCollide = false
+                        elseif v:IsA("Model") then
+                            for _, part in pairs(v:GetDescendants()) do
+                                if part:IsA("BasePart") then
+                                    part.CanTouch = false
+                                    part.CanCollide = false
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+btnAntiDrone.MouseButton1Click:Connect(function()
+    antiDroneActive = not antiDroneActive
+    _G.AntiDrone = antiDroneActive
+    if antiDroneActive then
+        btnAntiDrone.Text = "anti drone: aktif"
+        btnAntiDrone.TextColor3 = Color3.fromRGB(0, 255, 128)
+    else
+        btnAntiNames = "anti drone: kapali" -- güvenlik amaçlı düzeltme
+        btnAntiDrone.Text = "anti drone: kapali"
+        btnAntiDrone.TextColor3 = Color3.fromRGB(240, 240, 240)
+    end
+end)
+
+-- ==========================================
+-- 🛡️ ARCHIVES: ANTI-DRONE STAMPEDE (FE)
+-- ==========================================
+local antiDroneStampedeActive = false
+_G.AntiDroneStampede = false
+
+-- Dinamik Y konumlandırması için mevcut yüksekliği takip ediyoruz
+if not _G.ArchivesYPos then _G.ArchivesYPos = 15 end
+
+local btnAntiDroneStampede = Instance.new("TextButton")
+btnAntiDroneStampede.Size = UDim2.new(1, -20, 0, 35)
+btnAntiDroneStampede.Position = UDim2.new(0, 10, 0, _G.ArchivesYPos)
+btnAntiDroneStampede.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+btnAntiDroneStampede.Text = "anti drone stampede: kapali"
+btnAntiDroneStampede.TextColor3 = Color3.fromRGB(240, 240, 240)
+btnAntiDroneStampede.TextSize = 13
+btnAntiDroneStampede.Font = Enum.Font.GothamMedium
+btnAntiDroneStampede.Parent = pageArchives
+
+local adsCorner = Instance.new("UICorner")
+adsCorner.CornerRadius = UDim.new(0, 6)
+adsCorner.Parent = btnAntiDroneStampede
+
+_G.ArchivesYPos = _G.ArchivesYPos + 42
+pageArchives.CanvasSize = UDim2.new(0, 0, 0, _G.ArchivesYPos + 10)
+
+task.spawn(function()
+    while task.wait(0.2) do
+        if _G.AntiDroneStampede then
+            pcall(function()
+                for _, v in pairs(workspace:GetDescendants()) do
+                    local name = v.Name
+                    if name == "DroneStampede" or name:lower():find("dronestampede") then
+                        if v:IsA("BasePart") then
+                            v.CanTouch = false
+                            v.CanCollide = false
+                            v.Transparency = 1
+                        elseif v:IsA("Script") or v:IsA("LocalScript") then
+                            v.Disabled = true
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+btnAntiDroneStampede.MouseButton1Click:Connect(function()
+    antiDroneStampedeActive = not antiDroneStampedeActive
+    _G.AntiDroneStampede = antiDroneStampedeActive
+    if antiDroneStampedeActive then
+        btnAntiDroneStampede.Text = "anti drone stampede: aktif"
+        btnAntiDroneStampede.TextColor3 = Color3.fromRGB(0, 255, 128)
+    else
+        btnAntiDroneStampede.Text = "anti drone stampede: kapali"
+        btnAntiDroneStampede.TextColor3 = Color3.fromRGB(240, 240, 240)
+    end
+end)
+
+-- ==========================================
+-- ⚡ ARCHIVES: ANTI ELECTRIC PUDDLE
+-- ==========================================
+local antiElectricPuddleActive = false
+_G.AntiElectricPuddle = false
+
+if not _G.ArchivesYPos then _G.ArchivesYPos = 15 end
+
+local btnAntiElectricPuddle = Instance.new("TextButton")
+btnAntiElectricPuddle.Size = UDim2.new(1, -20, 0, 35)
+btnAntiElectricPuddle.Position = UDim2.new(0, 10, 0, _G.ArchivesYPos)
+btnAntiElectricPuddle.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+btnAntiElectricPuddle.Text = "anti electric puddle: kapali"
+btnAntiElectricPuddle.TextColor3 = Color3.fromRGB(240, 240, 240)
+btnAntiElectricPuddle.TextSize = 13
+btnAntiElectricPuddle.Font = Enum.Font.GothamMedium
+btnAntiElectricPuddle.Parent = pageArchives
+
+local aepCorner = Instance.new("UICorner")
+aepCorner.CornerRadius = UDim.new(0, 6)
+aepCorner.Parent = btnAntiElectricPuddle
+
+_G.ArchivesYPos = _G.ArchivesYPos + 42
+pageArchives.CanvasSize = UDim2.new(0, 0, 0, _G.ArchivesYPos + 10)
+
+task.spawn(function()
+    while task.wait(0.2) do
+        if _G.AntiElectricPuddle then
+            pcall(function()
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if v.Name == "ElectricPuddle" then
+                        if v:IsA("BasePart") then
+                            v.CanTouch = false
+                        elseif v:IsA("Model") then
+                            for _, part in pairs(v:GetDescendants()) do
+                                if part:IsA("BasePart") then
+                                    part.CanTouch = false
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+btnAntiElectricPuddle.MouseButton1Click:Connect(function()
+    antiElectricPuddleActive = not antiElectricPuddleActive
+    _G.AntiElectricPuddle = antiElectricPuddleActive
+    if antiElectricPuddleActive then
+        btnAntiElectricPuddle.Text = "anti electric puddle: aktif"
+        btnAntiElectricPuddle.TextColor3 = Color3.fromRGB(0, 255, 128)
+    else
+        btnAntiElectricPuddle.Text = "anti electric puddle: kapali"
+        btnAntiElectricPuddle.TextColor3 = Color3.fromRGB(240, 240, 240)
+    end
+end)
+
+-- ==========================================
+-- 🛡️ ARCHIVES: ANTI-RANSOM
+-- ==========================================
+local antiRansomActive = false
+_G.AntiRansom = false
+
+if not _G.ArchivesYPos then _G.ArchivesYPos = 15 end
+
+local btnAntiRansom = Instance.new("TextButton")
+btnAntiRansom.Size = UDim2.new(1, -20, 0, 35)
+btnAntiRansom.Position = UDim2.new(0, 10, 0, _G.ArchivesYPos)
+btnAntiRansom.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+btnAntiRansom.Text = "anti ransom: kapali"
+btnAntiRansom.TextColor3 = Color3.fromRGB(240, 240, 240)
+btnAntiRansom.TextSize = 13
+btnAntiRansom.Font = Enum.Font.GothamMedium
+btnAntiRansom.Parent = pageArchives
+
+local arCorner = Instance.new("UICorner")
+arCorner.CornerRadius = UDim.new(0, 6)
+arCorner.Parent = btnAntiRansom
+
+_G.ArchivesYPos = _G.ArchivesYPos + 42
+pageArchives.CanvasSize = UDim2.new(0, 0, 0, _G.ArchivesYPos + 10)
+
+task.spawn(function()
+    while task.wait(0.1) do
+        if _G.AntiRansom then
+            pcall(function()
+                local char = game.Players.LocalPlayer.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    for _, v in pairs(workspace:GetChildren()) do
+                        if v.Name:lower():find("ransom") or v.Name:lower():find("eyes") then
+                            local part = v:FindFirstChild("Hitbox") or v:FindFirstChild("RootPart")
+                            if part then
+                                part.CanTouch = false
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+btnAntiRansom.MouseButton1Click:Connect(function()
+    antiRansomActive = not antiRansomActive
+    _G.AntiRansom = antiRansomActive
+    if antiRansomActive then
+        btnAntiRansom.Text = "anti ransom: aktif"
+        btnAntiRansom.TextColor3 = Color3.fromRGB(0, 255, 128)
+    else
+        btnAntiRansom.Text = "anti ransom: kapali"
+        btnAntiRansom.TextColor3 = Color3.fromRGB(240, 240, 240)
+    end
+end)
+
