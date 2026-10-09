@@ -1,3 +1,4 @@
+
 -- // GHOSTHUB V2.0 - PART 1/2 (PEARL×NEØ) \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -301,6 +302,96 @@ task.spawn(function()
     starterNotify:Destroy()
 end)
 
+-- 📱 Mobil ve PC İçin Ekran Üstü Toggle (Aç/Kapat) Sürüklenebilir Buton
+local toggleMobileBtn = Instance.new("TextButton")
+toggleMobileBtn.Name = "ToggleMobileBtn"
+toggleMobileBtn.Size = UDim2.new(0, 90, 0, 32)
+toggleMobileBtn.Position = UDim2.new(0, 20, 0, 70)
+toggleMobileBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+toggleMobileBtn.Text = "UI: AÇ/KAPAT"
+toggleMobileBtn.TextColor3 = Color3.fromRGB(0, 255, 128)
+toggleMobileBtn.TextSize = 11
+toggleMobileBtn.Font = Enum.Font.GothamBold
+toggleMobileBtn.Parent = screenGui
+
+local tmCorner = Instance.new("UICorner")
+tmCorner.CornerRadius = UDim.new(0, 6)
+tmCorner.Parent = toggleMobileBtn
+
+-- Toggle Butonuna Tıklayınca Arayüzü Aç/Kapat
+toggleMobileBtn.MouseButton1Click:Connect(function()
+    toggleUI()
+end)
+
+local function applyTheme(tName)
+    local tData = themes[tName]
+    if tData then
+        activeTheme = tData
+        mainFrame.BackgroundColor3 = tData.MainBg
+        topBar.BackgroundColor3 = tData.TopBar
+        sideMenu.BackgroundColor3 = tData.SideMenu
+        titleLabel.TextColor3 = tData.Accent
+    end
+end
+
+local themeY = 15
+for tName, _ in pairs(themes) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -20, 0, 35)
+    btn.Position = UDim2.new(0, 10, 0, themeY)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    btn.Text = "Tema: " .. tName
+    btn.TextColor3 = Color3.fromRGB(240, 240, 240)
+    btn.TextSize = 13
+    btn.Font = Enum.Font.GothamMedium
+    btn.Parent = pageThemes
+    
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, 6)
+    c.Parent = btn
+    
+    btn.MouseButton1Click:Connect(function() applyTheme(tName) end)
+    themeY = themeY + 42
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
+        toggleUI()
+    end
+end)
+- ⏳ 10 Saniye Bekleme ve Yüklenme Bildirimi (Starter Notification)
+print("GhostHub V2.0: 10 Saniye Bekleyiniz...")
+task.wait(10)
+print("GhostHub Başarıyla Yüklendi!")
+
+-- Ekran üstü şık bildirim (Opsiyonel görsel bilgi)
+local starterNotify = Instance.new("TextLabel")
+starterNotify.Size = UDim2.new(0, 300, 0, 40)
+starterNotify.Position = UDim2.new(0.5, -150, 0, 15)
+starterNotify.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
+starterNotify.TextColor3 = Color3.fromRGB(0, 255, 128)
+starterNotify.TextSize = 13
+starterNotify.Font = Enum.Font.GothamBold
+starterNotify.Text = "GhostHub Başarıyla Yüklendi!"
+starterNotify.ZIndex = 999
+starterNotify.Parent = screenGui
+
+local snCorner = Instance.new("UICorner")
+snCorner.CornerRadius = UDim.new(0, 8)
+snCorner.Parent = starterNotify
+
+-- 3 saniye sonra bildirimi yavaşça yok et
+task.spawn(function()
+    task.wait(3)
+    for i = 1, 10 do
+        starterNotify.TextTransparency = i / 10
+        starterNotify.TextStrokeTransparency = i / 10
+        starterNotify.BackgroundTransparency = i / 10
+        task.wait(0.05)
+    end
+    starterNotify:Destroy()
+end)
+
 local isVisible = true
 local isTweening = false
 
@@ -331,236 +422,3 @@ local function toggleUI()
     
     isTweening = false
 end
-
--- ==========================================
--- 🛡️ ARCHIVES: ANTI-DRONE
--- ==========================================
-local antiDroneActive = false
-_G.AntiDrone = false
-
-local btnAntiDrone = Instance.new("TextButton")
-btnAntiDrone.Size = UDim2.new(1, -20, 0, 35)
-btnAntiDrone.Position = UDim2.new(0, 10, 0, 15) -- Archives sekmesindeki ilk sıra
-btnAntiDrone.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-btnAntiDrone.Text = "anti drone: kapali"
-btnAntiDrone.TextColor3 = Color3.fromRGB(240, 240, 240)
-btnAntiDrone.TextSize = 13
-btnAntiDrone.Font = Enum.Font.GothamMedium
-btnAntiDrone.Parent = pageArchives
-
-local adCorner = Instance.new("UICorner")
-adCorner.CornerRadius = UDim.new(0, 6)
-adCorner.Parent = btnAntiDrone
-
-task.spawn(function()
-    while task.wait(0.2) do
-        if _G.AntiDrone then
-            pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if v.Name == "Drone" then
-                        if v:IsA("BasePart") then
-                            v.CanTouch = false
-                            v.CanCollide = false
-                        elseif v:IsA("Model") then
-                            for _, part in pairs(v:GetDescendants()) do
-                                if part:IsA("BasePart") then
-                                    part.CanTouch = false
-                                    part.CanCollide = false
-                                end
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
-
-btnAntiDrone.MouseButton1Click:Connect(function()
-    antiDroneActive = not antiDroneActive
-    _G.AntiDrone = antiDroneActive
-    if antiDroneActive then
-        btnAntiDrone.Text = "anti drone: aktif"
-        btnAntiDrone.TextColor3 = Color3.fromRGB(0, 255, 128)
-    else
-        btnAntiNames = "anti drone: kapali" -- güvenlik amaçlı düzeltme
-        btnAntiDrone.Text = "anti drone: kapali"
-        btnAntiDrone.TextColor3 = Color3.fromRGB(240, 240, 240)
-    end
-end)
-
--- ==========================================
--- 🛡️ ARCHIVES: ANTI-DRONE STAMPEDE (FE)
--- ==========================================
-local antiDroneStampedeActive = false
-_G.AntiDroneStampede = false
-
--- Dinamik Y konumlandırması için mevcut yüksekliği takip ediyoruz
-if not _G.ArchivesYPos then _G.ArchivesYPos = 15 end
-
-local btnAntiDroneStampede = Instance.new("TextButton")
-btnAntiDroneStampede.Size = UDim2.new(1, -20, 0, 35)
-btnAntiDroneStampede.Position = UDim2.new(0, 10, 0, _G.ArchivesYPos)
-btnAntiDroneStampede.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-btnAntiDroneStampede.Text = "anti drone stampede: kapali"
-btnAntiDroneStampede.TextColor3 = Color3.fromRGB(240, 240, 240)
-btnAntiDroneStampede.TextSize = 13
-btnAntiDroneStampede.Font = Enum.Font.GothamMedium
-btnAntiDroneStampede.Parent = pageArchives
-
-local adsCorner = Instance.new("UICorner")
-adsCorner.CornerRadius = UDim.new(0, 6)
-adsCorner.Parent = btnAntiDroneStampede
-
-_G.ArchivesYPos = _G.ArchivesYPos + 42
-pageArchives.CanvasSize = UDim2.new(0, 0, 0, _G.ArchivesYPos + 10)
-
-task.spawn(function()
-    while task.wait(0.2) do
-        if _G.AntiDroneStampede then
-            pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    local name = v.Name
-                    if name == "DroneStampede" or name:lower():find("dronestampede") then
-                        if v:IsA("BasePart") then
-                            v.CanTouch = false
-                            v.CanCollide = false
-                            v.Transparency = 1
-                        elseif v:IsA("Script") or v:IsA("LocalScript") then
-                            v.Disabled = true
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
-
-btnAntiDroneStampede.MouseButton1Click:Connect(function()
-    antiDroneStampedeActive = not antiDroneStampedeActive
-    _G.AntiDroneStampede = antiDroneStampedeActive
-    if antiDroneStampedeActive then
-        btnAntiDroneStampede.Text = "anti drone stampede: aktif"
-        btnAntiDroneStampede.TextColor3 = Color3.fromRGB(0, 255, 128)
-    else
-        btnAntiDroneStampede.Text = "anti drone stampede: kapali"
-        btnAntiDroneStampede.TextColor3 = Color3.fromRGB(240, 240, 240)
-    end
-end)
-
--- ==========================================
--- ⚡ ARCHIVES: ANTI ELECTRIC PUDDLE
--- ==========================================
-local antiElectricPuddleActive = false
-_G.AntiElectricPuddle = false
-
-if not _G.ArchivesYPos then _G.ArchivesYPos = 15 end
-
-local btnAntiElectricPuddle = Instance.new("TextButton")
-btnAntiElectricPuddle.Size = UDim2.new(1, -20, 0, 35)
-btnAntiElectricPuddle.Position = UDim2.new(0, 10, 0, _G.ArchivesYPos)
-btnAntiElectricPuddle.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-btnAntiElectricPuddle.Text = "anti electric puddle: kapali"
-btnAntiElectricPuddle.TextColor3 = Color3.fromRGB(240, 240, 240)
-btnAntiElectricPuddle.TextSize = 13
-btnAntiElectricPuddle.Font = Enum.Font.GothamMedium
-btnAntiElectricPuddle.Parent = pageArchives
-
-local aepCorner = Instance.new("UICorner")
-aepCorner.CornerRadius = UDim.new(0, 6)
-aepCorner.Parent = btnAntiElectricPuddle
-
-_G.ArchivesYPos = _G.ArchivesYPos + 42
-pageArchives.CanvasSize = UDim2.new(0, 0, 0, _G.ArchivesYPos + 10)
-
-task.spawn(function()
-    while task.wait(0.2) do
-        if _G.AntiElectricPuddle then
-            pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if v.Name == "ElectricPuddle" then
-                        if v:IsA("BasePart") then
-                            v.CanTouch = false
-                        elseif v:IsA("Model") then
-                            for _, part in pairs(v:GetDescendants()) do
-                                if part:IsA("BasePart") then
-                                    part.CanTouch = false
-                                end
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
-
-btnAntiElectricPuddle.MouseButton1Click:Connect(function()
-    antiElectricPuddleActive = not antiElectricPuddleActive
-    _G.AntiElectricPuddle = antiElectricPuddleActive
-    if antiElectricPuddleActive then
-        btnAntiElectricPuddle.Text = "anti electric puddle: aktif"
-        btnAntiElectricPuddle.TextColor3 = Color3.fromRGB(0, 255, 128)
-    else
-        btnAntiElectricPuddle.Text = "anti electric puddle: kapali"
-        btnAntiElectricPuddle.TextColor3 = Color3.fromRGB(240, 240, 240)
-    end
-end)
-
--- ==========================================
--- 🛡️ ARCHIVES: ANTI-RANSOM
--- ==========================================
-local antiRansomActive = false
-_G.AntiRansom = false
-
-if not _G.ArchivesYPos then _G.ArchivesYPos = 15 end
-
-local btnAntiRansom = Instance.new("TextButton")
-btnAntiRansom.Size = UDim2.new(1, -20, 0, 35)
-btnAntiRansom.Position = UDim2.new(0, 10, 0, _G.ArchivesYPos)
-btnAntiRansom.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-btnAntiRansom.Text = "anti ransom: kapali"
-btnAntiRansom.TextColor3 = Color3.fromRGB(240, 240, 240)
-btnAntiRansom.TextSize = 13
-btnAntiRansom.Font = Enum.Font.GothamMedium
-btnAntiRansom.Parent = pageArchives
-
-local arCorner = Instance.new("UICorner")
-arCorner.CornerRadius = UDim.new(0, 6)
-arCorner.Parent = btnAntiRansom
-
-_G.ArchivesYPos = _G.ArchivesYPos + 42
-pageArchives.CanvasSize = UDim2.new(0, 0, 0, _G.ArchivesYPos + 10)
-
-task.spawn(function()
-    while task.wait(0.1) do
-        if _G.AntiRansom then
-            pcall(function()
-                local char = game.Players.LocalPlayer.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    for _, v in pairs(workspace:GetChildren()) do
-                        if v.Name:lower():find("ransom") or v.Name:lower():find("eyes") then
-                            local part = v:FindFirstChild("Hitbox") or v:FindFirstChild("RootPart")
-                            if part then
-                                part.CanTouch = false
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
-
-btnAntiRansom.MouseButton1Click:Connect(function()
-    antiRansomActive = not antiRansomActive
-    _G.AntiRansom = antiRansomActive
-    if antiRansomActive then
-        btnAntiRansom.Text = "anti ransom: aktif"
-        btnAntiRansom.TextColor3 = Color3.fromRGB(0, 255, 128)
-    else
-        btnAntiRansom.Text = "anti ransom: kapali"
-        btnAntiRansom.TextColor3 = Color3.fromRGB(240, 240, 240)
-    end
-end)
-
