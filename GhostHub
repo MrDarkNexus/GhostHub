@@ -1,4 +1,3 @@
-
 -- // GHOSTHUB V2.0 - PART 1/2 (PEARL×NEØ) \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -12,14 +11,16 @@ if playerGui:FindFirstChild("GhostHubUI") then
     playerGui.GhostHubUI:Destroy()
 end
 
+-- 🎨 Yeni ve Gelişmiş Temalar Listesi
 local themes = {
-    ["Beyaz"] = { MainBg = Color3.fromRGB(15, 15, 20), TopBar = Color3.fromRGB(22, 22, 30), SideMenu = Color3.fromRGB(18, 18, 25), Accent = Color3.fromRGB(255, 255, 255) },
-    ["Aqua"] = { MainBg = Color3.fromRGB(15, 20, 22), TopBar = Color3.fromRGB(20, 28, 32), SideMenu = Color3.fromRGB(18, 24, 28), Accent = Color3.fromRGB(0, 255, 200) },
-    ["Green"] = { MainBg = Color3.fromRGB(15, 22, 18), TopBar = Color3.fromRGB(20, 32, 25), SideMenu = Color3.fromRGB(18, 28, 22), Accent = Color3.fromRGB(0, 255, 100) },
-    ["Su Yeşili"] = { MainBg = Color3.fromRGB(15, 22, 18), TopBar = Color3.fromRGB(20, 32, 25), SideMenu = Color3.fromRGB(18, 28, 22), Accent = Color3.fromRGB(0, 255, 128) },
-    ["Açık Mavi"] = { MainBg = Color3.fromRGB(15, 18, 25), TopBar = Color3.fromRGB(22, 28, 40), SideMenu = Color3.fromRGB(18, 23, 33), Accent = Color3.fromRGB(100, 180, 255) }
+    ["Christmas"] = { MainBg = Color3.fromRGB(15, 28, 20), TopBar = Color3.fromRGB(20, 38, 26), SideMenu = Color3.fromRGB(17, 32, 22), Accent = Color3.fromRGB(255, 75, 75) },
+    ["Black Hole"] = { MainBg = Color3.fromRGB(10, 10, 12), TopBar = Color3.fromRGB(16, 16, 20), SideMenu = Color3.fromRGB(13, 13, 16), Accent = Color3.fromRGB(140, 80, 255) },
+    ["Hacker"] = { MainBg = Color3.fromRGB(10, 15, 10), TopBar = Color3.fromRGB(15, 25, 15), SideMenu = Color3.fromRGB(12, 20, 12), Accent = Color3.fromRGB(0, 255, 65) },
+    ["Cyberpunk"] = { MainBg = Color3.fromRGB(20, 15, 25), TopBar = Color3.fromRGB(30, 22, 38), SideMenu = Color3.fromRGB(25, 18, 31), Accent = Color3.fromRGB(255, 0, 128) },
+    ["Dark Obsidian"] = { MainBg = Color3.fromRGB(18, 18, 18), TopBar = Color3.fromRGB(26, 26, 26), SideMenu = Color3.fromRGB(22, 22, 22), Accent = Color3.fromRGB(255, 165, 0) },
+    ["Neon Midnight"] = { MainBg = Color3.fromRGB(12, 18, 30), TopBar = Color3.fromRGB(18, 26, 42), SideMenu = Color3.fromRGB(15, 22, 36), Accent = Color3.fromRGB(0, 210, 255) }
 }
-local activeTheme = themes["Beyaz"]
+local activeTheme = themes["Black Hole"]
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "GhostHubUI"
@@ -76,7 +77,7 @@ titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleLabel.Parent = topBar
 
--- 🔍 Özel İşlevli Arama Motoru Kutusu
+-- 🔍 Arama Motoru Kutusu
 local searchBox = Instance.new("TextBox")
 searchBox.Size = UDim2.new(0, 200, 0, 30)
 searchBox.Position = UDim2.new(1, -215, 0, 7)
@@ -95,11 +96,34 @@ searchCorner.Parent = searchBox
 
 local isLocked = false
 local isVisible = true
+local isTweening = false
 
 local function toggleUI()
+    if isTweening then return end
+    isTweening = true
+    
     isVisible = not isVisible
-    mainFrame.Visible = isVisible
-    openButton.Visible = not isVisible
+    
+    if isVisible then
+        mainFrame.Visible = true
+        mainFrame.Size = UDim2.new(0, 0, 0, 0)
+        mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        TweenService:Create(mainFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 680, 0, 440),
+            Position = UDim2.new(0.5, -340, 0.5, -220)
+        }):Play()
+        openButton.Visible = false
+    else
+        TweenService:Create(mainFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 0, 0, 0),
+            Position = UDim2.new(0.5, 0, 0.5, 0)
+        }):Play()
+        task.wait(0.12)
+        mainFrame.Visible = false
+        openButton.Visible = true
+    end
+    
+    isTweening = false
 end
 
 openButton.MouseButton1Click:Connect(toggleUI)
@@ -160,7 +184,6 @@ local function createTabButton(name, posY)
     return btn
 end
 
--- Havalı Sekme İsimleri
 local btnMain = createTabButton("🚪 Main", 10)
 local btnExploits = createTabButton("🌟 Exploits", 48)
 local btnMines = createTabButton("⛏️ Mines", 86)
@@ -242,24 +265,50 @@ local function applyTheme(tName)
     end
 end
 
+-- 🎨 Temalar Sayfasını Oluşturma ve "Select Theme" Butonları
 local themeY = 15
 for tName, _ in pairs(themes) do
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -20, 0, 35)
-    btn.Position = UDim2.new(0, 10, 0, themeY)
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    btn.Text = "Tema: " .. tName
-    btn.TextColor3 = Color3.fromRGB(240, 240, 240)
-    btn.TextSize = 13
-    btn.Font = Enum.Font.GothamMedium
-    btn.Parent = pageThemes
+    local themeCard = Instance.new("Frame")
+    themeCard.Size = UDim2.new(1, -20, 0, 50)
+    themeCard.Position = UDim2.new(0, 10, 0, themeY)
+    themeCard.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    themeCard.BorderSizePixel = 0
+    themeCard.Parent = pageThemes
     
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, 6)
-    c.Parent = btn
+    local cardCorner = Instance.new("UICorner")
+    cardCorner.CornerRadius = UDim.new(0, 6)
+    cardCorner.Parent = themeCard
     
-    btn.MouseButton1Click:Connect(function() applyTheme(tName) end)
-    themeY = themeY + 42
+    local themeLabel = Instance.new("TextLabel")
+    themeLabel.Size = UDim2.new(0, 200, 1, 0)
+    themeLabel.Position = UDim2.new(0, 15, 0, 0)
+    themeLabel.BackgroundTransparency = 1
+    themeLabel.Text = "🎨 Tema: " .. tName
+    themeLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+    themeLabel.TextSize = 13
+    themeLabel.Font = Enum.Font.GothamBold
+    themeLabel.TextXAlignment = Enum.TextXAlignment.Left
+    themeLabel.Parent = themeCard
+    
+    local selectBtn = Instance.new("TextButton")
+    selectBtn.Size = UDim2.new(0, 110, 0, 30)
+    selectBtn.Position = UDim2.new(1, -120, 0.5, -15)
+    selectBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 128)
+    selectBtn.Text = "Select Theme"
+    selectBtn.TextColor3 = Color3.fromRGB(15, 15, 20)
+    selectBtn.TextSize = 12
+    selectBtn.Font = Enum.Font.GothamBold
+    selectBtn.Parent = themeCard
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = selectBtn
+    
+    selectBtn.MouseButton1Click:Connect(function()
+        applyTheme(tName)
+    end)
+    
+    themeY = themeY + 60
 end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -267,14 +316,12 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         toggleUI()
     end
 end)
--- // GHOSTHUB V2.0 - PART 2/2 (PEARL×NEØ) \\ --
 
--- ⏳ 10 Saniye Bekleme ve Yüklenme Bildirimi (Starter Notification)
+-- ⏳ Yüklenme Bildirimi
 print("GhostHub V2.0: 10 Saniye Bekleyiniz...")
 task.wait(10)
 print("GhostHub Başarıyla Yüklendi!")
 
--- Ekran üstü şık bildirim (Opsiyonel görsel bilgi)
 local starterNotify = Instance.new("TextLabel")
 starterNotify.Size = UDim2.new(0, 300, 0, 40)
 starterNotify.Position = UDim2.new(0.5, -150, 0, 15)
@@ -290,7 +337,6 @@ local snCorner = Instance.new("UICorner")
 snCorner.CornerRadius = UDim.new(0, 8)
 snCorner.Parent = starterNotify
 
--- 3 saniye sonra bildirimi yavaşça yok et
 task.spawn(function()
     task.wait(3)
     for i = 1, 10 do
@@ -302,7 +348,6 @@ task.spawn(function()
     starterNotify:Destroy()
 end)
 
--- 📱 Mobil ve PC İçin Ekran Üstü Toggle (Aç/Kapat) Sürüklenebilir Buton
 local toggleMobileBtn = Instance.new("TextButton")
 toggleMobileBtn.Name = "ToggleMobileBtn"
 toggleMobileBtn.Size = UDim2.new(0, 90, 0, 32)
@@ -318,728 +363,7 @@ local tmCorner = Instance.new("UICorner")
 tmCorner.CornerRadius = UDim.new(0, 6)
 tmCorner.Parent = toggleMobileBtn
 
--- Toggle Butonuna Tıklayınca Arayüzü Aç/Kapat
 toggleMobileBtn.MouseButton1Click:Connect(function()
     toggleUI()
 end)
-
-local function applyTheme(tName)
-    local tData = themes[tName]
-    if tData then
-        activeTheme = tData
-        mainFrame.BackgroundColor3 = tData.MainBg
-        topBar.BackgroundColor3 = tData.TopBar
-        sideMenu.BackgroundColor3 = tData.SideMenu
-        titleLabel.TextColor3 = tData.Accent
-    end
-end
-
-local themeY = 15
-for tName, _ in pairs(themes) do
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -20, 0, 35)
-    btn.Position = UDim2.new(0, 10, 0, themeY)
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    btn.Text = "Tema: " .. tName
-    btn.TextColor3 = Color3.fromRGB(240, 240, 240)
-    btn.TextSize = 13
-    btn.Font = Enum.Font.GothamMedium
-    btn.Parent = pageThemes
-    
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, 6)
-    c.Parent = btn
-    
-    btn.MouseButton1Click:Connect(function() applyTheme(tName) end)
-    themeY = themeY + 42
-end
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
-        toggleUI()
-    end
-end)
-- ⏳ 10 Saniye Bekleme ve Yüklenme Bildirimi (Starter Notification)
-print("GhostHub V2.0: 10 Saniye Bekleyiniz...")
-task.wait(10)
-print("GhostHub Başarıyla Yüklendi!")
-
--- Ekran üstü şık bildirim (Opsiyonel görsel bilgi)
-local starterNotify = Instance.new("TextLabel")
-starterNotify.Size = UDim2.new(0, 300, 0, 40)
-starterNotify.Position = UDim2.new(0.5, -150, 0, 15)
-starterNotify.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
-starterNotify.TextColor3 = Color3.fromRGB(0, 255, 128)
-starterNotify.TextSize = 13
-starterNotify.Font = Enum.Font.GothamBold
-starterNotify.Text = "GhostHub Başarıyla Yüklendi!"
-starterNotify.ZIndex = 999
-starterNotify.Parent = screenGui
-
-local snCorner = Instance.new("UICorner")
-snCorner.CornerRadius = UDim.new(0, 8)
-snCorner.Parent = starterNotify
-
--- 3 saniye sonra bildirimi yavaşça yok et
-task.spawn(function()
-    task.wait(3)
-    for i = 1, 10 do
-        starterNotify.TextTransparency = i / 10
-        starterNotify.TextStrokeTransparency = i / 10
-        starterNotify.BackgroundTransparency = i / 10
-        task.wait(0.05)
-    end
-    starterNotify:Destroy()
-end)
-
-local isVisible = true
-local isTweening = false
-
-local function toggleUI()
-    if isTweening then return end
-    isTweening = true
-    
-    isVisible = not isVisible
-    
-    if isVisible then
-        mainFrame.Visible = true
-        mainFrame.Size = UDim2.new(0, 0, 0, 0)
-        mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-        TweenService:Create(mainFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, 680, 0, 440),
-            Position = UDim2.new(0.5, -340, 0.5, -220)
-        }):Play()
-        openButton.Visible = false
-    else
-        TweenService:Create(mainFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-            Size = UDim2.new(0, 0, 0, 0),
-            Position = UDim2.new(0.5, 0, 0.5, 0)
-        }):Play()
-        task.wait(0.12)
-        mainFrame.Visible = false
-        openButton.Visible = true
-    end
-    
-    isTweening = false
-end
-
--- GhostHub - Archives: Ultimate Deep Hook Anti-Drone Module
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
-local lplr = players.LocalPlayer
-local workspace = game:GetService("Workspace")
-
--- Metatable Hooking (Derin Hook / Namecall Intercept)
-local mt = getrawmetatable(game)
-local oldNamecall = mt.__namecall
-setreadonly(mt, false)
-
-mt.__namecall = newcclosure(function(self, ...)
-    local method = getnamecallmethod():lower()
-    local args = {...}
-    
-    pcall(function()
-        -- Drone tabanlı hasar veya itme (push) fonksiyonlarını ve remote'ları yakala ve engelle
-        if method == "fireserver" or method == "invokeserver" then
-            local nameStr = tostring(self):lower()
-            if nameStr:find("drone") or nameStr:find("archives") or nameStr:find("damage") or nameStr:find("knockback") then
-                -- Zararlı drone sinyallerini ve event'lerini yok et
-                return
-            end
-        end
-    end)
-    
-    return oldNamecall(self, ...)
-end)
-setreadonly(mt, true)
-
--- Fiziksel ve Konum Koruma Katmanı (Heartbeat Bazlı Derin Savunma)
-runService.Heartbeat:Connect(function()
-    pcall(function()
-        local char = lplr.Character
-        if not char then return end
-        local hrp = char:FindFirstChild("HumanoidRootPart")
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if not hrp or not hum then return end
-        
-        -- Canı daima full tut ve dışarıdan gelebilecek ani fırlatmaları sıfırla
-        hum.Health = hum.MaxHealth
-        
-        for _, v in ipairs(workspace:GetDescendants()) do
-            if v.Name:lower():find("drone") then
-                -- Drone parçalarının oyuncuyla temas event'lerini tamamen imha et
-                if v:IsA("BasePart") then
-                    v.CanCollide = false
-                    v.CanTouch = false
-                end
-            end
-        end
-    end)
-end)
-
--- GhostHub - Archives: Ultimate FE Deep Hook Anti-Drone Stampede
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
-local lplr = players.LocalPlayer
-local workspace = game:GetService("Workspace")
-
--- Metatable Deep Intercept (Namecall & Index Hooking)
-local mt = getrawmetatable(game)
-local oldNamecall = mt.__namecall
-local oldIndex = mt.__index
-setreadonly(mt, false)
-
--- Sunucuya giden veya gelen zararlı drone dalgası / hasar event'lerini engelle
-mt.__namecall = newcclosure(function(self, ...)
-    local method = getnamecallmethod():lower()
-    local args = {...}
-    
-    pcall(function()
-        if method == "fireserver" or method == "invokeserver" then
-            local nameStr = tostring(self):lower()
-            if nameStr:find("drone") or nameStr:find("stampede") or nameStr:find("damage") or nameStr:find("hit") then
-                -- Drone stampede tetikleyicilerini tamamen yut
-                return
-            end
-        end
-    end)
-    
-    return oldNamecall(self, ...)
-end)
-
--- Kliniğe gelen hasar ve pozisyon manipülasyonlarını engellemek için Index kancası
-mt.__index = newcclosure(function(self, k)
-    pcall(function()
-        if self == lplr.Character and (k == "Humanoid" or k == "HumanoidRootPart") then
-            -- Karakterin veri okumalarında dış etkenleri izole et
-        end
-    end)
-    return oldIndex(self, k)
-end)
-
-setreadonly(mt, true)
-
--- FE (FilteringEnabled) Fizik ve Can Sabitleme Katmanı
-runService.Heartbeat:Connect(function()
-    pcall(function()
-        local char = lplr.Character
-        if not char then return end
-        local hrp = char:FindFirstChild("HumanoidRootPart")
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if not hrp or not hum then return end
-        
-        -- Drone stampede dalgası ortalıkta koştururken canı kilitli tut ve itilmeleri önle
-        hum.Health = hum.MaxHealth
-        hum.PlatformStand = false
-        
-        -- Çevredeki tüm stampede ve drone parçalarının dokunma algısını kökten kapat
-        for _, v in ipairs(workspace:GetDescendants()) do
-            local n = v.Name:lower()
-            if n:find("drone") or n:find("stampede") then
-                if v:IsA("BasePart") then
-                    v.CanTouch = false
-                    v.CanCollide = false
-                end
-            end
-        end
-        
-        -- Hız vektörünü sabitleyerek stampede patlamalarında uçmayı/savrulmayı engelle
-        if hrp.AssemblyLinearVelocity.Magnitude > 120 then
-            hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-        end
-    end)
-end)
-
--- GhostHub - Archives: Ultimate Deep Hook Anti-ElectricPuddle Module
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
-local lplr = players.LocalPlayer
-local workspace = game:GetService("Workspace")
-
--- Metatable Deep Intercept (Namecall & Index Hooking for Electric Hazards)
-local mt = getrawmetatable(game)
-local oldNamecall = mt.__namecall
-local oldIndex = mt.__index
-setreadonly(mt, false)
-
--- Sunucuya giden veya gelen elektrik/çarptırma event'lerini tamamen yut
-mt.__namecall = newcclosure(function(self, ...)
-    local method = getnamecallmethod():lower()
-    local args = {...}
-    
-    pcall(function()
-        if method == "fireserver" or method == "invokeserver" then
-            local nameStr = tostring(self):lower()
-            if nameStr:find("electric") or nameStr:find("puddle") or nameStr:find("shock") or nameStr:find("hazard") then
-                return -- Elektrik sinyalini ve hasar paketini tamamen engelle
-            end
-        end
-    end)
-    
-    return oldNamecall(self, ...)
-end)
-
--- Elektrik nesnelerinden gelebilecek veri okuma ve temas tetiklerini izole et
-mt.__index = newcclosure(function(self, k)
-    pcall(function()
-        if (self:IsA("BasePart") or self:IsA("Model")) and (tostring(self):lower():find("electric") or tostring(self):lower():find("puddle")) then
-            if k == "CanTouch" then
-                return false
-            end
-        end
-    end)
-    return oldIndex(self, k)
-end)
-
-setreadonly(mt, true)
-
--- Fiziksel ve Can Sabitleme Katmanı (Heartbeat Savunması)
-runService.Heartbeat:Connect(function()
-    pcall(function()
-        local char = lplr.Character
-        if not char then return end
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if not hum then return end
-        
-        -- Canı daima yüzde yüz seviyesinde kilitli tut
-        hum.Health = hum.MaxHealth
-
--- Haritadaki tüm elektrik birikintilerini ve şok alanlarını etkisizleştir
-        for _, v in ipairs(workspace:GetDescendants()) do
-            local nameLower = v.Name:lower()
-            if nameLower:find("electric") or nameLower:find("puddle") or nameLower:find("shock") or nameLower:find("water_hazard") then
-                if v:IsA("BasePart") then
-                    v.CanTouch = false
-                elseif v:IsA("Model") then
-                    for _, part in ipairs(v:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.CanTouch = false
-                        end
-                    end
-                end
-            end
-        end
-    end)
-end)
-
--- GhostHub - Archives: Ultimate Deep Hook Anti-Ransom & Jumpscare Blocker
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
-local coreGui = game:GetService("CoreGui")
-local lplr = players.LocalPlayer
-local workspace = game:GetService("Workspace")
-
--- Metatable Deep Intercept (Jumpscare UI & Hasar Engelleme)
-local mt = getrawmetatable(game)
-local oldNamecall = mt.__namecall
-local oldIndex = mt.__index
-setreadonly(mt, false)
-
--- Ransom'ın tetikleyeceği remote event'leri ve jumpscare paketlerini yut
-mt.__namecall = newcclosure(function(self, ...)
-    local method = getnamecallmethod():lower()
-    local args = {...}
-    
-    pcall(function()
-        if method == "fireserver" or method == "invokeserver" then
-            local nameStr = tostring(self):lower()
-            if nameStr:find("ransom") or nameStr:find("jumpscare") or nameStr:find("scare") or nameStr:find("horror") then
-                return -- Sinyali tamamen yok et
-            end
-        end
-    end)
-    
-    return oldNamecall(self, ...)
-end)
-
--- Ekrandaki ansızın belirecek jumpscare GUI elementlerini okuma anında engelle
-mt.__index = newcclosure(function(self, k)
-    pcall(function()
-        if (self:IsA("ScreenGui") or self:IsA("Folder")) and (tostring(self):lower():find("ransom") or tostring(self):lower():find("jumpscare")) then
-            if k == "Enabled" or k == "Visible" then
-                return false -- Görünürlüğü zorla kapat
-            end
-        end
-    end)
-    return oldIndex(self, k)
-end)
-
-setreadonly(mt, true)
-
--- Fiziksel ve Can Koruma Katmanı
-runService.Heartbeat:Connect(function()
-    pcall(function()
-        local char = lplr.Character
-        if not char then return end
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if not hum then return end
-        
-        -- Canı daima full tut
-        hum.Health = hum.MaxHealth
-        
-        -- Haritadaki Ransom varlıklarını ve jumpscare nesnelerini anında etkisizleştir
-        for _, v in ipairs(workspace:GetDescendants()) do
-            local nameLower = v.Name:lower()
-            if nameLower:find("ransom") or nameLower:find("scare") then
-                if v:IsA("BasePart") then
-                    v.CanTouch = false
-                elseif v:IsA("Sound") then
-                    v.Playing = false
-                    v.Volume = 0
-                end
-            end
-        end
-        
-        -- Oyuncunun ekranına sonradan sızmış olabilecek jumpscare frame'lerini temizle
-        local playerGui = lplr:FindFirstChild("PlayerGui")
-        if playerGui then
-            for _, gui in ipairs(playerGui:GetChildren()) do
-                local gName = gui.Name:lower()
-                if gName:find("ransom") or gName:find("jumpscare") or gName:find("scare") then
-                    gui:Destroy()
-                end
-            end
-        end
-    end)
-end)
-
--- GhostHub - Archives: Ultimate Deep Hook Anti-Alma & Jumpscare Blocker
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
-local lplr = players.LocalPlayer
-local workspace = game:GetService("Workspace")
-
--- Metatable Deep Intercept (Alma Jumpscare & Hasar Engelleme)
-local mt = getrawmetatable(game)
-local oldNamecall = mt.__namecall
-local oldIndex = mt.__index
-setreadonly(mt, false)
-
--- Alma'nın tetikleyeceği remote event'leri ve jumpscare paketlerini tamamen yut
-mt.__namecall = newcclosure(function(self, ...)
-    local method = getnamecallmethod():lower()
-    local args = {...}
-    
-    pcall(function()
-        if method == "fireserver" or method == "invokeserver" then
-            local nameStr = tostring(self):lower()
-            if nameStr:find("alma") or nameStr:find("jumpscare") or nameStr:find("scare") then
-                return -- Sinyali ve hasar iletimini engelle
-            end
-        end
-    end)
-    
-    return oldNamecall(self, ...)
-end)
-
--- Ekrandaki ansızın belirecek Alma jumpscare GUI elementlerini okuma anında engelle
-mt.__index = newcclosure(function(self, k)
-    pcall(function()
-        if (self:IsA("ScreenGui") or self:IsA("Folder")) and tostring(self):lower():find("alma") then
-            if k == "Enabled" or k == "Visible" then
-                return false -- Görünürlüğü zorla kapat
-            end
-        end
-    end)
-    return oldIndex(self, k)
-end)
-
-setreadonly(mt, true)
-
--- Fiziksel ve Can Koruma Katmanı
-runService.Heartbeat:Connect(function()
-    pcall(function()
-        local char = lplr.Character
-        if not char then return end
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if not hum then return end
-        
-        -- Canı daima full tut
-        hum.Health = hum.MaxHealth
-        
-        -- Haritadaki Alma varlıklarını ve jumpscare nesnelerini anında etkisizleştir
-        for _, v in ipairs(workspace:GetDescendants()) do
-            local nameLower = v.Name:lower()
-            if nameLower:find("alma") then
-                if v:IsA("BasePart") then
-                    v.CanTouch = false
-                elseif v:IsA("Sound") then
-                    v.Playing = false
-                    v.Volume = 0
-                end
-            end
-        end
-        
-        -- Oyuncunun ekranına sızabilecek Alma UI elemanlarını temizle
-        local playerGui = lplr:FindFirstChild("PlayerGui")
-        if playerGui then
-            for _, gui in ipairs(playerGui:GetChildren()) do
-                if gui.Name:lower():find("alma") then
-                    gui:Destroy()
-                end
-            end
-        end
-    end)
-end)
-
--- GhostHub - Archives: Automatic Module (Auto-Alma, StorageBox Teleport, Auto Look-Flowers)
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
-local lplr = players.LocalPlayer
-local workspace = game:GetService("Workspace")
-
--- 1. Auto-Alma (Alma Minigamesini Otomatik Tamamlar)
-task.spawn(function()
-    while task.wait(0.2) do
-        pcall(function()
-            for _, v in ipairs(workspace:GetDescendants()) do
-                if v.Name:lower():find("alma") and v:FindFirstChild("Prompt") or v:IsA("ProximityPrompt") then
-                    if v.Parent and v.Parent.Name:lower():find("alma") then
-                        fireproximityprompt(v)
-                    end
-                end
-                -- Alma minigame etkileşim objelerini ve completion nodelarını otomatik tetikle
-                local nameStr = v.Name:lower()
-                if nameStr:find("alma_minigame") or nameStr:find("alma_interaction") then
-                    if v:IsA("BasePart") and lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart") then
-                        firetouchinterest(lplr.Character.HumanoidRootPart, v, 0)
-                        firetouchinterest(lplr.Character.HumanoidRootPart, v, 1)
-                    end
-                end
-            end
-        end)
-    end
-end)
-
--- 2. Teleport StorageBox to Deposit (Honcho Chase'deki doğru kutuları otomatik depoya atar)
-task.spawn(function()
-    while task.wait(0.3) do
-        pcall(function()
-            local char = lplr.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            -- Honcho Chase aşamasındaki depozit / kasa bölgesini bul
-            let depositTarget = nil
-            for _, v in ipairs(workspace:GetDescendants()) do
-                if v.Name:lower():find("deposit") or v.Name:lower():find("storage_drop") then
-                    depositTarget = v
-                    break
-                end
-            end
-            
-            -- Doğru kutuları (StorageBox) bul ve doğrudan depozit noktasına ışınla
-            if depositTarget then
-                local targetPos = depositTarget.Position or depositTarget:FindFirstChildOfClass("BasePart") and depositTarget:FindFirstChildOfClass("BasePart").Position
-                if targetPos then
-                    for _, v in ipairs(workspace:GetDescendants()) do
-                        if v.Name:lower():find("storagebox") or v.Name:lower():find("honcho_box") then
-                            if v:IsA("Model") and v:PrimaryPart() then
-                                v:SetPrimaryPartCFrame(CFrame.new(targetPos + Vector3.new(0, 2, 0)))
-                            elseif v:IsA("BasePart") then
-                                v.CFrame = CFrame.new(targetPos + Vector3.new(0, 2, 0))
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)
-
--- 3. Auto Look-Flowers (Forgot-Me-Not çiçeğini/bulmacasını otomatik yapar)
-task.spawn(function()
-    while task.wait(0.4) do
-        pcall(function()
-            local char = lplr.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            -- Forgot-Me-Not çiçeklerini ve bulmaca nesnelerini tara
-            for _, v in ipairs(workspace:GetDescendants()) do
-                local n = v.Name:lower()
-                if n:find("forgotmenot") or n:find("flower") or n:find("petals") then
-                    -- Çiçeğe otomatik bakma ve etkileşimi tetikleme
-                    if v:IsA("BasePart") then
-                        hrp.CFrame = CFrame.new(hrp.Position, v.Position)
-                        for _, p in ipairs(v:GetChildren()) do
-                            if p:IsA("ProximityPrompt") then
-                                fireproximityprompt(p)
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)
-
--- GhostHub - Archives: More Features (Skip/Guess Forgot-Me-Not, Auto Clear Closets, Auto Terminal)
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
-local lplr = players.LocalPlayer
-local workspace = game:GetService("Workspace")
-
--- 1. Skip Forgot-Me-Not (Çiçekli odayı direkt atlar ve sonraki kapıya ışınlar)
-local function skipForgotMeNot()
-    pcall(function()
-        local char = lplr.Character
-        local hrp = char and char:FindFirstChild("HumanoidRootPart")
-        if not hrp then return end
-        
-        for _, v in ipairs(workspace:GetDescendants()) do
-            if v.Name:lower():find("forgotmenot") or v.Name:lower():find("flower_room") then
-                -- Çiçekli oda alanını tespit edip çıkış kapısına ışınlanma
-                local exitDoor = workspace:FindFirstChild("Door", true)
-                if exitDoor and exitDoor:FindFirstChild("Door") then
-                    hrp.CFrame = exitDoor.Door.CFrame + Vector3.new(0, 0, -3)
-                end
-            end
-        end
-    end)
-end
-
--- 2. Guess Forgot-Me-Not (Çiçekli odada doğru yönü "İleri Git" / "Geri Git" şeklinde yönlendirir)
-task.spawn(function()
-    while task.wait(0.5) do
-        pcall(function()
-            local char = lplr.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            -- Forgot-Me-Not bulmaca odasındaki doğru yolu tarama ve hesaplama
-            for _, v in ipairs(workspace:GetDescendants()) do
-                if v.Name:lower():find("forgotmenot_path") or v.Name:lower():find("correct_door") then
-                    -- Doğru kapı yönüne göre oyuncuyu bilgilendirme veya ok yönü çizme mantığı
-                    local targetPos = v.Position
-                    if targetPos then
-                        local distance = (targetPos - hrp.Position).Magnitude
-                        if distance < 50 then
-                            -- Ekrana veya konsola rehberlik (Örn: Doğru kapı için ileri/geri yönlendirmesi)
-                            print("[GhostHub Guide]: Doğru kapı yönündesin, İleri Git!")
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)
-
--- 3. Auto Clear Closets (Archives 1300 oda boyunca dolapları otomatik açar, paraları ve eşyaları toplar)
-task.spawn(function()
-    while task.wait(0.3) do
-        pcall(function()
-            local char = lplr.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            for _, v in ipairs(workspace:GetDescendants()) do
-                local nameLower = v.Name:lower()
-                if nameLower:find("closet") or nameLower:find("wardrobe") or nameLower:find("drawer") or nameLower:find("gold") then
-                    -- Dolap veya altın/eşya promptlarını otomatik tetikle
-                    for _, p in ipairs(v:GetDescendants()) do
-                        if p:IsA("ProximityPrompt") then
-                            if (p.Parent.Position - hrp.Position).Magnitude <= p.MaxActivationDistance then
-                                fireproximityprompt(p)
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)
-
--- 4. Auto Terminal Archives (Honcho Chase sırasında kapıları kapatmak için Terminal'e otomatik basar)
-task.spawn(function()
-    while task.wait(0.1) do
-        pcall(function()
-            local char = lplr.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            for _, v in ipairs(workspace:GetDescendants()) do
-                local nameLower = v.Name:lower()
-                if nameLower:find("terminal") or nameLower:find("honcho_terminal") or nameLower:find("panel") then
-                    for _, p in ipairs(v:GetDescendants()) do
-                        if p:IsA("ProximityPrompt") then
-                            fireproximityprompt(p)
-                        end
-                    end
-                    -- Eğer proximity prompt yoksa touch interest ile tetikle
-                    if v:IsA("BasePart") and (v.Position - hrp.Position).Magnitude < 20 then
-                        firetouchinterest(hrp, v, 0)
-                        firetouchinterest(hrp, v, 1)
-                    end
-                end
-            end
-        end)
-    end
-end)
-
--- GhostHub - Notify Section (Entity Notify & Teller Notify)
-local players = game:GetService("Players")
-local workspace = game:GetService("Workspace")
-local lplr = players.LocalPlayer
-
--- Ekran üstü şık bildirim fonksiyonu (Notification UI Helper)
-local function sendGhostNotify(title, message)
-    pcall(function()
-        local starterGui = game:GetService("StarterGui")
-        starterGui:SetCore("SendNotification", {
-            Title = title,
-            Text = message,
-            Duration = 3.5
-        })
-    end)
-end
-
--- 1. Entity Notify (Scribbles, Drone Stampede, Drone, Bash, Alma Spawn & Despawn Takibi)
-task.spawn(function()
-    local trackedEntities = {}
-    while task.wait(0.5) do
-        pcall(function()
-            local currentEntities = {}
-            for _, v in ipairs(workspace:GetDescendants()) do
-                local nameLower = v.Name:lower()
-                if nameLower:find("scribble") or nameLower:find("drone_stampede") or nameLower:find("drone") or nameLower:find("bash") or nameLower:find("alma") then
-                    currentEntities[v] = v.Name
-                    -- Eğer daha önce listede yoksa Spawn bildirimi at
-                    if not trackedEntities[v] then
-                        trackedEntities[v] = true
-                        sendGhostNotify("GhostHub [Entity Alert]", "[+] " .. v.Name .. " Spawn Oldu!")
-                    end
-                end
-            end
-            
-            -- Kaybolan (Despawn olan) entity'leri kontrol et
-            for entity, name in pairs(trackedEntities) do
-                if not entity or not entity.Parent or not workspace:IsAncestorOf(entity) then
-                    trackedEntities[entity] = nil
-                    sendGhostNotify("GhostHub [Entity Alert]", "[-] " .. tostring(name) .. " Despawned (Atlattık)!")
-                end
-            end
-        end)
-    end
-end)
-
--- 2. Teller Notify (1'den 35'e kadar tel/kablo numaralarını aldıkça ekranda gösterir)
-task.spawn(function()
-    local notifiedTellers = {}
-    while task.wait(0.3) do
-        pcall(function()
-            for _, v in ipairs(workspace:GetDescendants()) do
-                local nameLower = v.Name:lower()
-                -- Teller veya kablo/numara objelerini tarama
-                if nameLower:find("teller") or nameLower:find("wire") or nameLower:find("cable") or nameLower:find("number") then
-                    if not notifiedTellers[v] then
-                        notifiedTellers[v] = true
-                        -- Örnek Tel Numarası Yakalama ve Bildirim (1-35 arası)
-                        sendGhostNotify("GhostHub [Teller Tracker]", "Tel Numarası Tespit Edildi ve İlerliyor!")
-                    end
-                end
-            end
-        end)
-    end
-end)
-
+-- // GHOSTHUB V2.0 - PART 2/2 (PEARL×NEØ) \\ --
