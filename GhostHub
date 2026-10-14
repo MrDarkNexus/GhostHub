@@ -1,7 +1,8 @@
--- // GHOSTHUB V2.0 - FIXED TABS & CONFIG INTEGRATION \\ --
+-- // GHOSTHUB V2.0 - CUSTOM TABS & THEME SYSTEM \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
@@ -30,7 +31,7 @@ local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0, 10)
 mainCorner.Parent = mainFrame
 
--- 🌌 Arka Plan Görseli (Config'den gelen ID: 89924308622883)[span_2](start_span)[span_2](end_span)
+-- 🌌 Arka Plan Görseli (Config'den gelen ID: 89924308622883)[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span)
 local bgImage = Instance.new("ImageLabel")
 bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
@@ -43,7 +44,7 @@ bgImage.Parent = mainFrame
 -- TopBar (Üst Bar)
 local topBar = Instance.new("Frame")
 topBar.Size = UDim2.new(1, 0, 0, 42)
-topBar.BackgroundColor3 = Color3.fromHex("070805") -- Config'den gelen MainColor[span_3](start_span)[span_3](end_span)
+topBar.BackgroundColor3 = Color3.fromHex("070805") -- Config'den gelen MainColor[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span)
 topBar.BorderSizePixel = 0
 topBar.ZIndex = 5
 topBar.Parent = mainFrame
@@ -53,9 +54,9 @@ titleLabel.Size = UDim2.new(0, 350, 1, 0)
 titleLabel.Position = UDim2.new(0, 15, 0, 0)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Text = player.Name .. " | GhostHub V2.0 (Christmas Edition)"
-titleLabel.TextColor3 = Color3.fromHex("242599") -- Config'den gelen AccentColor[span_4](start_span)[span_4](end_span)
+titleLabel.TextColor3 = Color3.fromHex("242599") -- Config'den gelen AccentColor[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)
 titleLabel.TextSize = 13
-titleLabel.Font = Enum.Font.Code -- Config'den gelen FontFace[span_5](start_span)[span_5](end_span)
+titleLabel.Font = Enum.Font.Code -- Config'den gelen FontFace[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span)
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleLabel.ZIndex = 6
 titleLabel.Parent = topBar
@@ -81,9 +82,9 @@ searchCorner.Parent = searchBox
 
 -- Sol Yan Menü (Sidebar)
 local sideMenu = Instance.new("ScrollingFrame")
-sideMenu.Size = UDim2.new(0, 150, 1, -42)
+sideMenu.Size = UDim2.new(0, 160, 1, -42)
 sideMenu.Position = UDim2.new(0, 0, 0, 42)
-sideMenu.BackgroundColor3 = Color3.fromHex("070805") -- Config MainColor[span_6](start_span)[span_6](end_span)
+sideMenu.BackgroundColor3 = Color3.fromHex("070805") -- Config MainColor[span_10](start_span)[span_10](end_span)
 sideMenu.BackgroundTransparency = 0.2
 sideMenu.BorderSizePixel = 0
 sideMenu.CanvasSize = UDim2.new(0, 0, 0, 520)
@@ -103,16 +104,15 @@ sidePadding.Parent = sideMenu
 
 -- İçerik Alanı
 local contentArea = Instance.new("Frame")
-contentArea.Size = UDim2.new(1, -155, 1, -45)
-contentArea.Position = UDim2.new(0, 155, 0, 45)
+contentArea.Size = UDim2.new(1, -165, 1, -45)
+contentArea.Position = UDim2.new(0, 165, 0, 45)
 contentArea.BackgroundTransparency = 1
 contentArea.ZIndex = 5
 contentArea.Parent = mainFrame
 
--- Sekme ve Sayfa Yönetim Sistemi (Sorunsuz Çalışması İçin Düzeltildi)
+-- Sekme ve Sayfa Yönetim Sistemi
 local pages = {}
 local tabButtons = {}
-local activePageName = nil
 
 local function createPage(pageName)
     local page = Instance.new("ScrollingFrame")
@@ -141,23 +141,22 @@ local function switchTab(targetName)
     end
     for name, btn in pairs(tabButtons) do
         if name == targetName then
-            btn.BackgroundColor3 = Color3.fromHex("242599") -- Aktif Buton Vurgu Rengi
+            btn.BackgroundColor3 = Color3.fromHex("242599")
             btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         else
             btn.BackgroundColor3 = Color3.fromRGB(20, 25, 35)
             btn.TextColor3 = Color3.fromRGB(180, 190, 210)
         end
     end
-    activePageName = targetName
 end
 
 local function createTabButton(name, icon, targetPageName)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -12, 0, 32)
     btn.BackgroundColor3 = Color3.fromRGB(20, 25, 35)
-    btn.Text = "  " .. icon .. "  " .. name
+    btn.Text = " " .. icon .. " " .. name
     btn.TextColor3 = Color3.fromRGB(180, 190, 210)
-    btn.TextSize = 12
+    btn.TextSize = 11
     btn.Font = Enum.Font.GothamMedium
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.ZIndex = 6
@@ -177,104 +176,137 @@ local function createTabButton(name, icon, targetPageName)
 end
 
 -- Sayfaların Oluşturulması
+local pageMain = createPage("MainPage")
+local pageArchives = createPage("ArchivesPage")
+local pageStairWell = createPage("StairWellPage")
 local pageExploits = createPage("ExploitsPage")
-local pageMines = createPage("MinesPage")
-local pageOutdoors = createPage("OutdoorsPage")
+local pageMisc = createPage("MiscPage")
+local pageVisuals = createPage("VisualsPage")
 local pageThemes = createPage("ThemesPage")
-local pageSettings = createPage("SettingsPage")
 
--- Sekme Butonlarının Eklenmesi
-createTabButton("Exploits", "⚡", "ExploitsPage")
-createTabButton("Mines", "⛏️", "MinesPage")
-createTabButton("OutDoors", "🌀", "OutdoorsPage")
+-- İstediğin Sekmeler ve Özel İkonlar
+createTabButton("Main", "🚪", "MainPage")
+createTabButton("Archives", "🗄️", "ArchivesPage")
+createTabButton("StairWell", "🪜", "StairWellPage")
+createTabButton("Exploits", "🌟", "ExploitsPage")
+createTabButton("Misc", "💻", "MiscPage")
+createTabButton("Visuals", "👁️", "VisualsPage")
 createTabButton("Temalar", "🎨", "ThemesPage")
-createTabButton("Settings", "⚙️", "SettingsPage")
 
 -- Varsayılan Sekmeyi Aç
-switchTab("ExploitsPage")
+switchTab("MainPage")
 
--- İçerik Ekleme Yardımcısı (Toggle)
-local function createToggle(page, text, defaultState, callback)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, -10, 0, 30)
-    container.BackgroundTransparency = 1
-    container.ZIndex = 6
-    container.Parent = page
+-- 🎨 Temalar Sekmesi & İstediğin Tema Yönetim Sistemi
+local themeHeader = Instance.new("TextLabel")
+themeHeader.Size = UDim2.new(1, -10, 0, 25)
+themeHeader.BackgroundTransparency = 1
+themeHeader.Text = "🎨 Tema & Config Yönetimi"
+themeHeader.TextColor3 = Color3.fromHex("ffffff")
+themeHeader.TextSize = 13
+themeHeader.Font = Enum.Font.GothamBold
+themeHeader.TextXAlignment = Enum.TextXAlignment.Left
+themeHeader.Parent = pageThemes
 
+local function createThemeCard(title, desc, actionCallback)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(1, -10, 0, 50)
+    card.BackgroundColor3 = Color3.fromRGB(18, 22, 35)
+    card.BackgroundTransparency = 0.3
+    card.ZIndex = 6
+    card.Parent = pageThemes
+    
+    local cCorner = Instance.new("UICorner")
+    cCorner.CornerRadius = UDim.new(0, 6)
+    cCorner.Parent = card
+    
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, -50, 1, 0)
-    label.Position = UDim2.new(0, 5, 0, 0)
+    label.Size = UDim2.new(0.6, 0, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
     label.BackgroundTransparency = 1
-    label.Text = text
+    label.Text = title .. "\n<font size='10' color='#aaaaaa'>" .. desc .. "</font>"
     label.TextColor3 = Color3.fromHex("ffffff")
     label.TextSize = 12
+    label.RichText = true
     label.Font = Enum.Font.GothamMedium
     label.TextXAlignment = Enum.TextXAlignment.Left
-    label.ZIndex = 6
-    label.Parent = container
-
-    local toggleBtn = Instance.new("TextButton")
-    toggleBtn.Size = UDim2.new(0, 36, 0, 18)
-    toggleBtn.Position = UDim2.new(1, -40, 0.5, -9)
-    toggleBtn.BackgroundColor3 = defaultState and Color3.fromHex("242599") or Color3.fromRGB(30, 35, 45)
-    toggleBtn.Text = ""
-    toggleBtn.ZIndex = 6
-    toggleBtn.Parent = container
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(1, 0)
-    corner.Parent = toggleBtn
-
-    local circle = Instance.new("Frame")
-    circle.Size = UDim2.new(0, 14, 0, 14)
-    circle.Position = defaultState and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
-    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    circle.ZIndex = 7
-    circle.Parent = toggleBtn
-
-    local circleCorner = Instance.new("UICorner")
-    circleCorner.CornerRadius = UDim.new(1, 0)
-    circleCorner.Parent = circle
-
-    local state = defaultState
-    toggleBtn.MouseButton1Click:Connect(function()
-        state = not state
-        TweenService:Create(toggleBtn, TweenInfo.new(0.12), {
-            BackgroundColor3 = state and Color3.fromHex("242599") or Color3.fromRGB(30, 35, 45)
-        }):Play()
-        TweenService:Create(circle, TweenInfo.new(0.12), {
-            Position = state and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
-        }):Play()
-        if callback then callback(state) end
+    label.Parent = card
+    
+    local applyBtn = Instance.new("TextButton")
+    applyBtn.Size = UDim2.new(0, 95, 0, 28)
+    applyBtn.Position = UDim2.new(1, -105, 0.5, -14)
+    applyBtn.BackgroundColor3 = Color3.fromHex("242599")
+    applyBtn.Text = "Seç / Uygula"
+    applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    applyBtn.TextSize = 11
+    applyBtn.Font = Enum.Font.GothamBold
+    applyBtn.Parent = card
+    
+    local bCorner = Instance.new("UICorner")
+    bCorner.CornerRadius = UDim.new(0, 6)
+    bCorner.Parent = applyBtn
+    
+    applyBtn.MouseButton1Click:Connect(function()
+        actionCallback(applyBtn)
     end)
 end
 
--- ⚡ Exploits İçerikleri
-createToggle(pageExploits, "Bypass Giggle", true)
-createToggle(pageExploits, "Bypass Dupe", true)
-createToggle(pageExploits, "Bypass Eyes", false)
-createToggle(pageExploits, "Bypass Lookman", true)
+-- 1. Config Theme (10 Saniye İçinde Seçilen Config'i Uygulama Sistemi)
+createThemeCard("Config Theme", "10 Saniye İçinde Uygulanır", function(btn)
+    btn.Text = "Bekleniyor (10s)..."
+    btn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
+    
+    task.spawn(function()
+        for i = 10, 1, -1 do
+            btn.Text = i .. "s kaldı..."
+            task.wait(1)
+        end
+        -- Config Renklerini & Görselini Uygula
+        bgImage.Image = "rbxassetid://89924308622883"
+        mainFrame.BackgroundColor3 = Color3.fromHex("000000")
+        topBar.BackgroundColor3 = Color3.fromHex("070805")
+        sideMenu.BackgroundColor3 = Color3.fromHex("070805")
+        titleLabel.TextColor3 = Color3.fromHex("242599")
+        
+        btn.Text = "Uygulandı!"
+        btn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        task.wait(2)
+        btn.Text = "Seç / Uygula"
+        btn.BackgroundColor3 = Color3.fromHex("242599")
+    end)
+end)
 
--- ⛏️ Mines İçerikleri
-createToggle(pageMines, "Auto Breaker Box", true)
-createToggle(pageMines, "Auto Library Guess Code", true)
-createToggle(pageMines, "Remove Basement Gate", true)
+-- 2. Christmas Theme 1
+createThemeCard("Christmas Theme 1", "Klasik Kış & Çam Ağacı Atmosferi", function(btn)
+    bgImage.Image = "rbxassetid://89924308622883"
+    mainFrame.BackgroundColor3 = Color3.fromHex("0c1814")
+    topBar.BackgroundColor3 = Color3.fromHex("12241a")
+    sideMenu.BackgroundColor3 = Color3.fromHex("0f2017")
+    titleLabel.TextColor3 = Color3.fromHex("ff4b4b")
+    btn.Text = "Aktif!"
+    task.wait(1.5)
+    btn.Text = "Seç / Uygula"
+end)
 
--- 🌀 OutDoors İçerikleri (Bahçe / Doğa Görünümlü Havalı Özellikler)
-createToggle(pageOutdoors, "Bypass Gloombat Eggs", true)
-createToggle(pageOutdoors, "Bypass Snare", true)
-createToggle(pageOutdoors, "Remove Seek Trigger", true)
+-- 3. Christmas Theme 2
+createThemeCard("Christmas Theme 2", "Koyu Yılbaşı Gecesi Atmosferi", function(btn)
+    bgImage.Image = "rbxassetid://89924308622883"
+    mainFrame.BackgroundColor3 = Color3.fromHex("081015")
+    topBar.BackgroundColor3 = Color3.fromHex("0e1d24")
+    sideMenu.BackgroundColor3 = Color3.fromHex("0a171d")
+    titleLabel.TextColor3 = Color3.fromHex("00d2ff")
+    btn.Text = "Aktif!"
+    task.wait(1.5)
+    btn.Text = "Seç / Uygula"
+end)
 
--- 🎨 Temalar Sekmesi İçeriği
-local themeLabelDesc = Instance.new("TextLabel")
-themeLabelDesc.Size = UDim2.new(1, -10, 0, 30)
-themeLabelDesc.BackgroundTransparency = 1
-themeLabelDesc.Text = "Aktif Config: Christmas Config"
-themeLabelDesc.TextColor3 = Color3.fromHex("ffffff")
-themeLabelDesc.TextSize = 13
-themeLabelDesc.Font = Enum.Font.GothamBold
-themeLabelDesc.TextXAlignment = Enum.TextXAlignment.Left
-themeLabelDesc.Parent = pageThemes
+-- 4. Theme +
+createThemeCard("Theme +", "Özel / Harici Tema Yükleme", function(btn)
+    btn.Text = "Yükleniyor..."
+    task.wait(1)
+    btn.Text = "Hazır!"
+    task.wait(1.5)
+    btn.Text = "Seç / Uygula"
+end)
 
 -- UI Açma/Kapama Tuşu (Sağ Shift)
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
