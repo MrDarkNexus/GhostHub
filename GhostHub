@@ -347,4 +347,94 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("GhostHub V2.0 Başarıyla Yüklendi!")
+-- // GHOSTHUB V2.0 - VISUALS ENTITY ESP (BALLS REMOVED, STEM KEPT) \\ --
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+
+-- Parantezsiz, Balls çıkarılmış ve Stem eklenmiş Entity Listesi
+local entityNames = {
+    "Portrait", "Mandrake", "GroundSpekker", "Bash", "Surge", "Snare", 
+    "Rush", "Ambush", "Eyes", "Creak", "Noise", "Noise_Tv", "GloomBats", 
+    "Alma", "Scribbles", "ElectricPuddle", "Drone", "A-120", "A-60", 
+    "Monument", "Blitz", "LookMan", "Dupe", "Figure", "Bramble", 
+    "Grumble", "Queen Grumble", "Frozen Ambush", "Glitched Rush", 
+    "Glitched Ambush", "Honcho", "Stem"
+}
+
+local activeEsps = {}
+
+local function createSafeESP(targetPart, displayName)
+    if not targetPart or activeEsps[targetPart] then return end
+    
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "GhostEntityESP"
+    billboard.Adornee = targetPart
+    billboard.Size = UDim2.new(0, 120, 0, 45)
+    billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+    billboard.AlwaysOnTop = true
+    billboard.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, 0, 0, 22)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = displayName
+    nameLabel.TextColor3 = Color3.fromRGB(255, 50, 50) -- Kırmızı İsim
+    nameLabel.TextSize = 13
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextStrokeTransparency = 0.4
+    nameLabel.Parent = billboard
+    
+    local distLabel = Instance.new("TextLabel")
+    distLabel.Size = UDim2.new(1, 0, 0, 20)
+    distLabel.Position = UDim2.new(0, 0, 0, 20)
+    distLabel.BackgroundTransparency = 1
+    distLabel.TextColor3 = Color3.fromRGB(255, 50, 50) -- Kırmızı Metre Bilgisi
+    distLabel.TextSize = 11
+    distLabel.Font = Enum.Font.GothamMedium
+    distLabel.TextStrokeTransparency = 0.4
+    distLabel.Parent = billboard
+    
+    billboard.Parent = player.PlayerGui
+    activeEsps[targetPart] = billboard
+    
+    -- Güvenli RenderStepped Bağlantısı
+    local connection
+    connection = RunService.RenderStepped:Connect(function()
+        if not targetPart or not targetPart.Parent or not billboard.Parent then
+            if billboard then billboard:Destroy() end
+            activeEsps[targetPart] = nil
+            if connection then connection:Disconnect() end
+            return
+        end
+        
+        local char = player.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local dist = (char.HumanoidRootPart.Position - targetPart.Position).Magnitude
+            distLabel.Text = "[" .. math.floor(dist) .. " M]"
+        end
+    end)
+end
+
+-- Performanslı ve Güvenli Tarama
+task.spawn(function()
+    while task.wait(1) do
+        pcall(function()
+            for _, v in ipairs(Workspace:GetDescendants()) do
+                if v:IsA("BasePart") or v:IsA("Model") then
+                    local partToHighlight = v:IsA("Model") and (v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart")) or v
+                    if partToHighlight and not activeEsps[partToHighlight] then
+                        for _, entityName in ipairs(entityNames) do
+                            if v.Name == entityName then
+                                createSafeESP(partToHighlight, entityName)
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
