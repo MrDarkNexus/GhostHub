@@ -1,4 +1,4 @@
--- // GHOSTHUB V2.0 - EXACT ENTITY ESP & HIGHLIGHT CATEGORIZATION \\ --
+-- // GHOSTHUB V2.0 - OPTIMIZED & LAG-FREE ESP SYSTEM \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -215,10 +215,10 @@ local pageThemes = createPage("ThemesPage")
 createTabButton("Main", "🚪", "MainPage")
 createTabButton("Misc", "🖥️", "MiscPage")
 createTabButton("Visuals", "👁️", "VisualsPage")
-createTabButton("Exploits", "🌟", "ExploitsPage")
-createTabButton("Mines", "⛏️", "MinesPage")
+createTabButton("Exploits", "🌟", "VisualsPage")
+createTabButton("Mines", "⛏️", "VisualsPage")
 createTabButton("OutDoors", "🏡", "OutdoorsPage")
-createTabButton("StairWell", "🪜", "StairWellPage")
+createTabButton("StairWell", "🪜", "VisualsPage")
 createTabButton("Archives", "🗄️", "ArchivesPage")
 createTabButton("The BackDoors", "🔙", "BackDoorsPage")
 createTabButton("Temalar", "🎨", "ThemesPage")
@@ -394,8 +394,8 @@ local function createToggle(parent, text, defaultState, callback)
     end)
 end
 
--- // 🚨 SADECE KINDIRILMIŞ/SABİT RED BOX (HIGHLIGHT) ALACAK TEHLİKELİLER \\ --
-local redBoxEntities = {
+-- // 🚨 1. GRUP: BÜYÜK DOLGULU KARE KUTU (ANİDEN SALDIRANLAR) \\ --
+local fillBoxEntities = {
     ["Rush"] = true,
     ["Ambush"] = true,
     ["A-60"] = true,
@@ -410,15 +410,18 @@ local redBoxEntities = {
     ["Frozen Ambush"] = true,
     ["DroneStampede"] = true,
     ["Drone Stampede"] = true,
+    ["Eyes"] = true,
     ["Bash"] = true,
     ["Scribbles"] = true
 }
 
--- 👁️ NORMAL ESP İLE GÖRÜNECEK (KUTUSUZ) ENTITY'LER
-local normalEspEntities = {
-    "Eyes", "Noise", "Snare", "Drone", "Noise_Tv", "Creak", "Figure", 
-    "Stem", "Alma", "Bramble", "Queen Grumble", "Grumble", "ElectricPuddle", 
-    "LookMan", "Mandrake", "Screech", "GroundSpekker", "Monument", "GloomBats", "Dupe", "Portrait", "Honcho"
+-- // 🚨 2. GRUP: RED OUTLINE (TÜM VÜCUT, KOL, BACAK VE DİĞERLERİ) \\ --
+local outlineEntities = {
+    "LookMan", "Noise", "Noise_Tv", "Creak", "Snare", 
+    "Crusher", "Bramble", "Monument", "GroundSpekker", "Figure", 
+    "Alma", "ElectricPuddle", "Dupe", "Drone", "Stem", 
+    "Grumble", "Queen Grumble", "Mandrake", "Giggle", "Screech", 
+    "GloomBats", "Portrait", "Honcho"
 }
 
 local activeEsps = {}
@@ -445,30 +448,27 @@ end
 local function processEntity(v)
     if not entityEspEnabled or not isInGame() then return end
     
-    -- Kitap ve Raf Parazitlerini Filtrele
     local fullName = v.Name:lower()
     if fullName:find("book") or fullName:find("kitap") or fullName:find("shelf") or fullName:find("handle") then
         return 
     end
     
     local matchedName = nil
-    local isRedBox = false
+    local isFillBox = false
     
-    -- 1. Kırmızı Kutu Alacak Tehlikelileri Kontrol Et
-    for name, _ in pairs(redBoxEntities) do
+    for name, _ in pairs(fillBoxEntities) do
         if v.Name == name or v.Name:match(name) then
             matchedName = name
-            isRedBox = true
+            isFillBox = true
             break
         end
     end
     
-    -- 2. Eğer Kutu Alacak Varlık Değilse, Normal ESP Listesini Kontrol Et
     if not matchedName then
-        for _, name in ipairs(normalEspEntities) do
+        for _, name in ipairs(outlineEntities) do
             if v.Name == name or v.Name:match(name) then
                 matchedName = name
-                isRedBox = false
+                isFillBox = false
                 break
             end
         end
@@ -483,23 +483,27 @@ local function processEntity(v)
         end
         
         if targetPart and not activeEsps[targetPart] then
-            -- Sadece Tehlikeli Listede İse Kırmızı Kutu (Highlight) Ekle
-            if isRedBox then
-                local targetModel = v:IsA("Model") and v or v.Parent
-                if targetModel and targetModel ~= Workspace and not activeHighlights[targetModel] then
-                    local highlight = Instance.new("Highlight")
-                    highlight.Name = "GhostRedBoxHighlight"
-                    highlight.Adornee = targetModel
+            local targetModel = v:IsA("Model") and v or v.Parent
+            if targetModel and targetModel ~= Workspace and not activeHighlights[targetModel] then
+                local highlight = Instance.new("Highlight")
+                highlight.Adornee = targetModel
+                highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+                highlight.OutlineTransparency = 0
+                
+                if isFillBox then
+                    highlight.Name = "GhostFillBox"
                     highlight.FillColor = Color3.fromRGB(255, 0, 0)
-                    highlight.FillTransparency = 0.65
-                    highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
-                    highlight.OutlineTransparency = 0
-                    highlight.Parent = targetModel
-                    activeHighlights[targetModel] = highlight
+                    highlight.FillTransparency = 0.45
+                else
+                    highlight.Name = "GhostRedOutline"
+                    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                    highlight.FillTransparency = 1
                 end
+                
+                highlight.Parent = targetModel
+                activeHighlights[targetModel] = highlight
             end
 
-            -- Metre Ve İsim Göstergesi (Tüm Seçili Entity'lerde Ortak)
             local billboard = Instance.new("BillboardGui")
             billboard.Name = "GhostEntityESP"
             billboard.Adornee = targetPart
@@ -578,4 +582,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("GhostHub V2.0 Filtreli & Kategorize ESP Başarıyla Yüklendi!")
+print("GhostHub V2.0 Hatasız ve Optimize Sistem Aktif!")
