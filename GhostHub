@@ -1,4 +1,4 @@
--- // GHOSTHUB V2.0 - CUSTOM TABS & THEME SYSTEM \\ --
+-- // GHOSTHUB V2.0 - FULL TABS & CONFIG THEME SYSTEM \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -22,7 +22,7 @@ local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.Size = UDim2.new(0, 700, 0, 440)
 mainFrame.Position = UDim2.new(0.5, -350, 0.5, -220)
-mainFrame.BackgroundColor3 = Color3.fromHex("000000") -- Config'den gelen Arka Plan Rengi[span_1](start_span)[span_1](end_span)
+mainFrame.BackgroundColor3 = Color3.fromHex("000000")
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
@@ -31,7 +31,7 @@ local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0, 10)
 mainCorner.Parent = mainFrame
 
--- 🌌 Arka Plan Görseli (Config'den gelen ID: 89924308622883)[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span)
+-- 🌌 Arka Plan Görseli
 local bgImage = Instance.new("ImageLabel")
 bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
@@ -44,7 +44,7 @@ bgImage.Parent = mainFrame
 -- TopBar (Üst Bar)
 local topBar = Instance.new("Frame")
 topBar.Size = UDim2.new(1, 0, 0, 42)
-topBar.BackgroundColor3 = Color3.fromHex("070805") -- Config'den gelen MainColor[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span)
+topBar.BackgroundColor3 = Color3.fromHex("070805")
 topBar.BorderSizePixel = 0
 topBar.ZIndex = 5
 topBar.Parent = mainFrame
@@ -53,10 +53,10 @@ local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(0, 350, 1, 0)
 titleLabel.Position = UDim2.new(0, 15, 0, 0)
 titleLabel.BackgroundTransparency = 1
-titleLabel.Text = player.Name .. " | GhostHub V2.0 (Christmas Edition)"
-titleLabel.TextColor3 = Color3.fromHex("242599") -- Config'den gelen AccentColor[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)
+titleLabel.Text = player.Name .. " | GhostHub V2.0"
+titleLabel.TextColor3 = Color3.fromHex("242599")
 titleLabel.TextSize = 13
-titleLabel.Font = Enum.Font.Code -- Config'den gelen FontFace[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span)
+titleLabel.Font = Enum.Font.Code
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleLabel.ZIndex = 6
 titleLabel.Parent = topBar
@@ -84,10 +84,10 @@ searchCorner.Parent = searchBox
 local sideMenu = Instance.new("ScrollingFrame")
 sideMenu.Size = UDim2.new(0, 160, 1, -42)
 sideMenu.Position = UDim2.new(0, 0, 0, 42)
-sideMenu.BackgroundColor3 = Color3.fromHex("070805") -- Config MainColor[span_10](start_span)[span_10](end_span)
+sideMenu.BackgroundColor3 = Color3.fromHex("070805")
 sideMenu.BackgroundTransparency = 0.2
 sideMenu.BorderSizePixel = 0
-sideMenu.CanvasSize = UDim2.new(0, 0, 0, 520)
+sideMenu.CanvasSize = UDim2.new(0, 0, 0, 380)
 sideMenu.ScrollBarThickness = 2
 sideMenu.ZIndex = 5
 sideMenu.Parent = mainFrame
@@ -152,7 +152,7 @@ end
 
 local function createTabButton(name, icon, targetPageName)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -12, 0, 32)
+    btn.Size = UDim2.new(1, -12, 0, 30)
     btn.BackgroundColor3 = Color3.fromRGB(20, 25, 35)
     btn.Text = " " .. icon .. " " .. name
     btn.TextColor3 = Color3.fromRGB(180, 190, 210)
@@ -175,28 +175,32 @@ local function createTabButton(name, icon, targetPageName)
     return btn
 end
 
--- Sayfaların Oluşturulması
+-- İstediğin Tam Liste Sekmeler
 local pageMain = createPage("MainPage")
-local pageArchives = createPage("ArchivesPage")
-local pageStairWell = createPage("StairWellPage")
-local pageExploits = createPage("ExploitsPage")
 local pageMisc = createPage("MiscPage")
 local pageVisuals = createPage("VisualsPage")
+local pageExploits = createPage("ExploitsPage")
+local pageMines = createPage("MinesPage")
+local pageOutdoors = createPage("OutdoorsPage")
+local pageStairWell = createPage("StairWellPage")
+local pageArchives = createPage("ArchivesPage")
+local pageBackDoors = createPage("BackDoorsPage")
 local pageThemes = createPage("ThemesPage")
 
--- İstediğin Sekmeler ve Özel İkonlar
 createTabButton("Main", "🚪", "MainPage")
-createTabButton("Archives", "🗄️", "ArchivesPage")
-createTabButton("StairWell", "🪜", "StairWellPage")
-createTabButton("Exploits", "🌟", "ExploitsPage")
-createTabButton("Misc", "💻", "MiscPage")
+createTabButton("Misc", "🖥️", "MiscPage")
 createTabButton("Visuals", "👁️", "VisualsPage")
+createTabButton("Exploits", "🌟", "ExploitsPage")
+createTabButton("Mines", "⛏️", "MinesPage")
+createTabButton("OutDoors", "🏡", "OutdoorsPage")
+createTabButton("StairWell", "🪜", "StairWellPage")
+createTabButton("Archives", "🗄️", "ArchivesPage")
+createTabButton("The BackDoors", "🔙", "BackDoorsPage")
 createTabButton("Temalar", "🎨", "ThemesPage")
 
--- Varsayılan Sekmeyi Aç
 switchTab("MainPage")
 
--- 🎨 Temalar Sekmesi & İstediğin Tema Yönetim Sistemi
+-- 🎨 Temalar Sekmesi Yönetim Sistemi
 local themeHeader = Instance.new("TextLabel")
 themeHeader.Size = UDim2.new(1, -10, 0, 25)
 themeHeader.BackgroundTransparency = 1
@@ -250,7 +254,7 @@ local function createThemeCard(title, desc, actionCallback)
     end)
 end
 
--- 1. Config Theme (10 Saniye İçinde Seçilen Config'i Uygulama Sistemi)
+-- 1. Config Theme (10 Saniye Geri Sayımlı - Christmas Theme 1 Verileriyle)
 createThemeCard("Config Theme", "10 Saniye İçinde Uygulanır", function(btn)
     btn.Text = "Bekleniyor (10s)..."
     btn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
@@ -260,12 +264,13 @@ createThemeCard("Config Theme", "10 Saniye İçinde Uygulanır", function(btn)
             btn.Text = i .. "s kaldı..."
             task.wait(1)
         end
-        -- Config Renklerini & Görselini Uygula
+        -- Christmas Theme 1 (JSON Verileri)[span_1](start_span)[span_1](end_span)
         bgImage.Image = "rbxassetid://89924308622883"
         mainFrame.BackgroundColor3 = Color3.fromHex("000000")
         topBar.BackgroundColor3 = Color3.fromHex("070805")
         sideMenu.BackgroundColor3 = Color3.fromHex("070805")
         titleLabel.TextColor3 = Color3.fromHex("242599")
+        titleLabel.Font = Enum.Font.Code
         
         btn.Text = "Uygulandı!"
         btn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
@@ -275,25 +280,27 @@ createThemeCard("Config Theme", "10 Saniye İçinde Uygulanır", function(btn)
     end)
 end)
 
--- 2. Christmas Theme 1
-createThemeCard("Christmas Theme 1", "Klasik Kış & Çam Ağacı Atmosferi", function(btn)
+-- 2. Christmas Theme 1 (Hızlı Uygulama)
+createThemeCard("Christmas Theme 1", "Özel JSON Config Teması", function(btn)
     bgImage.Image = "rbxassetid://89924308622883"
-    mainFrame.BackgroundColor3 = Color3.fromHex("0c1814")
-    topBar.BackgroundColor3 = Color3.fromHex("12241a")
-    sideMenu.BackgroundColor3 = Color3.fromHex("0f2017")
-    titleLabel.TextColor3 = Color3.fromHex("ff4b4b")
+    mainFrame.BackgroundColor3 = Color3.fromHex("000000")
+    topBar.BackgroundColor3 = Color3.fromHex("070805")
+    sideMenu.BackgroundColor3 = Color3.fromHex("070805")
+    titleLabel.TextColor3 = Color3.fromHex("242599")
+    titleLabel.Font = Enum.Font.Code
     btn.Text = "Aktif!"
     task.wait(1.5)
     btn.Text = "Seç / Uygula"
 end)
 
--- 3. Christmas Theme 2
-createThemeCard("Christmas Theme 2", "Koyu Yılbaşı Gecesi Atmosferi", function(btn)
+-- 3. Christmas Theme 2 (Koyu Kış & Yılbaşı Kırmızısı Atmosferi)
+createThemeCard("Christmas Theme 2", "Yılbaşı Kırmızısı & Kış Atmosferi", function(btn)
     bgImage.Image = "rbxassetid://89924308622883"
-    mainFrame.BackgroundColor3 = Color3.fromHex("081015")
-    topBar.BackgroundColor3 = Color3.fromHex("0e1d24")
-    sideMenu.BackgroundColor3 = Color3.fromHex("0a171d")
-    titleLabel.TextColor3 = Color3.fromHex("00d2ff")
+    mainFrame.BackgroundColor3 = Color3.fromHex("0c1a14")
+    topBar.BackgroundColor3 = Color3.fromHex("142c22")
+    sideMenu.BackgroundColor3 = Color3.fromHex("10241b")
+    titleLabel.TextColor3 = Color3.fromHex("ff3b3b")
+    titleLabel.Font = Enum.Font.GothamBold
     btn.Text = "Aktif!"
     task.wait(1.5)
     btn.Text = "Seç / Uygula"
