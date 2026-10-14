@@ -1,4 +1,4 @@
--- // GHOSTHUB V2.0 - ZERO-LAG EVENT-DRIVEN HIGHLIGHT & ESP \\ --
+-- // GHOSTHUB V2.0 - PERFECT RED BOX HIGHLIGHT UPDATE \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -394,14 +394,14 @@ local function createToggle(parent, text, defaultState, callback)
     end)
 end
 
--- // GHOSTHUB V2.0 - ZERO LAG EVENT-BASED ESP & HIGHLIGHT \\ --
+-- // GHOSTHUB V2.0 - ULTIMATE ENTITY ESP & HIGHLIGHT // --
 local entityNames = {
     "Portrait", "Mandrake", "GroundSpekker", "Bash", "Surge", "Snare", 
     "Rush", "Ambush", "Eyes", "Creak", "Noise", "Noise_Tv", "GloomBats", 
     "Alma", "Scribbles", "ElectricPuddle", "Drone", "A-120", "A-60", 
     "Monument", "Blitz", "LookMan", "Dupe", "Figure", "Bramble", 
     "Grumble", "Queen Grumble", "Frozen Ambush", "Glitched Rush", 
-    "Glitched Ambush", "Honcho", "Stem"
+    "Glitched Ambush", "Honcho", "Stem", "DroneStampede"
 }
 
 local activeEsps = {}
@@ -429,22 +429,23 @@ local function processEntity(v)
     if not entityEspEnabled or not isInGame() then return end
     
     for _, entityName in ipairs(entityNames) do
-        if v.Name == entityName then
+        if v.Name == entityName or v.Name:match(entityName) then
             local targetPart = nil
             if v:IsA("Model") then
-                targetPart = v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart")
+                targetPart = v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart") or v:FindFirstChildOfClass("Part")
             elseif v:IsA("BasePart") then
                 targetPart = v
             end
             
             if targetPart and not activeEsps[targetPart] then
+                -- Kesin Kırmızı Kutu Çerçevesi (Highlight)
                 local targetModel = v:IsA("Model") and v or v.Parent
                 if targetModel and targetModel ~= Workspace and not activeHighlights[targetModel] then
                     local highlight = Instance.new("Highlight")
-                    highlight.Name = "GhostEventHighlight"
+                    highlight.Name = "GhostBoxHighlight"
                     highlight.Adornee = targetModel
                     highlight.FillColor = Color3.fromRGB(255, 0, 0)
-                    highlight.FillTransparency = 0.7
+                    highlight.FillTransparency = 0.65
                     highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
                     highlight.OutlineTransparency = 0
                     highlight.Parent = targetModel
@@ -505,14 +506,12 @@ end
 createToggle(pageVisuals, "Entities ESP", false, function(state)
     entityEspEnabled = state
     if state then
-        -- ESP açıldığında mevcut haritadaki objeleri bir defaya mahsus tara
         pcall(function()
             for _, v in ipairs(Workspace:GetDescendants()) do
                 processEntity(v)
             end
         end)
         
-        -- Sadece yeni eklenen objeleri dinle (Sıfır Kasma)
         if not descendantConnection then
             descendantConnection = Workspace.DescendantAdded:Connect(function(v)
                 processEntity(v)
@@ -533,4 +532,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("GhostHub V2.0 Sıfır Kasma Optimizasyonu ile Yüklendi!")
+print("GhostHub V2.0 Tamamen Güncellendi ve Aktif!")
