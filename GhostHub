@@ -1,8 +1,10 @@
--- // GHOSTHUB V2.0 - FIT DESIGN & CHRISTMAS UPDATE \\ --
+
+-- // GHOSTHUB V2.0 - FIT DESIGN & ENTITY ESP TOGGLE \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -36,7 +38,7 @@ bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
 bgImage.Position = UDim2.new(0, 0, 0, 0)
 bgImage.BackgroundTransparency = 1
-bgImage.Image = "rbxassetid://89924308622883" -- Christmas Theme 1 Varsayılan
+bgImage.Image = "rbxassetid://89924308622883"
 bgImage.ImageTransparency = 0.25
 bgImage.ScaleType = Enum.ScaleType.Crop
 bgImage.ZIndex = 1
@@ -105,7 +107,7 @@ local searchCorner = Instance.new("UICorner")
 searchCorner.CornerRadius = UDim.new(0, 6)
 searchCorner.Parent = searchBox
 
--- Sol Yan Menü (Şeffaf Cam Effect)
+-- Sol Yan Menü
 local sideMenu = Instance.new("ScrollingFrame")
 sideMenu.Size = UDim2.new(0, 160, 1, -45)
 sideMenu.Position = UDim2.new(0, 0, 0, 45)
@@ -272,16 +274,6 @@ local function createThemeCard(title, desc, actionCallback)
     applyBtn.TextSize = 11
     applyBtn.Font = Enum.Font.GothamBold
     applyBtn.Parent = card
-
-local applyBtn = Instance.new("TextButton")
-    applyBtn.Size = UDim2.new(0, 95, 0, 28)
-    applyBtn.Position = UDim2.new(1, -105, 0.5, -14)
-    applyBtn.BackgroundColor3 = Color3.fromHex("242599")
-    applyBtn.Text = "Seç / Uygula"
-    applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    applyBtn.TextSize = 11
-    applyBtn.Font = Enum.Font.GothamBold
-    applyBtn.Parent = card
     
     local bCorner = Instance.new("UICorner")
     bCorner.CornerRadius = UDim.new(0, 6)
@@ -302,7 +294,6 @@ createThemeCard("Config Theme", "10 Saniye İçinde Otomatik Uygulanır", functi
             btn.Text = i .. "s kaldı..."
             task.wait(1)
         end
-        -- Christmas Theme 1 Config[span_5](start_span)[span_5](end_span)
         bgImage.Image = "rbxassetid://89924308622883"
         mainFrame.BackgroundColor3 = Color3.fromHex("000000")
         topBar.BackgroundColor3 = Color3.fromHex("070805")
@@ -318,12 +309,25 @@ createThemeCard("Config Theme", "10 Saniye İçinde Otomatik Uygulanır", functi
     end)
 end)
 
--- 3. Christmas Theme 2 (Canlı HD Kış Gecesi & Yılbaşı Kırmızısı)
+-- 2. Christmas Theme 1
+createThemeCard("Christmas Theme 1", "Mavi / Lacivert Karlı Gece Teması", function(btn)
+    bgImage.Image = "rbxassetid://89924308622883"
+    mainFrame.BackgroundColor3 = Color3.fromHex("000000")
+    topBar.BackgroundColor3 = Color3.fromHex("070805")
+    sideMenu.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+    titleLabel.TextColor3 = Color3.fromHex("242599")
+    titleLabel.Font = Enum.Font.Code
+    btn.Text = "Aktif!"
+    task.wait(1.5)
+    btn.Text = "Seç / Uygula"
+end)
+
+-- 3. Christmas Theme 2
 createThemeCard("Christmas Theme 2", "HD Karlı Orman & Yılbaşı Kırmızısı", function(btn)
-    bgImage.Image = "rbxassetid://12521097223" -- Özel HD Karlı Orman ID
+    bgImage.Image = "rbxassetid://12521097223"
     mainFrame.BackgroundColor3 = Color3.fromHex("0a1510")
     topBar.BackgroundColor3 = Color3.fromHex("12281e")
-    sideMenu.BackgroundColor3 = Color3.fromHex("0e2018")
+    sideMenu.BackgroundColor3 = Color3.fromRGB(14, 32, 24)
     titleLabel.TextColor3 = Color3.fromHex("ff3b3b")
     titleLabel.Font = Enum.Font.GothamBold
     btn.Text = "Aktif!"
@@ -340,21 +344,68 @@ createThemeCard("Theme +", "Özel / Harici Tema Slotu", function(btn)
     btn.Text = "Seç / Uygula"
 end)
 
--- UI Açma/Kapama Tuşu (Sağ Shift)
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
-        mainFrame.Visible = not mainFrame.Visible
-    end
-end)
+-- 👁️ Visuals Sekmesine Toggle (Açma / Kapama) Ekleme Fonksiyonu
+local function createToggle(parent, text, defaultState, callback)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -10, 0, 32)
+    container.BackgroundColor3 = Color3.fromRGB(15, 20, 30)
+    container.BackgroundTransparency = 0.4
+    container.ZIndex = 6
+    container.Parent = parent
 
--- // GHOSTHUB V2.0 - VISUALS ENTITY ESP (BALLS REMOVED, STEM KEPT) \\ --
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
+    local cCorner = Instance.new("UICorner")
+    cCorner.CornerRadius = UDim.new(0, 6)
+    cCorner.Parent = container
 
-local player = Players.LocalPlayer
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -50, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextSize = 12
+    label.Font = Enum.Font.GothamMedium
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.ZIndex = 6
+    label.Parent = container
 
--- Parantezsiz, Balls çıkarılmış ve Stem eklenmiş Entity Listesi
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size = UDim2.new(0, 36, 0, 18)
+    toggleBtn.Position = UDim2.new(1, -44, 0.5, -9)
+    toggleBtn.BackgroundColor3 = defaultState and Color3.fromHex("242599") or Color3.fromRGB(30, 35, 45)
+    toggleBtn.Text = ""
+    toggleBtn.ZIndex = 6
+    toggleBtn.Parent = container
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)
+    corner.Parent = toggleBtn
+
+    local circle = Instance.new("Frame")
+    circle.Size = UDim2.new(0, 14, 0, 14)
+    circle.Position = defaultState and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.ZIndex = 7
+    circle.Parent = toggleBtn
+
+    local circleCorner = Instance.new("UICorner")
+    circleCorner.CornerRadius = UDim.new(1, 0)
+    circleCorner.Parent = circle
+
+    local state = defaultState
+    toggleBtn.MouseButton1Click:Connect(function()
+        state = not state
+        TweenService:Create(toggleBtn, TweenInfo.new(0.12), {
+            BackgroundColor3 = state and Color3.fromHex("242599") or Color3.fromRGB(30, 35, 45)
+        }):Play()
+        TweenService:Create(circle, TweenInfo.new(0.12), {
+            Position = state and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
+        }):Play()
+        if callback then callback(state) end
+    end)
+end
+
+-- // ENTITY ESP SİSTEMİ (TOGGLE KONTROLLÜ) \\ --
 local entityNames = {
     "Portrait", "Mandrake", "GroundSpekker", "Bash", "Surge", "Snare", 
     "Rush", "Ambush", "Eyes", "Creak", "Noise", "Noise_Tv", "GloomBats", 
@@ -365,6 +416,14 @@ local entityNames = {
 }
 
 local activeEsps = {}
+local entityEspEnabled = false -- Başlangıçta Kapalı
+
+local function clearAllESPs()
+    for part, billboard in pairs(activeEsps) do
+        if billboard then billboard:Destroy() end
+    end
+    activeEsps = {}
+end
 
 local function createSafeESP(targetPart, displayName)
     if not targetPart or activeEsps[targetPart] then return end
@@ -391,7 +450,7 @@ local function createSafeESP(targetPart, displayName)
     distLabel.Size = UDim2.new(1, 0, 0, 20)
     distLabel.Position = UDim2.new(0, 0, 0, 20)
     distLabel.BackgroundTransparency = 1
-    distLabel.TextColor3 = Color3.fromRGB(255, 50, 50) -- Kırmızı Metre Bilgisi
+    distLabel.TextColor3 = Color3.fromRGB(255, 50, 50) -- Kırmızı Metre
     distLabel.TextSize = 11
     distLabel.Font = Enum.Font.GothamMedium
     distLabel.TextStrokeTransparency = 0.4
@@ -400,10 +459,9 @@ local function createSafeESP(targetPart, displayName)
     billboard.Parent = player.PlayerGui
     activeEsps[targetPart] = billboard
     
-    -- Güvenli RenderStepped Bağlantısı
     local connection
     connection = RunService.RenderStepped:Connect(function()
-        if not targetPart or not targetPart.Parent or not billboard.Parent then
+        if not entityEspEnabled or not targetPart or not targetPart.Parent or not billboard.Parent then
             if billboard then billboard:Destroy() end
             activeEsps[targetPart] = nil
             if connection then connection:Disconnect() end
@@ -418,23 +476,41 @@ local function createSafeESP(targetPart, displayName)
     end)
 end
 
--- Performanslı ve Güvenli Tarama
+-- Visuals Sekmesine Toggle Ekleme
+createToggle(pageVisuals, "Entities ESP", false, function(state)
+    entityEspEnabled = state
+    if not state then
+        clearAllESPs()
+    end
+end)
+
+-- Güvenli Tarama Döngüsü (Sadece Toggle Açıkken Çalışır)
 task.spawn(function()
     while task.wait(1) do
-        pcall(function()
-            for _, v in ipairs(Workspace:GetDescendants()) do
-                if v:IsA("BasePart") or v:IsA("Model") then
-                    local partToHighlight = v:IsA("Model") and (v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart")) or v
-                    if partToHighlight and not activeEsps[partToHighlight] then
-                        for _, entityName in ipairs(entityNames) do
-                            if v.Name == entityName then
-                                createSafeESP(partToHighlight, entityName)
+        if entityEspEnabled then
+            pcall(function()
+                for _, v in ipairs(Workspace:GetDescendants()) do
+                    if v:IsA("BasePart") or v:IsA("Model") then
+                        local partToHighlight = v:IsA("Model") and (v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart")) or v
+                        if partToHighlight and not activeEsps[partToHighlight] then
+                            for _, entityName in ipairs(entityNames) do
+                                if v.Name == entityName then
+                                    createSafeESP(partToHighlight, entityName)
+                                end
                             end
                         end
                     end
                 end
-            end
-        end)
+            end)
+        end
     end
 end)
 
+-- UI Açma/Kapama Tuşu (Sağ Shift)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
+        mainFrame.Visible = not mainFrame.Visible
+    end
+end)
+
+print("GhostHub V2.0 Başarıyla Yüklendi!")
