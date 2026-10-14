@@ -1,9 +1,8 @@
--- // GHOSTHUB V2.0 - FULL TABS & CONFIG THEME SYSTEM \\ --
+-- // GHOSTHUB V2.0 - FIT DESIGN & CHRISTMAS UPDATE \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -17,40 +16,66 @@ screenGui.Name = "GhostHubUI"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Ana Çerçeve
+-- Ana Çerçeve (Full Fit)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 700, 0, 440)
-mainFrame.Position = UDim2.new(0.5, -350, 0.5, -220)
+mainFrame.Size = UDim2.new(0, 720, 0, 450)
+mainFrame.Position = UDim2.new(0.5, -360, 0.5, -225)
 mainFrame.BackgroundColor3 = Color3.fromHex("000000")
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
 
 local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 10)
+mainCorner.CornerRadius = UDim.new(0, 12)
 mainCorner.Parent = mainFrame
 
--- 🌌 Arka Plan Görseli
+-- 🌌 Tüm Menüyü Kaplayan HD Arka Plan Görseli
 local bgImage = Instance.new("ImageLabel")
 bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
+bgImage.Position = UDim2.new(0, 0, 0, 0)
 bgImage.BackgroundTransparency = 1
-bgImage.Image = "rbxassetid://89924308622883"
-bgImage.ImageTransparency = 0.4
+bgImage.Image = "rbxassetid://89924308622883" -- Christmas Theme 1 Varsayılan
+bgImage.ImageTransparency = 0.25
 bgImage.ScaleType = Enum.ScaleType.Crop
+bgImage.ZIndex = 1
 bgImage.Parent = mainFrame
 
--- TopBar (Üst Bar)
+-- ❄️ Arka Plan Kar Efekti Kutusu
+local snowHolder = Instance.new("Frame")
+snowHolder.Name = "SnowHolder"
+snowHolder.Size = UDim2.new(1, 0, 1, 0)
+snowHolder.BackgroundTransparency = 1
+snowHolder.ZIndex = 2
+snowHolder.Parent = mainFrame
+
+for i = 1, 20 do
+    local flake = Instance.new("Frame")
+    flake.Size = UDim2.new(0, math.random(3, 5), 0, math.random(3, 5))
+    flake.Position = UDim2.new(math.random(), 0, math.random(), 0)
+    flake.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    flake.BackgroundTransparency = math.random(3, 7) / 10
+    flake.BorderSizePixel = 0
+    flake.ZIndex = 2
+    flake.Parent = snowHolder
+    
+    local fCorner = Instance.new("UICorner")
+    fCorner.CornerRadius = UDim.new(1, 0)
+    fCorner.Parent = flake
+end
+
+-- TopBar (Şeffaf Cam Tasarım)
 local topBar = Instance.new("Frame")
-topBar.Size = UDim2.new(1, 0, 0, 42)
+topBar.Size = UDim2.new(1, 0, 0, 45)
 topBar.BackgroundColor3 = Color3.fromHex("070805")
+topBar.BackgroundTransparency = 0.5
 topBar.BorderSizePixel = 0
 topBar.ZIndex = 5
 topBar.Parent = mainFrame
 
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(0, 350, 1, 0)
+titleLabel.Size = UDim2.new(0, 380, 1, 0)
 titleLabel.Position = UDim2.new(0, 15, 0, 0)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Text = player.Name .. " | GhostHub V2.0"
@@ -63,15 +88,15 @@ titleLabel.Parent = topBar
 
 -- 🔍 Search Box
 local searchBox = Instance.new("TextBox")
-searchBox.Size = UDim2.new(0, 180, 0, 26)
+searchBox.Size = UDim2.new(0, 180, 0, 28)
 searchBox.Position = UDim2.new(1, -195, 0, 8)
-searchBox.BackgroundColor3 = Color3.fromHex("000000")
-searchBox.BackgroundTransparency = 0.3
+searchBox.BackgroundColor3 = Color3.fromRGB(15, 20, 30)
+searchBox.BackgroundTransparency = 0.4
 searchBox.PlaceholderText = "Search..."
 searchBox.Text = ""
 searchBox.TextColor3 = Color3.fromHex("ffffff")
-searchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-searchBox.TextSize = 12
+searchBox.PlaceholderColor3 = Color3.fromRGB(160, 170, 190)
+searchBox.TextSize = 11
 searchBox.Font = Enum.Font.Gotham
 searchBox.ZIndex = 6
 searchBox.Parent = topBar
@@ -80,12 +105,12 @@ local searchCorner = Instance.new("UICorner")
 searchCorner.CornerRadius = UDim.new(0, 6)
 searchCorner.Parent = searchBox
 
--- Sol Yan Menü (Sidebar)
+-- Sol Yan Menü (Şeffaf Cam Effect)
 local sideMenu = Instance.new("ScrollingFrame")
-sideMenu.Size = UDim2.new(0, 160, 1, -42)
-sideMenu.Position = UDim2.new(0, 0, 0, 42)
-sideMenu.BackgroundColor3 = Color3.fromHex("070805")
-sideMenu.BackgroundTransparency = 0.2
+sideMenu.Size = UDim2.new(0, 160, 1, -45)
+sideMenu.Position = UDim2.new(0, 0, 0, 45)
+sideMenu.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+sideMenu.BackgroundTransparency = 0.65
 sideMenu.BorderSizePixel = 0
 sideMenu.CanvasSize = UDim2.new(0, 0, 0, 380)
 sideMenu.ScrollBarThickness = 2
@@ -104,13 +129,13 @@ sidePadding.Parent = sideMenu
 
 -- İçerik Alanı
 local contentArea = Instance.new("Frame")
-contentArea.Size = UDim2.new(1, -165, 1, -45)
-contentArea.Position = UDim2.new(0, 165, 0, 45)
+contentArea.Size = UDim2.new(1, -165, 1, -50)
+contentArea.Position = UDim2.new(0, 165, 0, 48)
 contentArea.BackgroundTransparency = 1
 contentArea.ZIndex = 5
 contentArea.Parent = mainFrame
 
--- Sekme ve Sayfa Yönetim Sistemi
+-- Sekme Yönetim Sistemi
 local pages = {}
 local tabButtons = {}
 
@@ -118,7 +143,6 @@ local function createPage(pageName)
     local page = Instance.new("ScrollingFrame")
     page.Name = pageName
     page.Size = UDim2.new(1, 0, 1, 0)
-    page.Position = UDim2.new(0, 0, 0, 0)
     page.BackgroundTransparency = 1
     page.Visible = false
     page.ScrollBarThickness = 2
@@ -142,9 +166,11 @@ local function switchTab(targetName)
     for name, btn in pairs(tabButtons) do
         if name == targetName then
             btn.BackgroundColor3 = Color3.fromHex("242599")
+            btn.BackgroundTransparency = 0.2
             btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         else
             btn.BackgroundColor3 = Color3.fromRGB(20, 25, 35)
+            btn.BackgroundTransparency = 0.6
             btn.TextColor3 = Color3.fromRGB(180, 190, 210)
         end
     end
@@ -154,6 +180,7 @@ local function createTabButton(name, icon, targetPageName)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -12, 0, 30)
     btn.BackgroundColor3 = Color3.fromRGB(20, 25, 35)
+    btn.BackgroundTransparency = 0.6
     btn.Text = " " .. icon .. " " .. name
     btn.TextColor3 = Color3.fromRGB(180, 190, 210)
     btn.TextSize = 11
@@ -175,7 +202,7 @@ local function createTabButton(name, icon, targetPageName)
     return btn
 end
 
--- İstediğin Tam Liste Sekmeler
+-- Sayfalar
 local pageMain = createPage("MainPage")
 local pageMisc = createPage("MiscPage")
 local pageVisuals = createPage("VisualsPage")
@@ -187,6 +214,7 @@ local pageArchives = createPage("ArchivesPage")
 local pageBackDoors = createPage("BackDoorsPage")
 local pageThemes = createPage("ThemesPage")
 
+-- Sekme Butonları
 createTabButton("Main", "🚪", "MainPage")
 createTabButton("Misc", "🖥️", "MiscPage")
 createTabButton("Visuals", "👁️", "VisualsPage")
@@ -200,7 +228,7 @@ createTabButton("Temalar", "🎨", "ThemesPage")
 
 switchTab("MainPage")
 
--- 🎨 Temalar Sekmesi Yönetim Sistemi
+-- 🎨 Temalar Sekmesi İçeriği
 local themeHeader = Instance.new("TextLabel")
 themeHeader.Size = UDim2.new(1, -10, 0, 25)
 themeHeader.BackgroundTransparency = 1
@@ -213,21 +241,21 @@ themeHeader.Parent = pageThemes
 
 local function createThemeCard(title, desc, actionCallback)
     local card = Instance.new("Frame")
-    card.Size = UDim2.new(1, -10, 0, 50)
-    card.BackgroundColor3 = Color3.fromRGB(18, 22, 35)
-    card.BackgroundTransparency = 0.3
+    card.Size = UDim2.new(1, -10, 0, 52)
+    card.BackgroundColor3 = Color3.fromRGB(15, 20, 30)
+    card.BackgroundTransparency = 0.4
     card.ZIndex = 6
     card.Parent = pageThemes
     
     local cCorner = Instance.new("UICorner")
-    cCorner.CornerRadius = UDim.new(0, 6)
+    cCorner.CornerRadius = UDim.new(0, 8)
     cCorner.Parent = card
     
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.6, 0, 1, 0)
-    label.Position = UDim2.new(0, 10, 0, 0)
+    label.Size = UDim2.new(0.65, 0, 1, 0)
+    label.Position = UDim2.new(0, 12, 0, 0)
     label.BackgroundTransparency = 1
-    label.Text = title .. "\n<font size='10' color='#aaaaaa'>" .. desc .. "</font>"
+    label.Text = title .. "\n<font size='10' color='#cccccc'>" .. desc .. "</font>"
     label.TextColor3 = Color3.fromHex("ffffff")
     label.TextSize = 12
     label.RichText = true
@@ -236,6 +264,16 @@ local function createThemeCard(title, desc, actionCallback)
     label.Parent = card
     
     local applyBtn = Instance.new("TextButton")
+    applyBtn.Size = UDim2.new(0, 95, 0, 28)
+    applyBtn.Position = UDim2.new(1, -105, 0.5, -14)
+    applyBtn.BackgroundColor3 = Color3.fromHex("242599")
+    applyBtn.Text = "Seç / Uygula"
+    applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    applyBtn.TextSize = 11
+    applyBtn.Font = Enum.Font.GothamBold
+    applyBtn.Parent = card
+
+local applyBtn = Instance.new("TextButton")
     applyBtn.Size = UDim2.new(0, 95, 0, 28)
     applyBtn.Position = UDim2.new(1, -105, 0.5, -14)
     applyBtn.BackgroundColor3 = Color3.fromHex("242599")
@@ -254,21 +292,21 @@ local function createThemeCard(title, desc, actionCallback)
     end)
 end
 
--- 1. Config Theme (10 Saniye Geri Sayımlı - Christmas Theme 1 Verileriyle)
-createThemeCard("Config Theme", "10 Saniye İçinde Uygulanır", function(btn)
+-- 1. Config Theme (10 Saniye Geri Sayım)
+createThemeCard("Config Theme", "10 Saniye İçinde Otomatik Uygulanır", function(btn)
     btn.Text = "Bekleniyor (10s)..."
-    btn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
+    btn.BackgroundColor3 = Color3.fromRGB(180, 120, 0)
     
     task.spawn(function()
         for i = 10, 1, -1 do
             btn.Text = i .. "s kaldı..."
             task.wait(1)
         end
-        -- Christmas Theme 1 (JSON Verileri)[span_1](start_span)[span_1](end_span)
+        -- Christmas Theme 1 Config[span_5](start_span)[span_5](end_span)
         bgImage.Image = "rbxassetid://89924308622883"
         mainFrame.BackgroundColor3 = Color3.fromHex("000000")
         topBar.BackgroundColor3 = Color3.fromHex("070805")
-        sideMenu.BackgroundColor3 = Color3.fromHex("070805")
+        sideMenu.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
         titleLabel.TextColor3 = Color3.fromHex("242599")
         titleLabel.Font = Enum.Font.Code
         
@@ -280,25 +318,12 @@ createThemeCard("Config Theme", "10 Saniye İçinde Uygulanır", function(btn)
     end)
 end)
 
--- 2. Christmas Theme 1 (Hızlı Uygulama)
-createThemeCard("Christmas Theme 1", "Özel JSON Config Teması", function(btn)
-    bgImage.Image = "rbxassetid://89924308622883"
-    mainFrame.BackgroundColor3 = Color3.fromHex("000000")
-    topBar.BackgroundColor3 = Color3.fromHex("070805")
-    sideMenu.BackgroundColor3 = Color3.fromHex("070805")
-    titleLabel.TextColor3 = Color3.fromHex("242599")
-    titleLabel.Font = Enum.Font.Code
-    btn.Text = "Aktif!"
-    task.wait(1.5)
-    btn.Text = "Seç / Uygula"
-end)
-
--- 3. Christmas Theme 2 (Koyu Kış & Yılbaşı Kırmızısı Atmosferi)
-createThemeCard("Christmas Theme 2", "Yılbaşı Kırmızısı & Kış Atmosferi", function(btn)
-    bgImage.Image = "rbxassetid://89924308622883"
-    mainFrame.BackgroundColor3 = Color3.fromHex("0c1a14")
-    topBar.BackgroundColor3 = Color3.fromHex("142c22")
-    sideMenu.BackgroundColor3 = Color3.fromHex("10241b")
+-- 3. Christmas Theme 2 (Canlı HD Kış Gecesi & Yılbaşı Kırmızısı)
+createThemeCard("Christmas Theme 2", "HD Karlı Orman & Yılbaşı Kırmızısı", function(btn)
+    bgImage.Image = "rbxassetid://12521097223" -- Özel HD Karlı Orman ID
+    mainFrame.BackgroundColor3 = Color3.fromHex("0a1510")
+    topBar.BackgroundColor3 = Color3.fromHex("12281e")
+    sideMenu.BackgroundColor3 = Color3.fromHex("0e2018")
     titleLabel.TextColor3 = Color3.fromHex("ff3b3b")
     titleLabel.Font = Enum.Font.GothamBold
     btn.Text = "Aktif!"
@@ -307,7 +332,7 @@ createThemeCard("Christmas Theme 2", "Yılbaşı Kırmızısı & Kış Atmosferi
 end)
 
 -- 4. Theme +
-createThemeCard("Theme +", "Özel / Harici Tema Yükleme", function(btn)
+createThemeCard("Theme +", "Özel / Harici Tema Slotu", function(btn)
     btn.Text = "Yükleniyor..."
     task.wait(1)
     btn.Text = "Hazır!"
