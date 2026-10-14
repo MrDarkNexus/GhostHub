@@ -1,4 +1,5 @@
--- // GHOSTHUB V2.0 - FINAL FULL HIGHLIGHT & ESP UPDATE \\ --
+
+-- // GHOSTHUB V2.0 - PERFECT HIGHLIGHT ESP \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -49,7 +50,6 @@ local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0, 12)
 mainCorner.Parent = mainFrame
 
--- Mobil Butonla Menüyü Açma / Kapatma
 mobileToggleBtn.MouseButton1Click:Connect(function()
     mainFrame.Visible = not mainFrame.Visible
 end)
@@ -58,36 +58,12 @@ end)
 local bgImage = Instance.new("ImageLabel")
 bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
-bgImage.Position = UDim2.new(0, 0, 0, 0)
 bgImage.BackgroundTransparency = 1
 bgImage.Image = "rbxassetid://89924308622883"
 bgImage.ImageTransparency = 0.25
 bgImage.ScaleType = Enum.ScaleType.Crop
 bgImage.ZIndex = 1
 bgImage.Parent = mainFrame
-
--- ❄️ Kar Efekti
-local snowHolder = Instance.new("Frame")
-snowHolder.Name = "SnowHolder"
-snowHolder.Size = UDim2.new(1, 0, 1, 0)
-snowHolder.BackgroundTransparency = 1
-snowHolder.ZIndex = 2
-snowHolder.Parent = mainFrame
-
-for i = 1, 20 do
-    local flake = Instance.new("Frame")
-    flake.Size = UDim2.new(0, math.random(3, 5), 0, math.random(3, 5))
-    flake.Position = UDim2.new(math.random(), 0, math.random(), 0)
-    flake.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    flake.BackgroundTransparency = math.random(3, 7) / 10
-    flake.BorderSizePixel = 0
-    flake.ZIndex = 2
-    flake.Parent = snowHolder
-    
-    local fCorner = Instance.new("UICorner")
-    fCorner.CornerRadius = UDim.new(1, 0)
-    fCorner.Parent = flake
-end
 
 -- TopBar
 local topBar = Instance.new("Frame")
@@ -159,7 +135,6 @@ contentArea.BackgroundTransparency = 1
 contentArea.ZIndex = 5
 contentArea.Parent = mainFrame
 
--- Sekme Yönetim Sistemi
 local pages = {}
 local tabButtons = {}
 
@@ -238,7 +213,6 @@ local pageArchives = createPage("ArchivesPage")
 local pageBackDoors = createPage("BackDoorsPage")
 local pageThemes = createPage("ThemesPage")
 
--- Sekme Butonları
 createTabButton("Main", "🚪", "MainPage")
 createTabButton("Misc", "🖥️", "MiscPage")
 createTabButton("Visuals", "👁️", "VisualsPage")
@@ -252,7 +226,7 @@ createTabButton("Temalar", "🎨", "ThemesPage")
 
 switchTab("MainPage")
 
--- 🎨 Temalar Sekmesi İçeriği
+-- Temalar Sekmesi
 local themeHeader = Instance.new("TextLabel")
 themeHeader.Size = UDim2.new(1, -10, 0, 25)
 themeHeader.BackgroundTransparency = 1
@@ -306,11 +280,9 @@ local function createThemeCard(title, desc, actionCallback)
     end)
 end
 
--- Temalar
 createThemeCard("Config Theme", "10 Saniye İçinde Otomatik Uygulanır", function(btn)
     btn.Text = "Bekleniyor (10s)..."
     btn.BackgroundColor3 = Color3.fromRGB(180, 120, 0)
-    
     task.spawn(function()
         for i = 10, 1, -1 do
             btn.Text = i .. "s kaldı..."
@@ -322,7 +294,6 @@ createThemeCard("Config Theme", "10 Saniye İçinde Otomatik Uygulanır", functi
         sideMenu.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
         titleLabel.TextColor3 = Color3.fromHex("242599")
         titleLabel.Font = Enum.Font.Code
-        
         btn.Text = "Uygulandı!"
         btn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
         task.wait(2)
@@ -363,7 +334,7 @@ createThemeCard("Theme +", "Özel / Harici Tema Slotu", function(btn)
     btn.Text = "Seç / Uygula"
 end)
 
--- 👁️ Visuals Sekmesine Toggle Oluşturucu
+-- Toggle Oluşturucu
 local function createToggle(parent, text, defaultState, callback)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(1, -10, 0, 32)
@@ -424,7 +395,7 @@ local function createToggle(parent, text, defaultState, callback)
     end)
 end
 
--- // ENTITY ESP SİSTEMİ (TÜM İSTEDİĞİN ÇEVRESİ KIRMIZI HIGHLIGHT ENTITY'LER) \\ --
+-- // GHOSTHUB V2.0 - KESİN ÇÖZÜMLÜ HIGHLIGHT & ESP SİSTEMİ \\ --
 local entityNames = {
     "Portrait", "Mandrake", "GroundSpekker", "Bash", "Surge", "Snare", 
     "Rush", "Ambush", "Eyes", "Creak", "Noise", "Noise_Tv", "GloomBats", 
@@ -432,41 +403,6 @@ local entityNames = {
     "Monument", "Blitz", "LookMan", "Dupe", "Figure", "Bramble", 
     "Grumble", "Queen Grumble", "Frozen Ambush", "Glitched Rush", 
     "Glitched Ambush", "Honcho", "Stem"
-}
-
--- Çevresi Kırmızı Kutu / Highlight Olacak Tüm Özel Entity Listesi
-local redHighlightEntities = {
-    ["Rush"] = true,
-    ["Blitz"] = true,
-    ["Ambush"] = true,
-    ["Surge"] = true,
-    ["GlitchedAmbush"] = true,
-    ["Glitched Rush"] = true,
-    ["Bash"] = true,
-    ["Scribbles"] = true,
-    ["FrozenAmbush"] = true,
-    ["Frozen Ambush"] = true,
-    ["A-60"] = true,
-    ["A-120"] = true,
-    ["Eyes"] = true,
-    ["Mandrake"] = true,
-    ["Stem"] = true,
-    ["Alma"] = true,
-    ["GroundSpekker"] = true,
-    ["LookMan"] = true,
-    ["ElectricPuddle"] = true,
-    ["Creak"] = true,
-    ["Noise"] = true,
-    ["Noise_Tv"] = true,
-    ["Figure"] = true,
-    ["Bramble"] = true,
-    ["Queen Grumble"] = true,
-    ["Grumble"] = true,
-    ["Dupe"] = true,
-    ["Drone"] = true,
-    ["GloomBats"] = true,
-    ["Snare"] = true,
-    ["Monument"] = true
 }
 
 local activeEsps = {}
@@ -484,7 +420,6 @@ local function clearAllESPs()
     activeHighlights = {}
 end
 
--- Oyun İçinde Olunduğunu Kontrol Etme (Lobi Engelleme)
 local function isInGame()
     local room = Workspace:FindFirstChild("Rooms") or Workspace:FindFirstChild("CurrentRooms")
     return room ~= nil
@@ -493,18 +428,18 @@ end
 local function createSafeESP(targetPart, displayName)
     if not targetPart or activeEsps[targetPart] then return end
     
-    -- İstediğin Tüm Entity'lerin Çevresine Kırmızı Highlight (Kutu Çerçevesi) Ekleme
-    local rootModel = targetPart:IsA("Model") and targetPart or targetPart.Parent
-    if redHighlightEntities[displayName] and rootModel and not activeHighlights[rootModel] then
+    -- Kırmızı Highlight (Kutu Çerçeve) Doğrudan Model veya Parçaya Eklenir
+    local targetModel = targetPart:IsA("Model") and targetPart or targetPart.Parent
+    if targetModel and targetModel ~= Workspace and not activeHighlights[targetModel] then
         local highlight = Instance.new("Highlight")
-        highlight.Name = "GhostRedHighlight"
-        highlight.Adornee = rootModel
+        highlight.Name = "GhostPerfectHighlight"
+        highlight.Adornee = targetModel
         highlight.FillColor = Color3.fromRGB(255, 0, 0)
-        highlight.FillTransparency = 0.75
+        highlight.FillTransparency = 0.7
         highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
         highlight.OutlineTransparency = 0
-        highlight.Parent = rootModel
-        activeHighlights[rootModel] = highlight
+        highlight.Parent = targetModel
+        activeHighlights[targetModel] = highlight
     end
 
     local billboard = Instance.new("BillboardGui")
@@ -513,7 +448,6 @@ local function createSafeESP(targetPart, displayName)
     billboard.Size = UDim2.new(0, 120, 0, 45)
     billboard.StudsOffset = Vector3.new(0, 2.5, 0)
     billboard.AlwaysOnTop = true
-    billboard.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     
     local nameLabel = Instance.new("TextLabel")
     nameLabel.Size = UDim2.new(1, 0, 0, 22)
@@ -555,7 +489,6 @@ local function createSafeESP(targetPart, displayName)
     end)
 end
 
--- Visuals Sekmesine Toggle Ekleme
 createToggle(pageVisuals, "Entities ESP", false, function(state)
     entityEspEnabled = state
     if not state then
@@ -563,18 +496,24 @@ createToggle(pageVisuals, "Entities ESP", false, function(state)
     end
 end)
 
--- Güvenli Tarama (Sadece Oyun İçindeyken ve Toggle Açıkken Çalışır)
+-- Gelişmiş Taramalı Güvenli Döngü
 task.spawn(function()
-    while task.wait(1) do
+    while task.wait(0.5) do
         if entityEspEnabled and isInGame() then
             pcall(function()
                 for _, v in ipairs(Workspace:GetDescendants()) do
-                    if v:IsA("BasePart") or v:IsA("Model") then
-                        local partToHighlight = v:IsA("Model") and (v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart")) or v
-                        if partToHighlight and not activeEsps[partToHighlight] then
-                            for _, entityName in ipairs(entityNames) do
-                                if v.Name == entityName then
-                                    createSafeESP(partToHighlight, entityName)
+                    if v.Name ~= "" then
+                        for _, entityName in ipairs(entityNames) do
+                            if v.Name == entityName then
+                                local targetPart = nil
+                                if v:IsA("Model") then
+                                    targetPart = v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart")
+                                elseif v:IsA("BasePart") then
+                                    targetPart = v
+                                end
+                                
+                                if targetPart and not activeEsps[targetPart] then
+                                    createSafeESP(targetPart, entityName)
                                 end
                             end
                         end
@@ -589,7 +528,6 @@ task.spawn(function()
     end
 end)
 
--- UI Açma/Kapama Tuşu (Sağ Shift)
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
         mainFrame.Visible = not mainFrame.Visible
@@ -597,3 +535,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 print("GhostHub V2.0 Başarıyla Yüklendi!")
+
