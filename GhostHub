@@ -249,3 +249,88 @@ createToggle(exploitsLeft, "Bypass Lookman", true)
 createToggle(exploitsRight, "Anticheat Bypass", true)
 createToggle(exploitsRight, "Velocity Manipulation", false)
 createToggle(exploitsRight, "Infinite Items", true)
+
+-- // GHOSTHUB V2.0 - CHRISTMAS CONFIG THEME INTEGRATION \\ --
+local HttpService = game:GetService("HttpService")
+
+-- Gönderdiğin Config Verisi
+local christmasConfigData = {
+    MainColor = Color3.fromHex("070805"),
+    FontFace = Enum.Font.Code,
+    FontColor = Color3.fromHex("ffffff"),
+    OutlineColor = Color3.fromHex("000000"),
+    BackgroundColor = Color3.fromHex("000000"),
+    BackgroundImage = "rbxassetid://89924308622883",
+    AccentColor = Color3.fromHex("242599")
+}
+
+-- Temayı Uygulama Fonksiyonu
+local function applyChristmasConfig()
+    -- Ana arkaplan rengini ve özel arka plan görselini güncelle
+    mainFrame.BackgroundColor3 = christmasConfigData.BackgroundColor
+    bgImage.Image = christmasConfigData.BackgroundImage
+    
+    -- Üst bar ve yan menü renklerini config verisine göre ayarla
+    topBar.BackgroundColor3 = christmasConfigData.MainColor
+    sideMenu.BackgroundColor3 = christmasConfigData.MainColor
+    
+    -- Başlık rengini AccentColor ile güncelle
+    titleLabel.TextColor3 = christmasConfigData.AccentColor
+    titleLabel.FontFace = Font.fromEnum(christmasConfigData.FontFace)
+    
+    print("🎄 Christmas Config Başarıyla Uygulandı!")
+end
+
+-- Temalar Sekmesindeki Butona Bağlantı
+local function createThemeCard(themeName, isConfig)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(1, -10, 0, 42)
+    card.BackgroundColor3 = Color3.fromRGB(18, 22, 35)
+    card.BackgroundTransparency = 0.3
+    card.ZIndex = 6
+    card.Parent = pageThemes
+    
+    local cCorner = Instance.new("UICorner")
+    cCorner.CornerRadius = UDim.new(0, 6)
+    cCorner.Parent = card
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.6, 0, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = (isConfig and "📄 Config: " or "🎨 Tema: ") .. themeName
+    label.TextColor3 = Color3.fromRGB(230, 235, 255)
+    label.TextSize = 12
+    label.Font = Enum.Font.GothamMedium
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = card
+    
+    local applyBtn = Instance.new("TextButton")
+    applyBtn.Size = UDim2.new(0, 90, 0, 26)
+    applyBtn.Position = UDim2.new(1, -100, 0.5, -13)
+    applyBtn.BackgroundColor3 = Color3.fromRGB(70, 90, 230)
+    applyBtn.Text = "Uygula"
+    applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    applyBtn.TextSize = 11
+    applyBtn.Font = Enum.Font.GothamBold
+    applyBtn.Parent = card
+    
+    local bCorner = Instance.new("UICorner")
+    bCorner.CornerRadius = UDim.new(0, 6)
+    bCorner.Parent = applyBtn
+    
+    applyBtn.MouseButton1Click:Connect(function()
+        if isConfig then
+            applyChristmasConfig()
+        else
+            print(themeName .. " Teması Uygulandı!")
+        end
+    end)
+end
+
+-- Temalar Sekmesine Ekleme
+createThemeCard("Christmas Config", true)
+createThemeCard("Dark Christmas", false)
+createThemeCard("Cyberpunk Neon", false)
+
+
