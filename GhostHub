@@ -1,5 +1,4 @@
-
--- // GHOSTHUB V2.0 - PERFECT HIGHLIGHT ESP \\ --
+-- // GHOSTHUB V2.0 - ZERO-LAG EVENT-DRIVEN HIGHLIGHT & ESP \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -395,7 +394,7 @@ local function createToggle(parent, text, defaultState, callback)
     end)
 end
 
--- // GHOSTHUB V2.0 - KESİN ÇÖZÜMLÜ HIGHLIGHT & ESP SİSTEMİ \\ --
+-- // GHOSTHUB V2.0 - ZERO LAG EVENT-BASED ESP & HIGHLIGHT \\ --
 local entityNames = {
     "Portrait", "Mandrake", "GroundSpekker", "Bash", "Surge", "Snare", 
     "Rush", "Ambush", "Eyes", "Creak", "Noise", "Noise_Tv", "GloomBats", 
@@ -408,6 +407,7 @@ local entityNames = {
 local activeEsps = {}
 local activeHighlights = {}
 local entityEspEnabled = false
+local descendantConnection = nil
 
 local function clearAllESPs()
     for _, billboard in pairs(activeEsps) do
@@ -425,105 +425,104 @@ local function isInGame()
     return room ~= nil
 end
 
-local function createSafeESP(targetPart, displayName)
-    if not targetPart or activeEsps[targetPart] then return end
+local function processEntity(v)
+    if not entityEspEnabled or not isInGame() then return end
     
-    -- Kırmızı Highlight (Kutu Çerçeve) Doğrudan Model veya Parçaya Eklenir
-    local targetModel = targetPart:IsA("Model") and targetPart or targetPart.Parent
-    if targetModel and targetModel ~= Workspace and not activeHighlights[targetModel] then
-        local highlight = Instance.new("Highlight")
-        highlight.Name = "GhostPerfectHighlight"
-        highlight.Adornee = targetModel
-        highlight.FillColor = Color3.fromRGB(255, 0, 0)
-        highlight.FillTransparency = 0.7
-        highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
-        highlight.OutlineTransparency = 0
-        highlight.Parent = targetModel
-        activeHighlights[targetModel] = highlight
-    end
+    for _, entityName in ipairs(entityNames) do
+        if v.Name == entityName then
+            local targetPart = nil
+            if v:IsA("Model") then
+                targetPart = v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart")
+            elseif v:IsA("BasePart") then
+                targetPart = v
+            end
+            
+            if targetPart and not activeEsps[targetPart] then
+                local targetModel = v:IsA("Model") and v or v.Parent
+                if targetModel and targetModel ~= Workspace and not activeHighlights[targetModel] then
+                    local highlight = Instance.new("Highlight")
+                    highlight.Name = "GhostEventHighlight"
+                    highlight.Adornee = targetModel
+                    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                    highlight.FillTransparency = 0.7
+                    highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+                    highlight.OutlineTransparency = 0
+                    highlight.Parent = targetModel
+                    activeHighlights[targetModel] = highlight
+                end
 
-    local billboard = Instance.new("BillboardGui")
-    billboard.Name = "GhostEntityESP"
-    billboard.Adornee = targetPart
-    billboard.Size = UDim2.new(0, 120, 0, 45)
-    billboard.StudsOffset = Vector3.new(0, 2.5, 0)
-    billboard.AlwaysOnTop = true
-    
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, 0, 0, 22)
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.Text = displayName
-    nameLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
-    nameLabel.TextSize = 13
-    nameLabel.Font = Enum.Font.GothamBold
-    nameLabel.TextStrokeTransparency = 0.4
-    nameLabel.Parent = billboard
-    
-    local distLabel = Instance.new("TextLabel")
-    distLabel.Size = UDim2.new(1, 0, 0, 20)
-    distLabel.Position = UDim2.new(0, 0, 0, 20)
-    distLabel.BackgroundTransparency = 1
-    distLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
-    distLabel.TextSize = 11
-    distLabel.Font = Enum.Font.GothamMedium
-    distLabel.TextStrokeTransparency = 0.4
-    distLabel.Parent = billboard
-    
-    billboard.Parent = player.PlayerGui
-    activeEsps[targetPart] = billboard
-    
-    local connection
-    connection = RunService.RenderStepped:Connect(function()
-        if not entityEspEnabled or not targetPart or not targetPart.Parent or not billboard.Parent then
-            if billboard then billboard:Destroy() end
-            activeEsps[targetPart] = nil
-            if connection then connection:Disconnect() end
-            return
+                local billboard = Instance.new("BillboardGui")
+                billboard.Name = "GhostEntityESP"
+                billboard.Adornee = targetPart
+                billboard.Size = UDim2.new(0, 120, 0, 45)
+                billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+                billboard.AlwaysOnTop = true
+                
+                local nameLabel = Instance.new("TextLabel")
+                nameLabel.Size = UDim2.new(1, 0, 0, 22)
+                nameLabel.BackgroundTransparency = 1
+                nameLabel.Text = entityName
+                nameLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+                nameLabel.TextSize = 13
+                nameLabel.Font = Enum.Font.GothamBold
+                nameLabel.TextStrokeTransparency = 0.4
+                nameLabel.Parent = billboard
+                
+                local distLabel = Instance.new("TextLabel")
+                distLabel.Size = UDim2.new(1, 0, 0, 20)
+                distLabel.Position = UDim2.new(0, 0, 0, 20)
+                distLabel.BackgroundTransparency = 1
+                distLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+                distLabel.TextSize = 11
+                distLabel.Font = Enum.Font.GothamMedium
+                distLabel.TextStrokeTransparency = 0.4
+                distLabel.Parent = billboard
+                
+                billboard.Parent = player.PlayerGui
+                activeEsps[targetPart] = billboard
+                
+                local connection
+                connection = RunService.RenderStepped:Connect(function()
+                    if not entityEspEnabled or not targetPart or not targetPart.Parent or not billboard.Parent then
+                        if billboard then billboard:Destroy() end
+                        activeEsps[targetPart] = nil
+                        if connection then connection:Disconnect() end
+                        return
+                    end
+                    
+                    local char = player.Character
+                    if char and char:FindFirstChild("HumanoidRootPart") then
+                        local dist = (char.HumanoidRootPart.Position - targetPart.Position).Magnitude
+                        distLabel.Text = "[" .. math.floor(dist) .. " M]"
+                    end
+                end)
+            end
+            break
         end
-        
-        local char = player.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            local dist = (char.HumanoidRootPart.Position - targetPart.Position).Magnitude
-            distLabel.Text = "[" .. math.floor(dist) .. " M]"
-        end
-    end)
+    end
 end
 
 createToggle(pageVisuals, "Entities ESP", false, function(state)
     entityEspEnabled = state
-    if not state then
-        clearAllESPs()
-    end
-end)
-
--- Gelişmiş Taramalı Güvenli Döngü
-task.spawn(function()
-    while task.wait(0.5) do
-        if entityEspEnabled and isInGame() then
-            pcall(function()
-                for _, v in ipairs(Workspace:GetDescendants()) do
-                    if v.Name ~= "" then
-                        for _, entityName in ipairs(entityNames) do
-                            if v.Name == entityName then
-                                local targetPart = nil
-                                if v:IsA("Model") then
-                                    targetPart = v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart")
-                                elseif v:IsA("BasePart") then
-                                    targetPart = v
-                                end
-                                
-                                if targetPart and not activeEsps[targetPart] then
-                                    createSafeESP(targetPart, entityName)
-                                end
-                            end
-                        end
-                    end
-                end
-            end)
-        else
-            if not isInGame() and next(activeEsps) ~= nil then
-                clearAllESPs()
+    if state then
+        -- ESP açıldığında mevcut haritadaki objeleri bir defaya mahsus tara
+        pcall(function()
+            for _, v in ipairs(Workspace:GetDescendants()) do
+                processEntity(v)
             end
+        end)
+        
+        -- Sadece yeni eklenen objeleri dinle (Sıfır Kasma)
+        if not descendantConnection then
+            descendantConnection = Workspace.DescendantAdded:Connect(function(v)
+                processEntity(v)
+            end)
+        end
+    else
+        clearAllESPs()
+        if descendantConnection then
+            descendantConnection:Disconnect()
+            descendantConnection = nil
         end
     end
 end)
@@ -534,5 +533,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("GhostHub V2.0 Başarıyla Yüklendi!")
-
+print("GhostHub V2.0 Sıfır Kasma Optimizasyonu ile Yüklendi!")
