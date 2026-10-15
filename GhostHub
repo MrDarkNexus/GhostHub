@@ -1,4 +1,4 @@
--- // GHOSTHUB V2.0 - FIXED ASSET ENGINE & FULL THEMES (820x520) \\ --
+-- // GHOSTHUB V2.0 - 46 THEMES + "SERENE SNOW" MINECRAFT EDITION (820x520) \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -32,7 +32,7 @@ mobileToggleBtn.ZIndex = 10
 mobileToggleBtn.Parent = screenGui
 Instance.new("UICorner", mobileToggleBtn).CornerRadius = UDim.new(0, 6)
 
--- 🖼️ DEV ANA MENÜ ÇERÇEVESİ (820x520)
+-- framed DEV ANA MENÜ ÇERÇEVESİ (820x520)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.Size = UDim2.new(0, 820, 0, 520)
@@ -53,7 +53,7 @@ bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
 bgImage.Position = UDim2.new(0, 0, 0, 0)
 bgImage.BackgroundTransparency = 1
-bgImage.Image = "rbxassetid://6023426915" -- Garanti çalışan estetik gece arkaplanı
+bgImage.Image = "rbxassetid://6023426915"
 bgImage.ImageTransparency = 0.35
 bgImage.ScaleType = Enum.ScaleType.Crop
 bgImage.ZIndex = 1
@@ -96,7 +96,7 @@ searchBox.ZIndex = 6
 searchBox.Parent = topBar
 Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 6)
 
--- Sol Yan Menü (180px Genişlik)
+-- Sol Yan Menü
 local sideMenu = Instance.new("ScrollingFrame")
 sideMenu.Size = UDim2.new(0, 180, 1, -48)
 sideMenu.Position = UDim2.new(0, 0, 0, 48)
@@ -136,7 +136,7 @@ local function createPage(pageName)
     page.BackgroundTransparency = 1
     page.Visible = false
     page.ScrollBarThickness = 3
-    page.CanvasSize = UDim2.new(0, 0, 0, 3300)
+    page.CanvasSize = UDim2.new(0, 0, 0, 3700)
     page.ZIndex = 5
     page.Parent = contentArea
     
@@ -210,7 +210,7 @@ createTabButton("Temalar & Config", "🎨", "ThemesPage")
 
 switchTab("ThemesPage")
 
--- 🔧 GÜVENLİ RESİM YÜKLEME MOTORU (Hata önleyici)
+-- 🔧 GÜVENLİ RESİM YÜKLEME MOTORU
 local function applyImageTarget(rawId)
     if not rawId or rawId == "" or rawId == "none" then
         bgImage.Image = ""
@@ -231,7 +231,7 @@ local function applyImageTarget(rawId)
     end
 end
 
--- ✏️ ÖZEL IMAGE ID GİRİŞ ALANI VE SIFIRLAMA BUTONU
+-- ✏️ ÖZEL IMAGE ID GİRİŞ ALANI (+ Textbox)
 local customHeader = Instance.new("TextLabel")
 customHeader.Size = UDim2.new(1, -10, 0, 25)
 customHeader.BackgroundTransparency = 1
@@ -430,8 +430,9 @@ createThemeCard("Cosmic Abyss Hole", "Derin Uzay Hiçliği", {Main="020208", Bg=
 createThemeCard("Dark Matter Hole", "Mor Radyasyonlu Kara Delik", {Main="100214", Bg="06000a", Img="6023426915", Accent="cc00ff", Font="Code"})
 createThemeCard("Void Collapse Hole", "Çöken Evren Simsiyah Teması", {Main="030303", Bg="000000", Img="6023426915", Accent="ffffff", Font="Code"})
 
--- ⛏️ 10 MINECRAFT THEMES
-createCategoryHeader("⛏️ Minecraft Themes (10 Tane)")
+-- ⛏️ 16 MINECRAFT THEMES (Serene Snow Özel Sürümü Eklendi)
+createCategoryHeader("⛏️ Minecraft Themes (16 Tane)")
+createThemeCard("MC: Serene Snow", "Huzurlu Kar Kamp Ateşi (Soothing Stories)", {Main="0a141d", Bg="030910", Img="6023426915", Accent="88eeff", Font="Gotham"})
 createThemeCard("Minecraft End Realm", "End Gezegeni & Ejderha Teması", {Main="0a0812", Bg="040208", Img="6023426915", Accent="cc66ff", Font="Code"})
 createThemeCard("Minecraft Nether Fortress", "Lavlı Kızıl Nether Teması", {Main="180500", Bg="080200", Img="6023426915", Accent="ff3300", Font="GothamBold"})
 createThemeCard("Minecraft End Portal", "Mistik Mor Portal Teması", {Main="061012", Bg="01080a", Img="6023426915", Accent="00ffcc", Font="Code"})
@@ -442,6 +443,11 @@ createThemeCard("Minecraft Sunset Biome", "Piksel Gün Batımı", {Main="180a08"
 createThemeCard("Minecraft Desert Temple", "Çöl & Çöl Tapınağı Teması", {Main="161205", Bg="0a0802", Img="6023426915", Accent="ffee55", Font="Code"})
 createThemeCard("Minecraft Village Life", "Sakin Köy Manzarası", {Main="0a1408", Bg="040803", Img="6023426915", Accent="88ff33", Font="Gotham"})
 createThemeCard("Minecraft Redstone Cave", "Kırmızı Redstone Işıkları", {Main="180303", Bg="0a0101", Img="6023426915", Accent="ff2222", Font="Code"})
+createThemeCard("Minecraft End City", "Koru Şehirler & Purpur Blokları", {Main="120a1c", Bg="05020a", Img="6023426915", Accent="dd88ff", Font="Code"})
+createThemeCard("Minecraft Void Abyss", "Uçsuz Bucaksız End Boşluğu", {Main="05040a", Bg="010103", Img="6023426915", Accent="9944ff", Font="GothamBold"})
+createThemeCard("Minecraft Dragon Flight", "Ender Dragon Uçuş Gökyüzü", {Main="090614", Bg="020105", Img="6023426915", Accent="ee44ff", Font="Code"})
+createThemeCard("Minecraft Ice Spikes", "Buz Dikitleri Kar Biyomu", {Main="0a141c", Bg="02060a", Img="6023426915", Accent="00ffff", Font="Gotham"})
+createThemeCard("Minecraft Snowy Taiga", "Karlı Tayga Ormanı", {Main="081014", Bg="030608", Img="6023426915", Accent="44bbff", Font="Code"})
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
@@ -449,4 +455,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("GhostHub V2.0 - Arka Plan Hata Koruması Eklendi ve Hazır!")
+print("GhostHub V2.0 - MC: Serene Snow Eklendi ve Hazır!")
