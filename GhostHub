@@ -1,4 +1,4 @@
--- // GHOSTHUB V2.0 - 30 EXTENDED THEMES & FIT DESIGN \\ --
+-- // GHOSTHUB V2.0 - FIXED BACKGROUND & BIGGER FIT DESIGN \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -19,11 +19,11 @@ screenGui.Parent = playerGui
 -- 📱 Mobil Toggle Butonu
 local mobileToggleBtn = Instance.new("TextButton")
 mobileToggleBtn.Name = "MobileToggleBtn"
-mobileToggleBtn.Size = UDim2.new(0, 85, 0, 32)
+mobileToggleBtn.Size = UDim2.new(0, 90, 0, 34)
 mobileToggleBtn.Position = UDim2.new(0, 15, 0, 15)
 mobileToggleBtn.BackgroundColor3 = Color3.fromHex("070805")
 mobileToggleBtn.BackgroundTransparency = 0.2
-mobileToggleBtn.Text = "Toggle"
+mobileToggleBtn.Text = "Aç/Kapat"
 mobileToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 mobileToggleBtn.TextSize = 12
 mobileToggleBtn.Font = Enum.Font.Code
@@ -31,11 +31,11 @@ mobileToggleBtn.ZIndex = 10
 mobileToggleBtn.Parent = screenGui
 Instance.new("UICorner", mobileToggleBtn).CornerRadius = UDim.new(0, 6)
 
--- 🖼️ Fit Ana Menü Çerçevesi
+-- 🖼️ Büyütülmüş Ana Menü Çerçevesi (740x460)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 680, 0, 420)
-mainFrame.Position = UDim2.new(0.5, -340, 0.5, -210)
+mainFrame.Size = UDim2.new(0, 740, 0, 460)
+mainFrame.Position = UDim2.new(0.5, -370, 0.5, -230)
 mainFrame.BackgroundColor3 = Color3.fromHex("000000")
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
@@ -46,10 +46,11 @@ mobileToggleBtn.MouseButton1Click:Connect(function()
     mainFrame.Visible = not mainFrame.Visible
 end)
 
--- 🌌 Arka Plan Görseli
+-- 🌌 Tüm Menüyü Kaplayan Arka Plan Görseli
 local bgImage = Instance.new("ImageLabel")
 bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
+bgImage.Position = UDim2.new(0, 0, 0, 0)
 bgImage.BackgroundTransparency = 1
 bgImage.Image = "rbxassetid://89924308622883"
 bgImage.ImageTransparency = 0.35
@@ -59,15 +60,15 @@ bgImage.Parent = mainFrame
 
 -- TopBar
 local topBar = Instance.new("Frame")
-topBar.Size = UDim2.new(1, 0, 0, 42)
+topBar.Size = UDim2.new(1, 0, 0, 44)
 topBar.BackgroundColor3 = Color3.fromHex("070805")
-topBar.BackgroundTransparency = 0.4
+topBar.BackgroundTransparency = 0.5
 topBar.BorderSizePixel = 0
 topBar.ZIndex = 5
 topBar.Parent = mainFrame
 
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(0, 350, 1, 0)
+titleLabel.Size = UDim2.new(0, 400, 1, 0)
 titleLabel.Position = UDim2.new(0, 15, 0, 0)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Text = player.Name .. " | GhostHub V2.0"
@@ -80,8 +81,8 @@ titleLabel.Parent = topBar
 
 -- 🔍 Search Box
 local searchBox = Instance.new("TextBox")
-searchBox.Size = UDim2.new(0, 180, 0, 26)
-searchBox.Position = UDim2.new(1, -195, 0, 8)
+searchBox.Size = UDim2.new(0, 200, 0, 28)
+searchBox.Position = UDim2.new(1, -215, 0, 8)
 searchBox.BackgroundColor3 = Color3.fromHex("070805")
 searchBox.BackgroundTransparency = 0.5
 searchBox.PlaceholderText = "Search..."
@@ -96,12 +97,12 @@ Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 6)
 
 -- Sol Yan Menü
 local sideMenu = Instance.new("ScrollingFrame")
-sideMenu.Size = UDim2.new(0, 150, 1, -42)
-sideMenu.Position = UDim2.new(0, 0, 0, 42)
+sideMenu.Size = UDim2.new(0, 160, 1, -44)
+sideMenu.Position = UDim2.new(0, 0, 0, 44)
 sideMenu.BackgroundColor3 = Color3.fromHex("070805")
-sideMenu.BackgroundTransparency = 0.6
+sideMenu.BackgroundTransparency = 0.7
 sideMenu.BorderSizePixel = 0
-sideMenu.CanvasSize = UDim2.new(0, 0, 0, 380)
+sideMenu.CanvasSize = UDim2.new(0, 0, 0, 420)
 sideMenu.ScrollBarThickness = 2
 sideMenu.ZIndex = 5
 sideMenu.Parent = mainFrame
@@ -118,8 +119,8 @@ sidePadding.Parent = sideMenu
 
 -- İçerik Alanı
 local contentArea = Instance.new("Frame")
-contentArea.Size = UDim2.new(1, -155, 1, -48)
-contentArea.Position = UDim2.new(0, 155, 0, 45)
+contentArea.Size = UDim2.new(1, -165, 1, -50)
+contentArea.Position = UDim2.new(0, 165, 0, 46)
 contentArea.BackgroundTransparency = 1
 contentArea.ZIndex = 5
 contentArea.Parent = mainFrame
@@ -134,7 +135,7 @@ local function createPage(pageName)
     page.BackgroundTransparency = 1
     page.Visible = false
     page.ScrollBarThickness = 2
-    page.CanvasSize = UDim2.new(0, 0, 0, 2200) -- Bütün temalar sığsın diye genişletildi
+    page.CanvasSize = UDim2.new(0, 0, 0, 2200)
     page.ZIndex = 5
     page.Parent = contentArea
     
@@ -166,7 +167,7 @@ end
 
 local function createTabButton(name, icon, targetPageName)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -12, 0, 28)
+    btn.Size = UDim2.new(1, -12, 0, 30)
     btn.BackgroundColor3 = Color3.fromHex("070805")
     btn.BackgroundTransparency = 0.6
     btn.Text = " " .. icon .. " " .. name
@@ -208,10 +209,27 @@ createTabButton("Temalar & Config", "🎨", "ThemesPage")
 
 switchTab("ThemesPage")
 
+-- Dynamic Image Apply Helper
+local function setBackgroundImage(imageId)
+    if imageId == "" or not imageId then
+        bgImage.Image = ""
+        bgImage.Visible = false
+    else
+        bgImage.Visible = true
+        if tonumber(imageId) then
+            bgImage.Image = "rbxassetid://" .. imageId
+        elseif imageId:find("rbxassetid://") or imageId:find("http") then
+            bgImage.Image = imageId
+        else
+            bgImage.Image = "rbxassetid://" .. imageId
+        end
+    end
+end
+
 -- Tema Kartı Oluşturucu
 local function createThemeCard(title, desc, themeData)
     local card = Instance.new("Frame")
-    card.Size = UDim2.new(1, -10, 0, 50)
+    card.Size = UDim2.new(1, -10, 0, 52)
     card.BackgroundColor3 = Color3.fromHex("070805")
     card.BackgroundTransparency = 0.5
     card.ZIndex = 6
@@ -232,8 +250,8 @@ local function createThemeCard(title, desc, themeData)
     label.Parent = card
     
     local applyBtn = Instance.new("TextButton")
-    applyBtn.Size = UDim2.new(0, 90, 0, 26)
-    applyBtn.Position = UDim2.new(1, -100, 0.5, -13)
+    applyBtn.Size = UDim2.new(0, 100, 0, 28)
+    applyBtn.Position = UDim2.new(1, -110, 0.5, -14)
     applyBtn.BackgroundColor3 = Color3.fromHex("242599")
     applyBtn.Text = "Yükle & Uygula"
     applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -245,9 +263,9 @@ local function createThemeCard(title, desc, themeData)
     
     applyBtn.MouseButton1Click:Connect(function()
         applyBtn.Text = "Yükleniyor..."
-        task.wait(0.2)
+        task.wait(0.1)
         
-        bgImage.Image = "rbxassetid://" .. themeData.Img
+        setBackgroundImage(themeData.Img)
         mainFrame.BackgroundColor3 = Color3.fromHex(themeData.Bg)
         topBar.BackgroundColor3 = Color3.fromHex(themeData.Main)
         sideMenu.BackgroundColor3 = Color3.fromHex(themeData.Main)
@@ -333,4 +351,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("GhostHub V2.0 30 Temalı Fit Tasarım Yüklendi!")
+print("GhostHub V2.0 Tam Ekran Arka Plan ve Büyütülmüş Menü ile Yüklendi!")
