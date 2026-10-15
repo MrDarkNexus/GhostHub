@@ -1,4 +1,4 @@
--- // GHOSTHUB V2.0 - AUTO RELOAD & THEME SYSTEM \\ --
+-- // GHOSTHUB V2.0 - 30 EXTENDED THEMES & FIT DESIGN \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -29,10 +29,7 @@ mobileToggleBtn.TextSize = 12
 mobileToggleBtn.Font = Enum.Font.Code
 mobileToggleBtn.ZIndex = 10
 mobileToggleBtn.Parent = screenGui
-
-local mBtnCorner = Instance.new("UICorner")
-mBtnCorner.CornerRadius = UDim.new(0, 6)
-mBtnCorner.Parent = mobileToggleBtn
+Instance.new("UICorner", mobileToggleBtn).CornerRadius = UDim.new(0, 6)
 
 -- 🖼️ Fit Ana Menü Çerçevesi
 local mainFrame = Instance.new("Frame")
@@ -43,10 +40,7 @@ mainFrame.BackgroundColor3 = Color3.fromHex("000000")
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
-
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 10)
-mainCorner.Parent = mainFrame
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
 
 mobileToggleBtn.MouseButton1Click:Connect(function()
     mainFrame.Visible = not mainFrame.Visible
@@ -57,7 +51,7 @@ local bgImage = Instance.new("ImageLabel")
 bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
 bgImage.BackgroundTransparency = 1
-bgImage.Image = "http://www.roblox.com/asset/?id=89924308622883"
+bgImage.Image = "rbxassetid://89924308622883"
 bgImage.ImageTransparency = 0.35
 bgImage.ScaleType = Enum.ScaleType.Crop
 bgImage.ZIndex = 1
@@ -98,10 +92,7 @@ searchBox.TextSize = 11
 searchBox.Font = Enum.Font.Code
 searchBox.ZIndex = 6
 searchBox.Parent = topBar
-
-local searchCorner = Instance.new("UICorner")
-searchCorner.CornerRadius = UDim.new(0, 6)
-searchCorner.Parent = searchBox
+Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 6)
 
 -- Sol Yan Menü
 local sideMenu = Instance.new("ScrollingFrame")
@@ -143,7 +134,7 @@ local function createPage(pageName)
     page.BackgroundTransparency = 1
     page.Visible = false
     page.ScrollBarThickness = 2
-    page.CanvasSize = UDim2.new(0, 0, 0, 500)
+    page.CanvasSize = UDim2.new(0, 0, 0, 2200) -- Bütün temalar sığsın diye genişletildi
     page.ZIndex = 5
     page.Parent = contentArea
     
@@ -186,16 +177,13 @@ local function createTabButton(name, icon, targetPageName)
     btn.ZIndex = 6
     btn.Parent = sideMenu
     
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 6)
-    corner.Parent = btn
-    
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
     tabButtons[targetPageName] = btn
     btn.MouseButton1Click:Connect(function() switchTab(targetPageName) end)
     return btn
 end
 
--- 📌 TÜM SEKMELER
+-- 📌 SEKMELER
 local pageMain = createPage("MainPage")
 local pageExploits = createPage("ExploitsPage")
 local pageMines = createPage("MinesPage")
@@ -216,11 +204,11 @@ createTabButton("StairWell", "🪜", "StairWellPage")
 createTabButton("Misc", "🖥️", "MiscPage")
 createTabButton("Visuals", "👁️", "VisualsPage")
 createTabButton("The BackDoors", "🔙", "BackDoorsPage")
-createTabButton("Temalar", "🎨", "ThemesPage")
+createTabButton("Temalar & Config", "🎨", "ThemesPage")
 
 switchTab("ThemesPage")
 
--- Tema Kartı ve Yeniden Yükleme (Reload) Mekanizması
+-- Tema Kartı Oluşturucu
 local function createThemeCard(title, desc, themeData)
     local card = Instance.new("Frame")
     card.Size = UDim2.new(1, -10, 0, 50)
@@ -229,9 +217,7 @@ local function createThemeCard(title, desc, themeData)
     card.ZIndex = 6
     card.Parent = pageThemes
     
-    local cCorner = Instance.new("UICorner")
-    cCorner.CornerRadius = UDim.new(0, 8)
-    cCorner.Parent = card
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 8)
     
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.65, 0, 1, 0)
@@ -255,32 +241,25 @@ local function createThemeCard(title, desc, themeData)
     applyBtn.Font = Enum.Font.Code
     applyBtn.Parent = card
     
-    local bCorner = Instance.new("UICorner")
-    bCorner.CornerRadius = UDim.new(0, 6)
-    bCorner.Parent = applyBtn
+    Instance.new("UICorner", applyBtn).CornerRadius = UDim.new(0, 6)
     
     applyBtn.MouseButton1Click:Connect(function()
         applyBtn.Text = "Yükleniyor..."
-        applyBtn.BackgroundColor3 = Color3.fromRGB(180, 120, 0)
+        task.wait(0.2)
         
-        -- Temayı anında işleme ve simüle edilmiş yenilenme efekti
-        task.wait(0.5)
-        bgImage.Image = themeData.BackgroundImage
-        mainFrame.BackgroundColor3 = Color3.fromHex(themeData.BackgroundColor)
-        topBar.BackgroundColor3 = Color3.fromHex(themeData.MainColor)
-        sideMenu.BackgroundColor3 = Color3.fromHex(themeData.MainColor)
-        titleLabel.TextColor3 = Color3.fromHex(themeData.AccentColor)
+        bgImage.Image = "rbxassetid://" .. themeData.Img
+        mainFrame.BackgroundColor3 = Color3.fromHex(themeData.Bg)
+        topBar.BackgroundColor3 = Color3.fromHex(themeData.Main)
+        sideMenu.BackgroundColor3 = Color3.fromHex(themeData.Main)
+        titleLabel.TextColor3 = Color3.fromHex(themeData.Accent)
         
-        local selectedFont = Enum.Font[themeData.FontFace] or Enum.Font.Code
-        titleLabel.Font = selectedFont
-        searchBox.Font = selectedFont
-        label.Font = selectedFont
+        local font = Enum.Font[themeData.Font] or Enum.Font.Code
+        titleLabel.Font = font
+        searchBox.Font = font
+        label.Font = font
+        for _, btn in pairs(tabButtons) do btn.Font = font end
         
-        for _, btn in pairs(tabButtons) do
-            btn.Font = selectedFont
-        end
-        
-        applyBtn.Text = "Hazır!"
+        applyBtn.Text = "Aktif!"
         applyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
         task.wait(1)
         applyBtn.Text = "Yükle & Uygula"
@@ -288,25 +267,65 @@ local function createThemeCard(title, desc, themeData)
     end)
 end
 
--- 🎄 Christmas Theme
-createThemeCard("Christmas Theme", "Lacivert / Siyah Karlı Gece", {
-    MainColor = "070805",
-    FontFace = "Code",
-    FontColor = "ffffff",
-    BackgroundColor = "000000",
-    BackgroundImage = "http://www.roblox.com/asset/?id=89924308622883",
-    AccentColor = "242599"
-})
+local function createCategoryHeader(text)
+    local header = Instance.new("TextLabel")
+    header.Size = UDim2.new(1, -10, 0, 25)
+    header.BackgroundTransparency = 1
+    header.Text = text
+    header.TextColor3 = Color3.fromHex("ffffff")
+    header.TextSize = 13
+    header.Font = Enum.Font.GothamBold
+    header.TextXAlignment = Enum.TextXAlignment.Left
+    header.Parent = pageThemes
+end
 
--- 🌸 Anime Nya Theme
-createThemeCard("Anime Nya Theme", "Catgirl Estetik Arka Plan", {
-    MainColor = "181825",
-    FontFace = "Gotham",
-    FontColor = "ffffff",
-    BackgroundColor = "0f0f14",
-    BackgroundImage = "http://www.roblox.com/asset/?id=85504522659236",
-    AccentColor = "64b4ff"
-})
+-- 🎄 5 CHRISTMAS THEMES
+createCategoryHeader("🎄 Christmas Themes")
+createThemeCard("Christmas Night", "Mavi Karlı Gece Teması", {Main="070805", Bg="000000", Img="89924308622883", Accent="242599", Font="Code"})
+createThemeCard("Red Christmas", "Yılbaşı Kırmızısı Orman", {Main="180808", Bg="0f0000", Img="12521097223", Accent="ff3b3b", Font="GothamBold"})
+createThemeCard("Snowy Frost", "Kutup Beyazı & Buzul Mavi", {Main="081218", Bg="020a10", Img="10892800366", Accent="00e1ff", Font="Code"})
+createThemeCard("Cozy Winter", "Sıcak Yılbaşı Ağacı Teması", {Main="140e08", Bg="0a0602", Img="11583097812", Accent="ffaa00", Font="Gotham"})
+createThemeCard("Santa Edition", "Koyu Kırmızı Minimal Yılbaşı", {Main="120505", Bg="080202", Img="12150981928", Accent="ff2222", Font="Code"})
+
+-- 🎃 5 HALLOWEEN THEMES
+createCategoryHeader("🎃 Halloween Themes")
+createThemeCard("Pumpkin Glow", "Koyu Turuncu Balkabağı Cadılar Bayramı", {Main="180a02", Bg="0d0400", Img="11192837410", Accent="ff6600", Font="GothamBold"})
+createThemeCard("Spooky Night", "Mor & Siyah Hayaletli Gece", {Main="120218", Bg="08000f", Img="10982736451", Accent="aa00ff", Font="Code"})
+createThemeCard("Haunted Forest", "Karanlık Sisli Orman", {Main="051005", Bg="010801", Img="11482910293", Accent="00ff44", Font="Code"})
+createThemeCard("Vampire Blood", "Kan Kırmızısı Gotik Cadılar Bayramı", {Main="180002", Bg="0a0001", Img="10782918273", Accent="ff0033", Font="Gotham"})
+createThemeCard("Witch Craft", "Zehir Yeşili Cadı Teması", {Main="0a140a", Bg="030a03", Img="11928374651", Accent="33ff33", Font="Code"})
+
+-- 🕳️ 5 BLACK HOLE THEMES
+createCategoryHeader("🕳️ Black Hole Themes")
+createThemeCard("Singularity", "Karanlık Yerçekimi Kara Deliği", {Main="050508", Bg="000002", Img="11827394851", Accent="6600ff", Font="Code"})
+createThemeCard("Event Horizon", "Turuncu Işıklı Kara Delik", {Main="140802", Bg="0a0300", Img="10928374619", Accent="ff8800", Font="GothamBold"})
+createThemeCard("Cosmic Abyss", "Derin Uzay Hiçliği", {Main="020208", Bg="000003", Img="11293847561", Accent="3388ff", Font="Code"})
+createThemeCard("Dark Matter", "Mor Radyasyonlu Kara Delik", {Main="100214", Bg="06000a", Img="12039485761", Accent="cc00ff", Font="Code"})
+createThemeCard("Void Collapse", "Çöken Evren Simsiyah Teması", {Main="030303", Bg="000000", Img="10827364519", Accent="ffffff", Font="Code"})
+
+-- 🌙 5 MOON THEMES
+createCategoryHeader("🌙 Moon Themes")
+createThemeCard("Full Moon", "Parlak Dolunay Gecesi", {Main="080b12", Bg="020408", Img="11726354819", Accent="ddeeff", Font="Gotham"})
+createThemeCard("Blood Moon", "Kırmızı Kanlı Ay Teması", {Main="180303", Bg="080000", Img="10928374652", Accent="ff2222", Font="GothamBold"})
+createThemeCard("Lunar Eclipse", "Ay Tutulması Karanlığı", {Main="0a0812", Bg="030208", Img="12938475612", Accent="9966ff", Font="Code"})
+createThemeCard("Crescent Night", "Hilal Ay & Yıldızlı Gökyüzü", {Main="050a14", Bg="01030a", Img="11283746510", Accent="44aaff", Font="Code"})
+createThemeCard("Blue Moon", "Gece Mavi Estetik Ay", {Main="020c18", Bg="00050d", Img="10837462819", Accent="00aaff", Font="Code"})
+
+-- 🪐 5 SATÜRN THEMES
+createCategoryHeader("🪐 Satürn Themes")
+createThemeCard("Saturn Rings", "Dev Halkalı Satürn Gezegeni", {Main="141005", Bg="080501", Img="11928374612", Accent="ffcc44", Font="Gotham"})
+createThemeCard("Golden Orbit", "Altın Sarısı Satürn Halesi", {Main="181403", Bg="0a0800", Img="10827364912", Accent="ffee00", Font="GothamBold"})
+createThemeCard("Deep Saturn", "Karanlık Uzayda Satürn", {Main="080a12", Bg="020308", Img="12039485712", Accent="66aaff", Font="Code"})
+createThemeCard("Titan Shadow", "Satürn'ün Uydusu Titan Görünümü", {Main="120a05", Bg="060301", Img="11293847123", Accent="ff8833", Font="Code"})
+createThemeCard("Gas Giant", "Mistik Gaz Bulutlu Satürn", {Main="0f0814", Bg="07020a", Img="10928374123", Accent="bb44ff", Font="Code"})
+
+-- ☀️ 5 GÜNEŞ SİSTEMİ THEMES
+createCategoryHeader("☀️ Güneş Sistemi Themes")
+createThemeCard("Solar Flare", "Alevli Güneş Patlaması", {Main="180600", Bg="0a0200", Img="11827364123", Accent="ff3300", Font="GothamBold"})
+createThemeCard("Galaxy System", "Tüm Güneş Sistemi Yörüngesi", {Main="060a14", Bg="010308", Img="12938471234", Accent="00ccff", Font="Code"})
+createThemeCard("Sun Core", "Sarı Core Işıklı Güneş", {Main="181400", Bg="0a0800", Img="10928371234", Accent="ffcc00", Font="Gotham"})
+createThemeCard("Planetary Alignment", "Hizalanmış Gezegenler", {Main="0d0814", Bg="05020a", Img="11293841234", Accent="aa55ff", Font="Code"})
+createThemeCard("Milky Way Solar", "Samanyolu Galaksisi & Güneş", {Main="040a12", Bg="010408", Img="12039481234", Accent="33bbee", Font="Code"})
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
@@ -314,4 +333,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("GhostHub V2.0 Yeniden Yükleme Sistemli Tema Hazır!")
+print("GhostHub V2.0 30 Temalı Fit Tasarım Yüklendi!")
