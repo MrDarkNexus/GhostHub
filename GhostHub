@@ -1,8 +1,9 @@
--- // GHOSTHUB V2.0 - FIXED BACKGROUND & BIGGER FIT DESIGN \\ --
+-- // GHOSTHUB V2.0 - FULL THEMES, CUSTOM ID INPUT & DEV FIT DESIGN (820x520) \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local ContentProvider = game:GetService("ContentProvider")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -19,34 +20,34 @@ screenGui.Parent = playerGui
 -- 📱 Mobil Toggle Butonu
 local mobileToggleBtn = Instance.new("TextButton")
 mobileToggleBtn.Name = "MobileToggleBtn"
-mobileToggleBtn.Size = UDim2.new(0, 90, 0, 34)
+mobileToggleBtn.Size = UDim2.new(0, 95, 0, 36)
 mobileToggleBtn.Position = UDim2.new(0, 15, 0, 15)
 mobileToggleBtn.BackgroundColor3 = Color3.fromHex("070805")
 mobileToggleBtn.BackgroundTransparency = 0.2
 mobileToggleBtn.Text = "Aç/Kapat"
 mobileToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-mobileToggleBtn.TextSize = 12
+mobileToggleBtn.TextSize = 13
 mobileToggleBtn.Font = Enum.Font.Code
 mobileToggleBtn.ZIndex = 10
 mobileToggleBtn.Parent = screenGui
 Instance.new("UICorner", mobileToggleBtn).CornerRadius = UDim.new(0, 6)
 
--- 🖼️ Büyütülmüş Ana Menü Çerçevesi (740x460)
+-- 🖼️ DEV ANA MENÜ ÇERÇEVESİ (820x520)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 740, 0, 460)
-mainFrame.Position = UDim2.new(0.5, -370, 0.5, -230)
+mainFrame.Size = UDim2.new(0, 820, 0, 520)
+mainFrame.Position = UDim2.new(0.5, -410, 0.5, -260)
 mainFrame.BackgroundColor3 = Color3.fromHex("000000")
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
-Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 12)
 
 mobileToggleBtn.MouseButton1Click:Connect(function()
     mainFrame.Visible = not mainFrame.Visible
 end)
 
--- 🌌 Tüm Menüyü Kaplayan Arka Plan Görseli
+-- 🌌 TÜM MENÜYÜ KAPLAYAN ARKA PLAN GÖRSELİ
 local bgImage = Instance.new("ImageLabel")
 bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
@@ -60,7 +61,7 @@ bgImage.Parent = mainFrame
 
 -- TopBar
 local topBar = Instance.new("Frame")
-topBar.Size = UDim2.new(1, 0, 0, 44)
+topBar.Size = UDim2.new(1, 0, 0, 48)
 topBar.BackgroundColor3 = Color3.fromHex("070805")
 topBar.BackgroundTransparency = 0.5
 topBar.BorderSizePixel = 0
@@ -68,12 +69,12 @@ topBar.ZIndex = 5
 topBar.Parent = mainFrame
 
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(0, 400, 1, 0)
-titleLabel.Position = UDim2.new(0, 15, 0, 0)
+titleLabel.Size = UDim2.new(0, 450, 1, 0)
+titleLabel.Position = UDim2.new(0, 18, 0, 0)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Text = player.Name .. " | GhostHub V2.0"
 titleLabel.TextColor3 = Color3.fromHex("242599")
-titleLabel.TextSize = 13
+titleLabel.TextSize = 14
 titleLabel.Font = Enum.Font.Code
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleLabel.ZIndex = 6
@@ -81,46 +82,46 @@ titleLabel.Parent = topBar
 
 -- 🔍 Search Box
 local searchBox = Instance.new("TextBox")
-searchBox.Size = UDim2.new(0, 200, 0, 28)
-searchBox.Position = UDim2.new(1, -215, 0, 8)
+searchBox.Size = UDim2.new(0, 220, 0, 30)
+searchBox.Position = UDim2.new(1, -238, 0, 9)
 searchBox.BackgroundColor3 = Color3.fromHex("070805")
 searchBox.BackgroundTransparency = 0.5
 searchBox.PlaceholderText = "Search..."
 searchBox.Text = ""
 searchBox.TextColor3 = Color3.fromHex("ffffff")
 searchBox.PlaceholderColor3 = Color3.fromRGB(160, 170, 190)
-searchBox.TextSize = 11
+searchBox.TextSize = 12
 searchBox.Font = Enum.Font.Code
 searchBox.ZIndex = 6
 searchBox.Parent = topBar
 Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 6)
 
--- Sol Yan Menü
+-- Sol Yan Menü (180px Genişlik)
 local sideMenu = Instance.new("ScrollingFrame")
-sideMenu.Size = UDim2.new(0, 160, 1, -44)
-sideMenu.Position = UDim2.new(0, 0, 0, 44)
+sideMenu.Size = UDim2.new(0, 180, 1, -48)
+sideMenu.Position = UDim2.new(0, 0, 0, 48)
 sideMenu.BackgroundColor3 = Color3.fromHex("070805")
 sideMenu.BackgroundTransparency = 0.7
 sideMenu.BorderSizePixel = 0
-sideMenu.CanvasSize = UDim2.new(0, 0, 0, 420)
-sideMenu.ScrollBarThickness = 2
+sideMenu.CanvasSize = UDim2.new(0, 0, 0, 460)
+sideMenu.ScrollBarThickness = 3
 sideMenu.ZIndex = 5
 sideMenu.Parent = mainFrame
 
 local sideLayout = Instance.new("UIListLayout")
 sideLayout.SortOrder = Enum.SortOrder.LayoutOrder
-sideLayout.Padding = UDim.new(0, 4)
+sideLayout.Padding = UDim.new(0, 5)
 sideLayout.Parent = sideMenu
 
 local sidePadding = Instance.new("UIPadding")
-sidePadding.PaddingTop = UDim.new(0, 6)
-sidePadding.PaddingLeft = UDim.new(0, 6)
+sidePadding.PaddingTop = UDim.new(0, 8)
+sidePadding.PaddingLeft = UDim.new(0, 8)
 sidePadding.Parent = sideMenu
 
 -- İçerik Alanı
 local contentArea = Instance.new("Frame")
-contentArea.Size = UDim2.new(1, -165, 1, -50)
-contentArea.Position = UDim2.new(0, 165, 0, 46)
+contentArea.Size = UDim2.new(1, -190, 1, -54)
+contentArea.Position = UDim2.new(0, 190, 0, 50)
 contentArea.BackgroundTransparency = 1
 contentArea.ZIndex = 5
 contentArea.Parent = mainFrame
@@ -134,14 +135,14 @@ local function createPage(pageName)
     page.Size = UDim2.new(1, 0, 1, 0)
     page.BackgroundTransparency = 1
     page.Visible = false
-    page.ScrollBarThickness = 2
-    page.CanvasSize = UDim2.new(0, 0, 0, 2200)
+    page.ScrollBarThickness = 3
+    page.CanvasSize = UDim2.new(0, 0, 0, 3200)
     page.ZIndex = 5
     page.Parent = contentArea
     
     local layout = Instance.new("UIListLayout")
     layout.SortOrder = Enum.SortOrder.LayoutOrder
-    layout.Padding = UDim.new(0, 6)
+    layout.Padding = UDim.new(0, 8)
     layout.Parent = page
     
     pages[pageName] = page
@@ -167,12 +168,12 @@ end
 
 local function createTabButton(name, icon, targetPageName)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -12, 0, 30)
+    btn.Size = UDim2.new(1, -14, 0, 32)
     btn.BackgroundColor3 = Color3.fromHex("070805")
     btn.BackgroundTransparency = 0.6
-    btn.Text = " " .. icon .. " " .. name
+    btn.Text = "  " .. icon .. " " .. name
     btn.TextColor3 = Color3.fromRGB(180, 190, 210)
-    btn.TextSize = 11
+    btn.TextSize = 12
     btn.Font = Enum.Font.Code
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.ZIndex = 6
@@ -184,7 +185,7 @@ local function createTabButton(name, icon, targetPageName)
     return btn
 end
 
--- 📌 SEKMELER
+-- 📌 SEKMELER (EKSİKSİZ)
 local pageMain = createPage("MainPage")
 local pageExploits = createPage("ExploitsPage")
 local pageMines = createPage("MinesPage")
@@ -209,63 +210,122 @@ createTabButton("Temalar & Config", "🎨", "ThemesPage")
 
 switchTab("ThemesPage")
 
--- Dynamic Image Apply Helper
-local function setBackgroundImage(imageId)
-    if imageId == "" or not imageId then
+-- 🔧 DİNAMİK RESİM YÜKLEYİCİ MOTOR
+local function applyImageTarget(rawId)
+    if not rawId or rawId == "" then
         bgImage.Image = ""
-        bgImage.Visible = false
+        return
+    end
+    
+    local cleanId = tostring(rawId):match("%d+")
+    if cleanId then
+        local formattedUrl = "rbxassetid://" .. cleanId
+        bgImage.Image = formattedUrl
+        task.spawn(function()
+            pcall(function()
+                ContentProvider:PreloadAsync({bgImage})
+            end)
+        end)
     else
-        bgImage.Visible = true
-        if tonumber(imageId) then
-            bgImage.Image = "rbxassetid://" .. imageId
-        elseif imageId:find("rbxassetid://") or imageId:find("http") then
-            bgImage.Image = imageId
-        else
-            bgImage.Image = "rbxassetid://" .. imageId
-        end
+        bgImage.Image = rawId
     end
 end
 
--- Tema Kartı Oluşturucu
+-- ✏️ ÖZEL IMAGE ID GİRİŞ ALANI (+ Textbox)
+local customHeader = Instance.new("TextLabel")
+customHeader.Size = UDim2.new(1, -10, 0, 25)
+customHeader.BackgroundTransparency = 1
+customHeader.Text = "🖼️ Özel Roblox Resim / Fotoğraf ID Gir (+ Textbox)"
+customHeader.TextColor3 = Color3.fromHex("ffffff")
+customHeader.TextSize = 13
+customHeader.Font = Enum.Font.GothamBold
+customHeader.TextXAlignment = Enum.TextXAlignment.Left
+customHeader.Parent = pageThemes
+
+local customCard = Instance.new("Frame")
+customCard.Size = UDim2.new(1, -10, 0, 54)
+customCard.BackgroundColor3 = Color3.fromHex("070805")
+customCard.BackgroundTransparency = 0.5
+customCard.ZIndex = 6
+customCard.Parent = pageThemes
+Instance.new("UICorner", customCard).CornerRadius = UDim.new(0, 8)
+
+local idInput = Instance.new("TextBox")
+idInput.Size = UDim2.new(0, 420, 0, 32)
+idInput.Position = UDim2.new(0, 12, 0.5, -16)
+idInput.BackgroundColor3 = Color3.fromHex("121520")
+idInput.PlaceholderText = "Google/Roblox ID Yapıştır (Örn: 85504522659236)"
+idInput.Text = ""
+idInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+idInput.PlaceholderColor3 = Color3.fromRGB(130, 140, 160)
+idInput.TextSize = 12
+idInput.Font = Enum.Font.Code
+idInput.ZIndex = 6
+idInput.Parent = customCard
+Instance.new("UICorner", idInput).CornerRadius = UDim.new(0, 6)
+
+local applyIdBtn = Instance.new("TextButton")
+applyIdBtn.Size = UDim2.new(0, 130, 0, 32)
+applyIdBtn.Position = UDim2.new(1, -142, 0.5, -16)
+applyIdBtn.BackgroundColor3 = Color3.fromHex("242599")
+applyIdBtn.Text = "Resmi Uygula"
+applyIdBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+applyIdBtn.TextSize = 12
+applyIdBtn.Font = Enum.Font.GothamBold
+applyIdBtn.ZIndex = 6
+applyIdBtn.Parent = customCard
+Instance.new("UICorner", applyIdBtn).CornerRadius = UDim.new(0, 6)
+
+applyIdBtn.MouseButton1Click:Connect(function()
+    if idInput.Text ~= "" then
+        applyIdBtn.Text = "Yükleniyor..."
+        applyImageTarget(idInput.Text)
+        task.wait(0.3)
+        applyIdBtn.Text = "Uygulandı!"
+        applyIdBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        task.wait(1)
+        applyIdBtn.Text = "Resmi Uygula"
+        applyIdBtn.BackgroundColor3 = Color3.fromHex("242599")
+    end
+end)
+
+-- 🎨 TEMA KART OLUŞTURUCU
 local function createThemeCard(title, desc, themeData)
     local card = Instance.new("Frame")
-    card.Size = UDim2.new(1, -10, 0, 52)
+    card.Size = UDim2.new(1, -10, 0, 54)
     card.BackgroundColor3 = Color3.fromHex("070805")
     card.BackgroundTransparency = 0.5
     card.ZIndex = 6
     card.Parent = pageThemes
-    
     Instance.new("UICorner", card).CornerRadius = UDim.new(0, 8)
     
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.65, 0, 1, 0)
-    label.Position = UDim2.new(0, 12, 0, 0)
+    label.Position = UDim2.new(0, 14, 0, 0)
     label.BackgroundTransparency = 1
     label.Text = title .. "\n<font size='10' color='#aaaaaa'>" .. desc .. "</font>"
     label.TextColor3 = Color3.fromHex("ffffff")
-    label.TextSize = 12
+    label.TextSize = 13
     label.RichText = true
     label.Font = Enum.Font.Code
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = card
     
     local applyBtn = Instance.new("TextButton")
-    applyBtn.Size = UDim2.new(0, 100, 0, 28)
-    applyBtn.Position = UDim2.new(1, -110, 0.5, -14)
+    applyBtn.Size = UDim2.new(0, 110, 0, 30)
+    applyBtn.Position = UDim2.new(1, -122, 0.5, -15)
     applyBtn.BackgroundColor3 = Color3.fromHex("242599")
-    applyBtn.Text = "Yükle & Uygula"
+    applyBtn.Text = "Seç / Uygula"
     applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     applyBtn.TextSize = 11
     applyBtn.Font = Enum.Font.Code
     applyBtn.Parent = card
-    
     Instance.new("UICorner", applyBtn).CornerRadius = UDim.new(0, 6)
     
     applyBtn.MouseButton1Click:Connect(function()
-        applyBtn.Text = "Yükleniyor..."
-        task.wait(0.1)
+        applyBtn.Text = "Uygulanıyor..."
         
-        setBackgroundImage(themeData.Img)
+        applyImageTarget(themeData.Img)
         mainFrame.BackgroundColor3 = Color3.fromHex(themeData.Bg)
         topBar.BackgroundColor3 = Color3.fromHex(themeData.Main)
         sideMenu.BackgroundColor3 = Color3.fromHex(themeData.Main)
@@ -277,10 +337,11 @@ local function createThemeCard(title, desc, themeData)
         label.Font = font
         for _, btn in pairs(tabButtons) do btn.Font = font end
         
+        task.wait(0.2)
         applyBtn.Text = "Aktif!"
         applyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
         task.wait(1)
-        applyBtn.Text = "Yükle & Uygula"
+        applyBtn.Text = "Seç / Uygula"
         applyBtn.BackgroundColor3 = Color3.fromHex("242599")
     end)
 end
@@ -297,8 +358,12 @@ local function createCategoryHeader(text)
     header.Parent = pageThemes
 end
 
+-- 🌸 POPÜLER & ANIME
+createCategoryHeader("⭐ Popüler Temalar")
+createThemeCard("Anime Nya Theme", "Catgirl Estetik Arka Plan", {Main="181825", Bg="0f0f14", Img="85504522659236", Accent="64b4ff", Font="Gotham"})
+
 -- 🎄 5 CHRISTMAS THEMES
-createCategoryHeader("🎄 Christmas Themes")
+createCategoryHeader("🎄 Christmas Themes (5 Tane)")
 createThemeCard("Christmas Night", "Mavi Karlı Gece Teması", {Main="070805", Bg="000000", Img="89924308622883", Accent="242599", Font="Code"})
 createThemeCard("Red Christmas", "Yılbaşı Kırmızısı Orman", {Main="180808", Bg="0f0000", Img="12521097223", Accent="ff3b3b", Font="GothamBold"})
 createThemeCard("Snowy Frost", "Kutup Beyazı & Buzul Mavi", {Main="081218", Bg="020a10", Img="10892800366", Accent="00e1ff", Font="Code"})
@@ -306,44 +371,57 @@ createThemeCard("Cozy Winter", "Sıcak Yılbaşı Ağacı Teması", {Main="140e0
 createThemeCard("Santa Edition", "Koyu Kırmızı Minimal Yılbaşı", {Main="120505", Bg="080202", Img="12150981928", Accent="ff2222", Font="Code"})
 
 -- 🎃 5 HALLOWEEN THEMES
-createCategoryHeader("🎃 Halloween Themes")
-createThemeCard("Pumpkin Glow", "Koyu Turuncu Balkabağı Cadılar Bayramı", {Main="180a02", Bg="0d0400", Img="11192837410", Accent="ff6600", Font="GothamBold"})
+createCategoryHeader("🎃 Halloween Themes (5 Tane)")
+createThemeCard("Pumpkin Glow", "Koyu Turuncu Balkabağı", {Main="180a02", Bg="0d0400", Img="11192837410", Accent="ff6600", Font="GothamBold"})
 createThemeCard("Spooky Night", "Mor & Siyah Hayaletli Gece", {Main="120218", Bg="08000f", Img="10982736451", Accent="aa00ff", Font="Code"})
 createThemeCard("Haunted Forest", "Karanlık Sisli Orman", {Main="051005", Bg="010801", Img="11482910293", Accent="00ff44", Font="Code"})
-createThemeCard("Vampire Blood", "Kan Kırmızısı Gotik Cadılar Bayramı", {Main="180002", Bg="0a0001", Img="10782918273", Accent="ff0033", Font="Gotham"})
+createThemeCard("Vampire Blood", "Kan Kırmızısı Gotik Teması", {Main="180002", Bg="0a0001", Img="10782918273", Accent="ff0033", Font="Gotham"})
 createThemeCard("Witch Craft", "Zehir Yeşili Cadı Teması", {Main="0a140a", Bg="030a03", Img="11928374651", Accent="33ff33", Font="Code"})
 
--- 🕳️ 5 BLACK HOLE THEMES
-createCategoryHeader("🕳️ Black Hole Themes")
-createThemeCard("Singularity", "Karanlık Yerçekimi Kara Deliği", {Main="050508", Bg="000002", Img="11827394851", Accent="6600ff", Font="Code"})
-createThemeCard("Event Horizon", "Turuncu Işıklı Kara Delik", {Main="140802", Bg="0a0300", Img="10928374619", Accent="ff8800", Font="GothamBold"})
-createThemeCard("Cosmic Abyss", "Derin Uzay Hiçliği", {Main="020208", Bg="000003", Img="11293847561", Accent="3388ff", Font="Code"})
-createThemeCard("Dark Matter", "Mor Radyasyonlu Kara Delik", {Main="100214", Bg="06000a", Img="12039485761", Accent="cc00ff", Font="Code"})
-createThemeCard("Void Collapse", "Çöken Evren Simsiyah Teması", {Main="030303", Bg="000000", Img="10827364519", Accent="ffffff", Font="Code"})
-
--- 🌙 5 MOON THEMES
-createCategoryHeader("🌙 Moon Themes")
-createThemeCard("Full Moon", "Parlak Dolunay Gecesi", {Main="080b12", Bg="020408", Img="11726354819", Accent="ddeeff", Font="Gotham"})
-createThemeCard("Blood Moon", "Kırmızı Kanlı Ay Teması", {Main="180303", Bg="080000", Img="10928374652", Accent="ff2222", Font="GothamBold"})
-createThemeCard("Lunar Eclipse", "Ay Tutulması Karanlığı", {Main="0a0812", Bg="030208", Img="12938475612", Accent="9966ff", Font="Code"})
-createThemeCard("Crescent Night", "Hilal Ay & Yıldızlı Gökyüzü", {Main="050a14", Bg="01030a", Img="11283746510", Accent="44aaff", Font="Code"})
-createThemeCard("Blue Moon", "Gece Mavi Estetik Ay", {Main="020c18", Bg="00050d", Img="10837462819", Accent="00aaff", Font="Code"})
+-- ☀️ 5 GÜNEŞ SİSTEMİ & GEZEGENLER
+createCategoryHeader("☀️ Güneş Sistemi Themes (5 Tane)")
+createThemeCard("Solar System Orbit", "Tüm Gezegenler & Yörünge", {Main="060a14", Bg="010308", Img="12938471234", Accent="00ccff", Font="Code"})
+createThemeCard("Solar Flare Core", "Alevli Güneş Patlaması", {Main="180600", Bg="0a0200", Img="11827364123", Accent="ff3300", Font="GothamBold"})
+createThemeCard("Mars Red Planet", "Kızıl Gezegen Mars Yüzeyi", {Main="1a0500", Bg="0c0200", Img="11223344556", Accent="ff4400", Font="Code"})
+createThemeCard("Jupiter Storm", "Dev Gaz Gezegeni Jüpiter", {Main="140a02", Bg="080400", Img="11223344557", Accent="ff9933", Font="Gotham"})
+createThemeCard("Neptune Deep Blue", "Derin Mavi Neptün Atmosferi", {Main="020a18", Bg="00040c", Img="11223344558", Accent="0088ff", Font="Code"})
 
 -- 🪐 5 SATÜRN THEMES
-createCategoryHeader("🪐 Satürn Themes")
+createCategoryHeader("🪐 Satürn Themes (5 Tane)")
 createThemeCard("Saturn Rings", "Dev Halkalı Satürn Gezegeni", {Main="141005", Bg="080501", Img="11928374612", Accent="ffcc44", Font="Gotham"})
 createThemeCard("Golden Orbit", "Altın Sarısı Satürn Halesi", {Main="181403", Bg="0a0800", Img="10827364912", Accent="ffee00", Font="GothamBold"})
-createThemeCard("Deep Saturn", "Karanlık Uzayda Satürn", {Main="080a12", Bg="020308", Img="12039485712", Accent="66aaff", Font="Code"})
-createThemeCard("Titan Shadow", "Satürn'ün Uydusu Titan Görünümü", {Main="120a05", Bg="060301", Img="11293847123", Accent="ff8833", Font="Code"})
-createThemeCard("Gas Giant", "Mistik Gaz Bulutlu Satürn", {Main="0f0814", Bg="07020a", Img="10928374123", Accent="bb44ff", Font="Code"})
+createThemeCard("Deep Saturn Space", "Karanlık Uzayda Satürn", {Main="080a12", Bg="020308", Img="12039485712", Accent="66aaff", Font="Code"})
+createThemeCard("Titan Shadow", "Satürn Uydusu Titan Görünümü", {Main="120a05", Bg="060301", Img="11293847123", Accent="ff8833", Font="Code"})
+createThemeCard("Gas Giant Saturn", "Mistik Gaz Bulutlu Satürn", {Main="0f0814", Bg="07020a", Img="10928374123", Accent="bb44ff", Font="Code"})
 
--- ☀️ 5 GÜNEŞ SİSTEMİ THEMES
-createCategoryHeader("☀️ Güneş Sistemi Themes")
-createThemeCard("Solar Flare", "Alevli Güneş Patlaması", {Main="180600", Bg="0a0200", Img="11827364123", Accent="ff3300", Font="GothamBold"})
-createThemeCard("Galaxy System", "Tüm Güneş Sistemi Yörüngesi", {Main="060a14", Bg="010308", Img="12938471234", Accent="00ccff", Font="Code"})
-createThemeCard("Sun Core", "Sarı Core Işıklı Güneş", {Main="181400", Bg="0a0800", Img="10928371234", Accent="ffcc00", Font="Gotham"})
-createThemeCard("Planetary Alignment", "Hizalanmış Gezegenler", {Main="0d0814", Bg="05020a", Img="11293841234", Accent="aa55ff", Font="Code"})
-createThemeCard("Milky Way Solar", "Samanyolu Galaksisi & Güneş", {Main="040a12", Bg="010408", Img="12039481234", Accent="33bbee", Font="Code"})
+-- 🌙 5 MOON THEMES
+createCategoryHeader("🌙 Moon Themes (5 Tane)")
+createThemeCard("Full Moon Night", "Parlak Dolunay Gecesi", {Main="080b12", Bg="020408", Img="11726354819", Accent="ddeeff", Font="Gotham"})
+createThemeCard("Blood Moon Red", "Kırmızı Kanlı Ay Teması", {Main="180303", Bg="080000", Img="10928374652", Accent="ff2222", Font="GothamBold"})
+createThemeCard("Lunar Eclipse Dark", "Ay Tutulması Karanlığı", {Main="0a0812", Bg="030208", Img="12938475612", Accent="9966ff", Font="Code"})
+createThemeCard("Crescent Starry", "Hilal Ay & Yıldızlı Gökyüzü", {Main="050a14", Bg="01030a", Img="11283746510", Accent="44aaff", Font="Code"})
+createThemeCard("Blue Moon Aesthetic", "Gece Mavi Estetik Ay", {Main="020c18", Bg="00050d", Img="10837462819", Accent="00aaff", Font="Code"})
+
+-- 🕳️ 5 BLACK HOLE THEMES
+createCategoryHeader("🕳️ Black Hole Themes (5 Tane)")
+createThemeCard("Singularity Hole", "Karanlık Yerçekimi Kara Deliği", {Main="050508", Bg="000002", Img="11827394851", Accent="6600ff", Font="Code"})
+createThemeCard("Event Horizon Glow", "Turuncu Işıklı Kara Delik", {Main="140802", Bg="0a0300", Img="10928374619", Accent="ff8800", Font="GothamBold"})
+createThemeCard("Cosmic Abyss Hole", "Derin Uzay Hiçliği", {Main="020208", Bg="000003", Img="11293847561", Accent="3388ff", Font="Code"})
+createThemeCard("Dark Matter Hole", "Mor Radyasyonlu Kara Delik", {Main="100214", Bg="06000a", Img="12039485761", Accent="cc00ff", Font="Code"})
+createThemeCard("Void Collapse Hole", "Çöken Evren Simsiyah Teması", {Main="030303", Bg="000000", Img="10827364519", Accent="ffffff", Font="Code"})
+
+-- ⛏️ 10 MINECRAFT THEMES
+createCategoryHeader("⛏️ Minecraft Themes (10 Tane)")
+createThemeCard("Minecraft End Realm", "End Gezegeni & Ejderha Teması", {Main="0a0812", Bg="040208", Img="12345678001", Accent="cc66ff", Font="Code"})
+createThemeCard("Minecraft Nether Fortress", "Lavlı Kızıl Nether Teması", {Main="180500", Bg="080200", Img="12345678002", Accent="ff3300", Font="GothamBold"})
+createThemeCard("Minecraft End Portal", "Mistik Mor Portal Teması", {Main="061012", Bg="01080a", Img="12345678003", Accent="00ffcc", Font="Code"})
+createThemeCard("Minecraft Green Mountain", "Yeşillikli Dağ & Manzara", {Main="051205", Bg="020802", Img="12345678004", Accent="33ff55", Font="Gotham"})
+createThemeCard("Minecraft Snowy Peak", "Karlı Dağ & Soğuk Atmosfer", {Main="081018", Bg="030810", Img="12345678005", Accent="88ddff", Font="Code"})
+createThemeCard("Minecraft Lush Cave", "Sarmaşıklı Işıklı Mağara", {Main="08140a", Bg="030a04", Img="12345678006", Accent="55ff88", Font="Code"})
+createThemeCard("Minecraft Sunset Biome", "Piksel Gün Batımı", {Main="180a08", Bg="0c0403", Img="12345678007", Accent="ff7733", Font="GothamBold"})
+createThemeCard("Minecraft Desert Temple", "Çöl & Çöl Tapınağı Teması", {Main="161205", Bg="0a0802", Img="12345678008", Accent="ffee55", Font="Code"})
+createThemeCard("Minecraft Village Life", "Sakin Köy Manzarası", {Main="0a1408", Bg="040803", Img="12345678009", Accent="88ff33", Font="Gotham"})
+createThemeCard("Minecraft Redstone Cave", "Kırmızı Redstone Işıkları", {Main="180303", Bg="0a0101", Img="12345678010", Accent="ff2222", Font="Code"})
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
@@ -351,4 +429,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("GhostHub V2.0 Tam Ekran Arka Plan ve Büyütülmüş Menü ile Yüklendi!")
+print("GhostHub V2.0 Full Sürüm Yüklendi!")
