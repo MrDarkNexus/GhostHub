@@ -1,4 +1,4 @@
--- // GHOSTHUB V2.0 - FULL TABS & FIT THEMES \\ --
+-- // GHOSTHUB V2.0 - FULL TABS & FIXED THEMES \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -57,7 +57,7 @@ local bgImage = Instance.new("ImageLabel")
 bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
 bgImage.BackgroundTransparency = 1
-bgImage.Image = "rbxassetid://89924308622883" -- Christmas ID
+bgImage.Image = "rbxassetid://89924308622883" -- Varsayılan Christmas ID
 bgImage.ImageTransparency = 0.3
 bgImage.ScaleType = Enum.ScaleType.Crop
 bgImage.ZIndex = 1
@@ -195,7 +195,7 @@ local function createTabButton(name, icon, targetPageName)
     return btn
 end
 
--- 📌 BÜTÜN SEKMELER OLUŞTURULUYOR
+-- 📌 BÜTÜN SEKMELER
 local pageMain = createPage("MainPage")
 local pageExploits = createPage("ExploitsPage")
 local pageMines = createPage("MinesPage")
@@ -218,7 +218,7 @@ createTabButton("Visuals", "👁️", "VisualsPage")
 createTabButton("The BackDoors", "🔙", "BackDoorsPage")
 createTabButton("Temalar", "🎨", "ThemesPage")
 
-switchTab("MainPage")
+switchTab("ThemesPage")
 
 -- Temalar Listesi Kart Oluşturucu
 local function createThemeCard(title, desc, themeData)
@@ -276,7 +276,7 @@ local function createThemeCard(title, desc, themeData)
     end)
 end
 
--- 🎄 Christmas Theme (JSON Verilerinden)
+-- 🎄 Christmas Theme
 createThemeCard("Christmas Theme", "Lacivert / Siyah Karlı Gece", {
     MainColor = "070805",
     FontFace = "Code",
@@ -287,7 +287,7 @@ createThemeCard("Christmas Theme", "Lacivert / Siyah Karlı Gece", {
     AccentColor = "242599"
 })
 
--- 🌸 Anime Nya Theme (Görsel Verilerinden)
+-- 🌸 Anime Nya Theme (Düzeltilmiş ID Formatı)
 createThemeCard("Anime Nya Theme", "Catgirl Estetik Arka Plan", {
     MainColor = "181825",
     FontFace = "Gotham",
@@ -304,4 +304,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("GhostHub V2.0 Tüm Sekmeleriyle Birlikte Hazır!")
+print("GhostHub V2.0 Temalar Düzeltildi ve Hazır!")
