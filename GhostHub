@@ -1,4 +1,4 @@
--- // GHOSTHUB V2.0 - FULL TABS & FIXED THEMES \\ --
+-- // GHOSTHUB V2.0 - AUTO RELOAD & THEME SYSTEM \\ --
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -57,8 +57,8 @@ local bgImage = Instance.new("ImageLabel")
 bgImage.Name = "BackgroundImage"
 bgImage.Size = UDim2.new(1, 0, 1, 0)
 bgImage.BackgroundTransparency = 1
-bgImage.Image = "rbxassetid://89924308622883" -- Varsayılan Christmas ID
-bgImage.ImageTransparency = 0.3
+bgImage.Image = "http://www.roblox.com/asset/?id=89924308622883"
+bgImage.ImageTransparency = 0.35
 bgImage.ScaleType = Enum.ScaleType.Crop
 bgImage.ZIndex = 1
 bgImage.Parent = mainFrame
@@ -195,7 +195,7 @@ local function createTabButton(name, icon, targetPageName)
     return btn
 end
 
--- 📌 BÜTÜN SEKMELER
+-- 📌 TÜM SEKMELER
 local pageMain = createPage("MainPage")
 local pageExploits = createPage("ExploitsPage")
 local pageMines = createPage("MinesPage")
@@ -220,7 +220,7 @@ createTabButton("Temalar", "🎨", "ThemesPage")
 
 switchTab("ThemesPage")
 
--- Temalar Listesi Kart Oluşturucu
+-- Tema Kartı ve Yeniden Yükleme (Reload) Mekanizması
 local function createThemeCard(title, desc, themeData)
     local card = Instance.new("Frame")
     card.Size = UDim2.new(1, -10, 0, 50)
@@ -249,7 +249,7 @@ local function createThemeCard(title, desc, themeData)
     applyBtn.Size = UDim2.new(0, 90, 0, 26)
     applyBtn.Position = UDim2.new(1, -100, 0.5, -13)
     applyBtn.BackgroundColor3 = Color3.fromHex("242599")
-    applyBtn.Text = "Uygula"
+    applyBtn.Text = "Yükle & Uygula"
     applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     applyBtn.TextSize = 11
     applyBtn.Font = Enum.Font.Code
@@ -260,7 +260,12 @@ local function createThemeCard(title, desc, themeData)
     bCorner.Parent = applyBtn
     
     applyBtn.MouseButton1Click:Connect(function()
-        bgImage.Image = "rbxassetid://" .. themeData.BackgroundImage
+        applyBtn.Text = "Yükleniyor..."
+        applyBtn.BackgroundColor3 = Color3.fromRGB(180, 120, 0)
+        
+        -- Temayı anında işleme ve simüle edilmiş yenilenme efekti
+        task.wait(0.5)
+        bgImage.Image = themeData.BackgroundImage
         mainFrame.BackgroundColor3 = Color3.fromHex(themeData.BackgroundColor)
         topBar.BackgroundColor3 = Color3.fromHex(themeData.MainColor)
         sideMenu.BackgroundColor3 = Color3.fromHex(themeData.MainColor)
@@ -269,10 +274,17 @@ local function createThemeCard(title, desc, themeData)
         local selectedFont = Enum.Font[themeData.FontFace] or Enum.Font.Code
         titleLabel.Font = selectedFont
         searchBox.Font = selectedFont
+        label.Font = selectedFont
         
-        applyBtn.Text = "Aktif!"
+        for _, btn in pairs(tabButtons) do
+            btn.Font = selectedFont
+        end
+        
+        applyBtn.Text = "Hazır!"
+        applyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
         task.wait(1)
-        applyBtn.Text = "Uygula"
+        applyBtn.Text = "Yükle & Uygula"
+        applyBtn.BackgroundColor3 = Color3.fromHex("242599")
     end)
 end
 
@@ -281,20 +293,18 @@ createThemeCard("Christmas Theme", "Lacivert / Siyah Karlı Gece", {
     MainColor = "070805",
     FontFace = "Code",
     FontColor = "ffffff",
-    OutlineColor = "000000",
     BackgroundColor = "000000",
-    BackgroundImage = "89924308622883",
+    BackgroundImage = "http://www.roblox.com/asset/?id=89924308622883",
     AccentColor = "242599"
 })
 
--- 🌸 Anime Nya Theme (Düzeltilmiş ID Formatı)
+-- 🌸 Anime Nya Theme
 createThemeCard("Anime Nya Theme", "Catgirl Estetik Arka Plan", {
     MainColor = "181825",
     FontFace = "Gotham",
     FontColor = "ffffff",
-    OutlineColor = "000000",
     BackgroundColor = "0f0f14",
-    BackgroundImage = "85504522659236",
+    BackgroundImage = "http://www.roblox.com/asset/?id=85504522659236",
     AccentColor = "64b4ff"
 })
 
@@ -304,4 +314,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("GhostHub V2.0 Temalar Düzeltildi ve Hazır!")
+print("GhostHub V2.0 Yeniden Yükleme Sistemli Tema Hazır!")
