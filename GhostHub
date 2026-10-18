@@ -4,6 +4,8 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local ContentProvider = game:GetService("ContentProvider")
+local CoreGui = game:GetService("CoreGui")
+local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -136,7 +138,7 @@ local function createPage(pageName)
     page.BackgroundTransparency = 1
     page.Visible = false
     page.ScrollBarThickness = 3
-    page.CanvasSize = UDim2.new(0, 0, 0, 4800) -- Hepsine yer kalsın diye yükseltildi
+    page.CanvasSize = UDim2.new(0, 0, 0, 5200)
     page.ZIndex = 5
     page.Parent = contentArea
     
@@ -208,7 +210,641 @@ createTabButton("Visuals", "👁️", "VisualsPage")
 createTabButton("The BackDoors", "🔙", "BackDoorsPage")
 createTabButton("Temalar & Config", "🎨", "ThemesPage")
 
-switchTab("ThemesPage")
+switchTab("StairWellPage")
+
+-- 🔧 GHOST UI BİLEŞEN OLUŞTURUCULARI
+local function addSectionHeader(parentPage, text)
+    local header = Instance.new("TextLabel")
+    header.Size = UDim2.new(1, -10, 0, 25)
+    header.BackgroundTransparency = 1
+    header.Text = "--- " .. text .. " ---"
+    header.TextColor3 = Color3.fromHex("ffffff")
+    header.TextSize = 13
+    header.Font = Enum.Font.GothamBold
+    header.TextXAlignment = Enum.TextXAlignment.Left
+    header.Parent = parentPage
+end
+
+local function addToggle(parentPage, title, desc, callback)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(1, -10, 0, 48)
+    card.BackgroundColor3 = Color3.fromHex("070805")
+    card.BackgroundTransparency = 0.5
+    card.ZIndex = 6
+    card.Parent = parentPage
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 8)
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.7, 0, 1, 0)
+    label.Position = UDim2.new(0, 12, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = title .. "\n<font size='10' color='#aaaaaa'>" .. desc .. "</font>"
+    label.TextColor3 = Color3.fromHex("ffffff")
+    label.TextSize = 12
+    label.RichText = true
+    label.Font = Enum.Font.Code
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = card
+
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size = UDim2.new(0, 75, 0, 26)
+    toggleBtn.Position = UDim2.new(1, -85, 0.5, -13)
+    toggleBtn.BackgroundColor3 = Color3.fromHex("1a1d26")
+    toggleBtn.Text = "OFF"
+    toggleBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+    toggleBtn.TextSize = 11
+    toggleBtn.Font = Enum.Font.GothamBold
+    toggleBtn.ZIndex = 6
+    toggleBtn.Parent = card
+    Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 6)
+
+    local state = false
+    toggleBtn.MouseButton1Click:Connect(function()
+        state = not state
+        if state then
+            toggleBtn.Text = "ON"
+            toggleBtn.BackgroundColor3 = Color3.fromHex("242599")
+            toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        else
+            toggleBtn.Text = "OFF"
+            toggleBtn.BackgroundColor3 = Color3.fromHex("1a1d26")
+            toggleBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+        end
+        pcall(callback, state)
+    end)
+end
+
+local function addButton(parentPage, title, desc, callback)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(1, -10, 0, 48)
+    card.BackgroundColor3 = Color3.fromHex("070805")
+    card.BackgroundTransparency = 0.5
+    card.ZIndex = 6
+    card.Parent = parentPage
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 8)
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.65, 0, 1, 0)
+    label.Position = UDim2.new(0, 12, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = title .. "\n<font size='10' color='#aaaaaa'>" .. desc .. "</font>"
+    label.TextColor3 = Color3.fromHex("ffffff")
+    label.TextSize = 12
+    label.RichText = true
+    label.Font = Enum.Font.Code
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = card
+
+    local actionBtn = Instance.new("TextButton")
+    actionBtn.Size = UDim2.new(0, 95, 0, 28)
+    actionBtn.Position = UDim2.new(1, -105, 0.5, -14)
+    actionBtn.BackgroundColor3 = Color3.fromHex("242599")
+    actionBtn.Text = "Çalıştır"
+    actionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    actionBtn.TextSize = 11
+    actionBtn.Font = Enum.Font.GothamBold
+    actionBtn.ZIndex = 6
+    actionBtn.Parent = card
+    Instance.new("UICorner", actionBtn).CornerRadius = UDim.new(0, 6)
+
+    actionBtn.MouseButton1Click:Connect(function()
+        actionBtn.Text = "..."
+        pcall(callback)
+        task.wait(0.3)
+        actionBtn.Text = "Çalıştır"
+    end)
+end
+
+local function addSlider(parentPage, title, minVal, maxVal, defaultVal, callback)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(1, -10, 0, 52)
+    card.BackgroundColor3 = Color3.fromHex("070805")
+    card.BackgroundTransparency = 0.5
+    card.ZIndex = 6
+    card.Parent = parentPage
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 8)
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.6, 0, 0, 20)
+    label.Position = UDim2.new(0, 12, 0, 4)
+    label.BackgroundTransparency = 1
+    label.Text = title .. ": " .. tostring(defaultVal)
+    label.TextColor3 = Color3.fromHex("ffffff")
+    label.TextSize = 12
+    label.Font = Enum.Font.Code
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = card
+
+    local sliderBg = Instance.new("Frame")
+    sliderBg.Size = UDim2.new(1, -24, 0, 8)
+    sliderBg.Position = UDim2.new(0, 12, 0, 32)
+    sliderBg.BackgroundColor3 = Color3.fromHex("121520")
+    sliderBg.ZIndex = 6
+    sliderBg.Parent = card
+    Instance.new("UICorner", sliderBg).CornerRadius = UDim.new(0, 4)
+
+    local sliderFill = Instance.new("Frame")
+    local initRatio = (defaultVal - minVal) / (maxVal - minVal)
+    sliderFill.Size = UDim2.new(initRatio, 0, 1, 0)
+    sliderFill.BackgroundColor3 = Color3.fromHex("242599")
+    sliderFill.ZIndex = 6
+    sliderFill.Parent = sliderBg
+    Instance.new("UICorner", sliderFill).CornerRadius = UDim.new(0, 4)
+
+    local dragging = false
+    local function updateSlider(input)
+        local posX = math.clamp(input.Position.X - sliderBg.AbsolutePosition.X, 0, sliderBg.AbsoluteSize.X)
+        local ratio = posX / sliderBg.AbsoluteSize.X
+        local val = math.floor(minVal + (maxVal - minVal) * ratio)
+        sliderFill.Size = UDim2.new(ratio, 0, 1, 0)
+        label.Text = title .. ": " .. tostring(val)
+        pcall(callback, val)
+    end
+
+    sliderBg.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            updateSlider(input)
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            updateSlider(input)
+        end
+    end)
+end
+
+-- ================================================
+-- 🪜 STAIRWELL SEKME İÇERİĞİ VE TÜM KODLAR
+-- ================================================
+
+-- 1. ANTI / BYPASS
+addSectionHeader(pageStairWell, "Anti / Bypass")
+
+local AntiNoiseConn = nil
+addToggle(pageStairWell, "Anti-Noise", "Noise durur, hareket etseniz bile sizi Mavi (Güvenli) formunda görür.", function(state)
+    if state then
+        AntiNoiseConn = RunService.Heartbeat:Connect(function()
+            local char = player.Character
+            if char then
+                local humanoid = char:FindFirstChildOfClass("Humanoid")
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if humanoid and hrp then
+                    pcall(function() sethiddenproperty(humanoid, "NetworkIsMoving", false) end)
+                    local noise = Workspace:FindFirstChild("Noise") or Workspace:FindFirstChild("NoiseEntity")
+                    if noise then
+                        hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                    end
+                end
+            end
+        end)
+    else
+        if AntiNoiseConn then AntiNoiseConn:Disconnect() AntiNoiseConn = nil end
+    end
+end)
+
+local AntiCrusherConn = nil
+addToggle(pageStairWell, "Anti-Crusher", "Crusher dikenleri etkisiz kalır, içinden rahatça geçebilirsiniz.", function(state)
+    if state then
+        AntiCrusherConn = RunService.Heartbeat:Connect(function()
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("crusher") or obj.Name:lower():find("spike") then
+                    if obj:IsA("BasePart") then obj.CanCollide = false
+                    elseif obj:IsA("Model") then
+                        for _, p in ipairs(obj:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = false end end
+                    end
+                end
+            end
+        end)
+    else
+        if AntiCrusherConn then AntiCrusherConn:Disconnect() AntiCrusherConn = nil end
+    end
+end)
+
+local DisableCrushersConn = nil
+addToggle(pageStairWell, "Disable Crushers", "Crusher'ların script ve hareketlerini dondurur.", function(state)
+    if state then
+        DisableCrushersConn = RunService.Heartbeat:Connect(function()
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("crusher") or obj.Name:lower():find("spike") then
+                    for _, child in ipairs(obj:GetDescendants()) do
+                        if child:IsA("Script") or child:IsA("LocalScript") then child.Disabled = true end
+                    end
+                end
+            end
+        end)
+    else
+        if DisableCrushersConn then DisableCrushersConn:Disconnect() DisableCrushersConn = nil end
+    end
+end)
+
+addToggle(pageStairWell, "Remove Meld", "Yapışkan Meld nesnelerini haritadan sürekli siler.", function(state)
+    if state then
+        task.spawn(function()
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("meld") then pcall(function() obj:Destroy() end) end
+            end
+        end)
+    end
+end)
+
+addButton(pageStairWell, "Delete Crushers", "Tüm Crusher'ları anında ve sonsuza kadar siler.", function()
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj.Name:lower():find("crusher") or obj.Name:lower():find("spike") then
+            pcall(function() obj:Destroy() end)
+        end
+    end
+end)
+
+-- 2. MISC / EXPLOITS
+addSectionHeader(pageStairWell, "Misc / Exploits")
+
+local TvBreakerConn = nil
+addToggle(pageStairWell, "Tv Breaker Noise", "TV'ye yaklaştığınızda veya eşya attığınızda TV yok edilir.", function(state)
+    if state then
+        TvBreakerConn = RunService.Heartbeat:Connect(function()
+            local char = player.Character
+            if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+            local hrp = char.HumanoidRootPart
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("tv") or obj.Name:lower():find("noisetv") then
+                    local part = obj:IsA("Model") and (obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")) or obj
+                    if part and part:IsA("BasePart") and (hrp.Position - part.Position).Magnitude <= 25 then
+                        pcall(function() obj:Destroy() end)
+                    end
+                end
+            end
+        end)
+    else
+        if TvBreakerConn then TvBreakerConn:Disconnect() TvBreakerConn = nil end
+    end
+end)
+
+-- Item Number (Trash Counter) UI & Toggle
+local TrashCounterGui, TrashLabel = nil, nil
+addToggle(pageStairWell, "Item Number", "Yerdeki ve atılan tüm çöplerin sayısını ekranda canlı gösterir.", function(state)
+    if state then
+        TrashCounterGui = Instance.new("ScreenGui")
+        TrashCounterGui.Name = "GhostHub_TrashCounter"
+        TrashCounterGui.Parent = (gethui and gethui()) or CoreGui or playerGui
+
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0, 170, 0, 36)
+        frame.Position = UDim2.new(0.5, -85, 0.08, 0)
+        frame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+        frame.Active = true
+        frame.Draggable = true
+        frame.Parent = TrashCounterGui
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+
+        TrashLabel = Instance.new("TextLabel")
+        TrashLabel.Size = UDim2.new(1, 0, 1, 0)
+        TrashLabel.BackgroundTransparency = 1
+        TrashLabel.Text = "Item Number : 0"
+        TrashLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TrashLabel.Font = Enum.Font.GothamBold
+        TrashLabel.TextSize = 13
+        TrashLabel.Parent = frame
+
+        task.spawn(function()
+            while TrashCounterGui do
+                local count = 0
+                for _, obj in ipairs(Workspace:GetDescendants()) do
+                    if obj.Name:lower():find("trash") or obj.Name:lower():find("garbage") then count = count + 1 end
+                end
+                if TrashLabel then TrashLabel.Text = "Item Number : " .. tostring(count) end
+                task.wait(0.3)
+            end
+        end)
+    else
+        if TrashCounterGui then TrashCounterGui:Destroy() TrashCounterGui = nil end
+    end
+end)
+
+
+-- 🌟 CREAK AGGRESSION BAR (METER)
+local CreakMeterGui, CreakBarFill, CreakPercentText = nil, nil, nil
+addToggle(pageStairWell, "Creak Agression Bar", "Creak'in sinirlilik oranını renk skalası ile gösterir.", function(state)
+    if state then
+        CreakMeterGui = Instance.new("ScreenGui")
+        CreakMeterGui.Name = "GhostHub_CreakMeter"
+        CreakMeterGui.Parent = (gethui and gethui()) or CoreGui or playerGui
+
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0, 240, 0, 42)
+        frame.Position = UDim2.new(0.5, -120, 0.02, 0)
+        frame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+        frame.Active = true
+        frame.Draggable = true
+        frame.Parent = CreakMeterGui
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+
+        local title = Instance.new("TextLabel")
+        title.Size = UDim2.new(1, 0, 0, 18)
+        title.BackgroundTransparency = 1
+        title.Text = "Creak Aggression"
+        title.TextColor3 = Color3.fromRGB(255, 255, 255)
+        title.Font = Enum.Font.GothamBold
+        title.TextSize = 11
+        title.Parent = frame
+
+        local barBg = Instance.new("Frame")
+        barBg.Size = UDim2.new(0.9, 0, 0, 12)
+        barBg.Position = UDim2.new(0.05, 0, 0, 22)
+        barBg.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+        barBg.Parent = frame
+        Instance.new("UICorner", barBg).CornerRadius = UDim.new(0, 6)
+
+        CreakBarFill = Instance.new("Frame")
+        CreakBarFill.Size = UDim2.new(0, 0, 1, 0)
+        CreakBarFill.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+        CreakBarFill.Parent = barBg
+        Instance.new("UICorner", CreakBarFill).CornerRadius = UDim.new(0, 6)
+
+        CreakPercentText = Instance.new("TextLabel")
+        CreakPercentText.Size = UDim2.new(1, 0, 1, 0)
+        CreakPercentText.BackgroundTransparency = 1
+        CreakPercentText.Text = "0% (Sıkıntı Yok)"
+        CreakPercentText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        CreakPercentText.Font = Enum.Font.Code
+        CreakPercentText.TextSize = 10
+        CreakPercentText.Parent = barBg
+
+        task.spawn(function()
+            while CreakMeterGui do
+                local creak = Workspace:FindFirstChild("Creak") or Workspace:FindFirstChild("CreakEntity")
+                local aggro = 0
+                if creak then
+                    local val = creak:FindFirstChild("Anger") or creak:FindFirstChild("Aggression")
+                    if val and val:IsA("NumberValue") then aggro = math.clamp(val.Value, 0, 100) end
+                end
+
+                if CreakBarFill and CreakPercentText then
+                    CreakBarFill.Size = UDim2.new(aggro / 100, 0, 1, 0)
+                    if aggro <= 25 then
+                        CreakBarFill.BackgroundColor3 = Color3.fromRGB(0, 220, 100) -- Yeşil
+                        CreakPercentText.Text = aggro .. "% (Sıkıntı Yok)"
+                    elseif aggro <= 50 then
+                        CreakBarFill.BackgroundColor3 = Color3.fromRGB(230, 200, 0) -- Sarı
+                        CreakPercentText.Text = aggro .. "% (Normal)"
+                    elseif aggro <= 75 then
+                        CreakBarFill.BackgroundColor3 = Color3.fromRGB(255, 80, 0) -- Kırmızı
+                        CreakPercentText.Text = aggro .. "% (Sinirli)"
+                    else
+                        CreakBarFill.BackgroundColor3 = Color3.fromRGB(255, 0, 80) -- Açık/Parlak Kırmızı
+                        CreakPercentText.Text = aggro .. "% (AGRESİF!)"
+                    end
+                end
+                task.wait(0.2)
+            end
+        end)
+    else
+        if CreakMeterGui then CreakMeterGui:Destroy() CreakMeterGui = nil end
+    end
+end)
+
+addButton(pageStairWell, "Kill All (Requires > 1 Cart)", "En az 2 market arabasıyla haritadakileri yok eder.", function()
+    local carts = {}
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if (obj.Name:lower():find("cart") or obj.Name:lower():find("shopping")) and (obj:IsA("Model") or obj:IsA("BasePart")) then
+            table.insert(carts, obj)
+        end
+    end
+    if #carts >= 2 then
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = p.Character.HumanoidRootPart
+                for _, c in ipairs(carts) do
+                    if c:IsA("Model") and c.PrimaryPart then c:SetPrimaryPartCFrame(hrp.CFrame)
+                    elseif c:IsA("BasePart") then c.CFrame = hrp.CFrame end
+                end
+            end
+        end
+    end
+end)
+
+local BugCreakConn = nil
+addToggle(pageStairWell, "Bug Out Creak (Requires > 5)", "En az 5 eşyayı kullanarak Creak'in AI'sını kilitler.", function(state)
+    if state then
+        BugCreakConn = RunService.Heartbeat:Connect(function()
+            local creak = Workspace:FindFirstChild("Creak") or Workspace:FindFirstChild("CreakEntity")
+            if not creak then return end
+            local items = {}
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("trash") or obj.Name:lower():find("cart") then table.insert(items, obj) end
+            end
+            if #items >= 5 then
+                local cPart = creak:IsA("Model") and (creak.PrimaryPart or creak:FindFirstChildWhichIsA("BasePart")) or creak
+                if cPart then
+                    for idx, item in ipairs(items) do
+                        local offset = Vector3.new(math.sin(idx), 0, math.cos(idx)) * 2
+                        if item:IsA("Model") then item:SetPrimaryPartCFrame(cPart.CFrame + offset)
+                        elseif item:IsA("BasePart") then item.CFrame = cPart.CFrame + offset end
+                    end
+                end
+            end
+        end)
+    else
+        if BugCreakConn then BugCreakConn:Disconnect() BugCreakConn = nil end
+    end
+end)
+
+-- 3. STAIRWELL EXPERIMENTAL & ORBIT
+addSectionHeader(pageStairWell, "Stairwell Experimental")
+
+local OrbitSpeed = 5
+local OrbitDistance = 6
+local OrbitHeight = 0
+local DroppedItemsInterval = 0.1
+local OrbitEnabled = false
+local OrbitConn = nil
+
+addToggle(pageStairWell, "Orbit Dropped Item", "Çöpleri ve eşyaları etrafınızda dönen halkaya dönüştürür.", function(state)
+    OrbitEnabled = state
+    if OrbitEnabled then
+        local angle = 0
+        OrbitConn = RunService.Heartbeat:Connect(function(dt)
+            local char = player.Character
+            if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+            local hrp = char.HumanoidRootPart
+            angle = angle + dt * OrbitSpeed
+
+            local trashList = {}
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("trash") or obj.Name:lower():find("garbage") then
+                    if obj:IsA("BasePart") or (obj:IsA("Model") and obj.PrimaryPart) then
+                        table.insert(trashList, obj)
+                    end
+                end
+            end
+
+            for i, item in ipairs(trashList) do
+                local currentAngle = angle + ((i / #trashList) * math.pi * 2)
+                local offset = Vector3.new(math.cos(currentAngle) * OrbitDistance, OrbitHeight, math.sin(currentAngle) * OrbitDistance)
+                local targetPos = hrp.Position + offset
+                if item:IsA("Model") then item:SetPrimaryPartCFrame(CFrame.new(targetPos))
+                elseif item:IsA("BasePart") then item.CFrame = CFrame.new(targetPos) end
+            end
+        end)
+    else
+        if OrbitConn then OrbitConn:Disconnect() OrbitConn = nil end
+    end
+end)
+
+addSlider(pageStairWell, "Orbit Speed", 1, 20, 5, function(v) OrbitSpeed = v end)
+addSlider(pageStairWell, "Orbit Distance", 2, 25, 6, function(v) OrbitDistance = v end)
+addSlider(pageStairWell, "Orbit Height", -5, 10, 0, function(v) OrbitHeight = v end)
+addSlider(pageStairWell, "Dropped Items Interval", 1, 10, 1, function(v) DroppedItemsInterval = v / 10 end)
+
+addButton(pageStairWell, "TP to Trash & Drop Trash", "Çöpleri otomatik toplayıp fırlatır.", function()
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj.Name:lower():find("trash") then
+            local part = obj:IsA("Model") and obj.PrimaryPart or obj
+            if part and part:IsA("BasePart") then
+                char.HumanoidRootPart.CFrame = part.CFrame + Vector3.new(0, 2, 0)
+                task.wait(DroppedItemsInterval)
+            end
+        end
+    end
+end)
+
+addButton(pageStairWell, "TP All Drops to Nearest Grinder", "Yerdeki tüm çöpleri en yakın Depot/Grinder içine atar.", function()
+    local grinder = Workspace:FindFirstChild("Grinder") or Workspace:FindFirstChild("Depot") or Workspace:FindFirstChild("ScrapMachine")
+    if grinder then
+        local gPart = grinder:IsA("Model") and grinder.PrimaryPart or grinder
+        if gPart then
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("trash") or obj.Name:lower():find("drop") then
+                    if obj:IsA("Model") and obj.PrimaryPart then obj:SetPrimaryPartCFrame(gPart.CFrame)
+                    elseif obj:IsA("BasePart") then obj.CFrame = gPart.CFrame end
+                end
+            end
+        end
+    end
+end)
+
+-- 4. TARGET PLAYER & SHOPPING CART TOOLS
+addSectionHeader(pageStairWell, "Shopping Cart Tools & Players")
+
+local SelectedPlayerName = ""
+
+local targetCard = Instance.new("Frame")
+targetCard.Size = UDim2.new(1, -10, 0, 48)
+targetCard.BackgroundColor3 = Color3.fromHex("070805")
+targetCard.BackgroundTransparency = 0.5
+targetCard.ZIndex = 6
+targetCard.Parent = pageStairWell
+Instance.new("UICorner", targetCard).CornerRadius = UDim.new(0, 8)
+
+local targetLabel = Instance.new("TextLabel")
+targetLabel.Size = UDim2.new(0.45, 0, 1, 0)
+targetLabel.Position = UDim2.new(0, 12, 0, 0)
+targetLabel.BackgroundTransparency = 1
+targetLabel.Text = "Shopping Cart Target:\n<font size='10' color='#aaaaaa'>" .. (SelectedPlayerName ~= "" and SelectedPlayerName or "Seçilmedi") .. "</font>"
+targetLabel.TextColor3 = Color3.fromHex("ffffff")
+targetLabel.TextSize = 11
+targetLabel.RichText = true
+targetLabel.Font = Enum.Font.Code
+targetLabel.TextXAlignment = Enum.TextXAlignment.Left
+targetLabel.Parent = targetCard
+
+local refreshBtn = Instance.new("TextButton")
+refreshBtn.Size = UDim2.new(0, 110, 0, 28)
+refreshBtn.Position = UDim2.new(1, -120, 0.5, -14)
+refreshBtn.BackgroundColor3 = Color3.fromHex("242599")
+refreshBtn.Text = "Refresh Players"
+refreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+refreshBtn.TextSize = 10
+refreshBtn.Font = Enum.Font.GothamBold
+refreshBtn.ZIndex = 6
+refreshBtn.Parent = targetCard
+Instance.new("UICorner", refreshBtn).CornerRadius = UDim.new(0, 6)
+
+refreshBtn.MouseButton1Click:Connect(function()
+    local plrs = Players:GetPlayers()
+    for _, p in ipairs(plrs) do
+        if p ~= player then
+            SelectedPlayerName = p.Name
+            targetLabel.Text = "Shopping Cart Target:\n<font size='10' color='#55ff55'>" .. SelectedPlayerName .. "</font>"
+            break
+        end
+    end
+end)
+
+addButton(pageStairWell, "Shopping Cart Target (Auto Take)", "Market Arabasını elinize / kontrolünüze alır.", function()
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj.Name:lower():find("cart") or obj.Name:lower():find("shopping") then
+            if obj:IsA("Model") and obj.PrimaryPart then obj:SetPrimaryPartCFrame(char.HumanoidRootPart.CFrame + Vector3.new(0, 0, -3))
+            elseif obj:IsA("BasePart") then obj.CFrame = char.HumanoidRootPart.CFrame + Vector3.new(0, 0, -3) end
+        end
+    end
+end)
+
+addButton(pageStairWell, "Tp Shopping Cart to Player", "Arabayı seçilen oyuncunun konumuna ışınlar.", function()
+    if SelectedPlayerName == "" then return end
+    local targetPlr = Players:FindFirstChild(SelectedPlayerName)
+    if targetPlr and targetPlr.Character and targetPlr.Character:FindFirstChild("HumanoidRootPart") then
+        local tHrp = targetPlr.Character.HumanoidRootPart
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            if obj.Name:lower():find("cart") or obj.Name:lower():find("shopping") then
+                if obj:IsA("Model") and obj.PrimaryPart then obj:SetPrimaryPartCFrame(tHrp.CFrame)
+                elseif obj:IsA("BasePart") then obj.CFrame = tHrp.CFrame end
+            end
+        end
+    end
+end)
+
+-- 5. MISC ESP (FIRE LEVER & SHOPPING CART)
+addSectionHeader(pageStairWell, "Misc ESP")
+
+local EspHighlights = {}
+local function createWhiteESP(obj, textName)
+    if not obj or EspHighlights[obj] then return end
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "GhostHub_ESP"
+    highlight.FillColor = Color3.fromRGB(255, 255, 255)
+    highlight.OutlineColor = Color3.fromRGB(200, 200, 200)
+    highlight.FillTransparency = 0.5
+    highlight.Adornee = obj
+    highlight.Parent = CoreGui
+    EspHighlights[obj] = highlight
+end
+
+local function clearESP()
+    for _, h in pairs(EspHighlights) do pcall(function() h:Destroy() end) end
+    EspHighlights = {}
+end
+
+addToggle(pageStairWell, "Fire Lever ESP", "Fire Lever nesnesini beyaz renkte gösterir.", function(state)
+    if state then
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            if obj.Name == "Fire Lever" or obj.Name:lower():find("firelever") then createWhiteESP(obj, "Fire Lever") end
+        end
+    else
+        clearESP()
+    end
+end)
+
+addToggle(pageStairWell, "Shopping Cart ESP", "Market arabasını beyaz renkte gösterir.", function(state)
+    if state then
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            if obj.Name:lower():find("cart") or obj.Name:lower():find("shopping") then createWhiteESP(obj, "Shopping Cart") end
+        end
+    else
+        clearESP()
+    end
+end)
 
 -- 🔧 GÜVENLİ RESİM YÜKLEME MOTORU
 local function applyImageTarget(rawId)
@@ -222,9 +858,7 @@ local function applyImageTarget(rawId)
         local formattedUrl = "rbxassetid://" .. cleanId
         bgImage.Image = formattedUrl
         task.spawn(function()
-            pcall(function()
-                ContentProvider:PreloadAsync({bgImage})
-            end)
+            pcall(function() ContentProvider:PreloadAsync({bgImage}) end)
         end)
     else
         bgImage.Image = rawId
@@ -309,163 +943,215 @@ clearBgBtn.MouseButton1Click:Connect(function()
     clearBgBtn.Text = "Resmi Kaldır"
 end)
 
--- 🎨 TEMA KART OLUŞTURUCU
-local function createThemeCard(title, desc, themeData)
-    local card = Instance.new("Frame")
-    card.Size = UDim2.new(1, -10, 0, 54)
-    card.BackgroundColor3 = Color3.fromHex("070805")
-    card.BackgroundTransparency = 0.5
-    card.ZIndex = 6
-    card.Parent = pageThemes
-    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 8)
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.65, 0, 1, 0)
-    label.Position = UDim2.new(0, 14, 0, 0)
-    label.BackgroundTransparency = 1
-    label.Text = title .. "\n<font size='10' color='#aaaaaa'>" .. desc .. "</font>"
-    label.TextColor3 = Color3.fromHex("ffffff")
-    label.TextSize = 13
-    label.RichText = true
-    label.Font = Enum.Font.Code
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = card
-    
-    local applyBtn = Instance.new("TextButton")
-    applyBtn.Size = UDim2.new(0, 110, 0, 30)
-    applyBtn.Position = UDim2.new(1, -122, 0.5, -15)
-    applyBtn.BackgroundColor3 = Color3.fromHex("242599")
-    applyBtn.Text = "Seç / Uygula"
-    applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    applyBtn.TextSize = 11
-    applyBtn.Font = Enum.Font.Code
-    applyBtn.Parent = card
-    Instance.new("UICorner", applyBtn).CornerRadius = UDim.new(0, 6)
-    
-    applyBtn.MouseButton1Click:Connect(function()
-        applyBtn.Text = "Uygulanıyor..."
-        
-        applyImageTarget(themeData.Img)
-        mainFrame.BackgroundColor3 = Color3.fromHex(themeData.Bg)
-        topBar.BackgroundColor3 = Color3.fromHex(themeData.Main)
-        sideMenu.BackgroundColor3 = Color3.fromHex(themeData.Main)
-        titleLabel.TextColor3 = Color3.fromHex(themeData.Accent)
-        
-        local font = Enum.Font[themeData.Font] or Enum.Font.Code
-        titleLabel.Font = font
-        searchBox.Font = font
-        label.Font = font
-        for _, btn in pairs(tabButtons) do btn.Font = font end
-        
-        task.wait(0.2)
-        applyBtn.Text = "Aktif!"
-        applyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-        task.wait(1)
-        applyBtn.Text = "Seç / Uygula"
-        applyBtn.BackgroundColor3 = Color3.fromHex("242599")
-    end)
-end
-
-local function createCategoryHeader(text)
-    local header = Instance.new("TextLabel")
-    header.Size = UDim2.new(1, -10, 0, 25)
-    header.BackgroundTransparency = 1
-    header.Text = text
-    header.TextColor3 = Color3.fromHex("ffffff")
-    header.TextSize = 13
-    header.Font = Enum.Font.GothamBold
-    header.TextXAlignment = Enum.TextXAlignment.Left
-    header.Parent = pageThemes
-end
-
--- ⛏️ 16 MINECRAFT THEMES (ORİJİNAL TAM LİSTE)
-createCategoryHeader("⛏️ Minecraft Themes (16 Tane)")
-createThemeCard("MC: Serene Snow", "Huzurlu Kar Kamp Ateşi (Soothing Stories)", {Main="0a141d", Bg="030910", Img="6023426915", Accent="88eeff", Font="Gotham"})
-createThemeCard("Minecraft End Realm", "End Gezegeni & Ejderha Teması", {Main="0a0812", Bg="040208", Img="6023426915", Accent="cc66ff", Font="Code"})
-createThemeCard("Minecraft Nether Fortress", "Lavlı Kızıl Nether Teması", {Main="180500", Bg="080200", Img="6023426915", Accent="ff3300", Font="GothamBold"})
-createThemeCard("Minecraft End Portal", "Mistik Mor Portal Teması", {Main="061012", Bg="01080a", Img="6023426915", Accent="00ffcc", Font="Code"})
-createThemeCard("Minecraft Green Mountain", "Yeşillikli Dağ & Manzara", {Main="051205", Bg="020802", Img="6023426915", Accent="33ff55", Font="Gotham"})
-createThemeCard("Minecraft Snowy Peak", "Karlı Dağ & Soğuk Atmosfer", {Main="081018", Bg="030810", Img="6023426915", Accent="88ddff", Font="Code"})
-createThemeCard("Minecraft Lush Cave", "Sarmaşıklı Işıklı Mağara", {Main="08140a", Bg="030a04", Img="6023426915", Accent="55ff88", Font="Code"})
-createThemeCard("Minecraft Sunset Biome", "Piksel Gün Batımı", {Main="180a08", Bg="0c0403", Img="6023426915", Accent="ff7733", Font="GothamBold"})
-createThemeCard("Minecraft Desert Temple", "Çöl & Çöl Tapınağı Teması", {Main="161205", Bg="0a0802", Img="6023426915", Accent="ffee55", Font="Code"})
-createThemeCard("Minecraft Village Life", "Sakin Köy Manzarası", {Main="0a1408", Bg="040803", Img="6023426915", Accent="88ff33", Font="Gotham"})
-createThemeCard("Minecraft Redstone Cave", "Kırmızı Redstone Işıkları", {Main="180303", Bg="0a0101", Img="6023426915", Accent="ff2222", Font="Code"})
-createThemeCard("Minecraft End City", "Koru Şehirler & Purpur Blokları", {Main="120a1c", Bg="05020a", Img="6023426915", Accent="dd88ff", Font="Code"})
-createThemeCard("Minecraft Void Abyss", "Uçsuz Bucaksız End Boşluğu", {Main="05040a", Bg="010103", Img="6023426915", Accent="9944ff", Font="GothamBold"})
-createThemeCard("Minecraft Dragon Flight", "Ender Dragon Uçuş Gökyüzü", {Main="090614", Bg="020105", Img="6023426915", Accent="ee44ff", Font="Code"})
-createThemeCard("Minecraft Ice Spikes", "Buz Dikitleri Kar Biyomu", {Main="0a141c", Bg="02060a", Img="6023426915", Accent="00ffff", Font="Gotham"})
-createThemeCard("Minecraft Snowy Taiga", "Karlı Tayga Ormanı", {Main="081014", Bg="030608", Img="6023426915", Accent="44bbff", Font="Code"})
-
--- ❄️ MINECRAFT SPECIAL SNOW THEMES (ÖZEL RESİMLERİNİZ)
-createCategoryHeader("❄️ Minecraft Special Snow Themes")
-createThemeCard("MC: Snowy Taiga Village", "Karanlık Sisli Karlı Köy (Görsel 1)", {Main="0d1117", Bg="030508", Img="6023426915", Accent="ffaa55", Font="Code"})
-createThemeCard("MC: Snowy Mountain Peaks", "Güneşli Dev Karlı Dağlar (Görsel 2)", {Main="101820", Bg="050b10", Img="6023426915", Accent="88ccff", Font="GothamBold"})
-createThemeCard("MC: Frozen Ice Stream", "Bembeyaz Parıldayan Donmuş Nehir (Görsel 3)", {Main="121c24", Bg="060d12", Img="6023426915", Accent="00ffff", Font="Gotham"})
-
--- 🌌 MINECRAFT THE END SPECIAL THEMES (ÖZEL RESİMLERİNİZ)
-createCategoryHeader("🌌 Minecraft The End Themes")
-createThemeCard("MC: End City Ruins", "Purpur Blokları & Koru Şehirleri (Görsel 1)", {Main="14081c", Bg="06020a", Img="6023426915", Accent="d877ff", Font="Code"})
-createThemeCard("MC: Floating End Island", "Uzay Boşluğundaki Dev End Adası (Görsel 2)", {Main="0c1218", Bg="03060a", Img="6023426915", Accent="77ddcc", Font="GothamBold"})
-createThemeCard("MC: Ender Dragon Boss", "Epik Ender Dragon & Oyuncu Savaşı (Görsel 3)", {Main="12061a", Bg="05010a", Img="6023426915", Accent="ff44ee", Font="Gotham"})
-createThemeCard("MC: End Portal Void", "Sonsuz Yıldızlı End Portal Dokusu (Görsel 4)", {Main="040a10", Bg="000204", Img="6023426915", Accent="00ffff", Font="Code"})
-
--- 🌸 POPÜLER & ANIME
-createCategoryHeader("⭐ Popüler Temalar")
-createThemeCard("Anime Nya Theme", "Catgirl Estetik Arka Plan", {Main="181825", Bg="0f0f14", Img="85504522659236", Accent="64b4ff", Font="Gotham"})
-
--- 🎄 5 CHRISTMAS THEMES
-createCategoryHeader("🎄 Christmas Themes (5 Tane)")
-createThemeCard("Christmas Night", "Mavi Karlı Gece Teması", {Main="070805", Bg="000000", Img="6023426915", Accent="242599", Font="Code"})
-createThemeCard("Red Christmas", "Yılbaşı Kırmızısı Orman", {Main="180808", Bg="0f0000", Img="6023426915", Accent="ff3b3b", Font="GothamBold"})
-createThemeCard("Snowy Frost", "Kutup Beyazı & Buzul Mavi", {Main="081218", Bg="020a10", Img="6023426915", Accent="00e1ff", Font="Code"})
-createThemeCard("Cozy Winter", "Sıcak Yılbaşı Ağacı Teması", {Main="140e08", Bg="0a0602", Img="6023426915", Accent="ffaa00", Font="Gotham"})
-createThemeCard("Santa Edition", "Koyu Kırmızı Minimal Yılbaşı", {Main="120505", Bg="080202", Img="6023426915", Accent="ff2222", Font="Code"})
-
--- 🎃 5 HALLOWEEN THEMES
-createCategoryHeader("🎃 Halloween Themes (5 Tane)")
-createThemeCard("Pumpkin Glow", "Koyu Turuncu Balkabağı", {Main="180a02", Bg="0d0400", Img="6023426915", Accent="ff6600", Font="GothamBold"})
-createThemeCard("Spooky Night", "Mor & Siyah Hayaletli Gece", {Main="120218", Bg="08000f", Img="6023426915", Accent="aa00ff", Font="Code"})
-createThemeCard("Haunted Forest", "Karanlık Sisli Orman", {Main="051005", Bg="010801", Img="6023426915", Accent="00ff44", Font="Code"})
-createThemeCard("Vampire Blood", "Kan Kırmızısı Gotik Teması", {Main="180002", Bg="0a0001", Img="6023426915", Accent="ff0033", Font="Gotham"})
-createThemeCard("Witch Craft", "Zehir Yeşili Cadı Teması", {Main="0a140a", Bg="030a03", Img="6023426915", Accent="33ff33", Font="Code"})
-
--- ☀️ 5 GÜNEŞ SİSTEMİ & GEZEGENLER
-createCategoryHeader("☀️ Güneş Sistemi Themes (5 Tane)")
-createThemeCard("Solar System Orbit", "Tüm Gezegenler & Yörünge", {Main="060a14", Bg="010308", Img="6023426915", Accent="00ccff", Font="Code"})
-createThemeCard("Solar Flare Core", "Alevli Güneş Patlaması", {Main="180600", Bg="0a0200", Img="6023426915", Accent="ff3300", Font="GothamBold"})
-createThemeCard("Mars Red Planet", "Kızıl Gezegen Mars Yüzeyi", {Main="1a0500", Bg="0c0200", Img="6023426915", Accent="ff4400", Font="Code"})
-createThemeCard("Jupiter Storm", "Dev Gaz Gezegeni Jüpiter", {Main="140a02", Bg="080400", Img="6023426915", Accent="ff9933", Font="Gotham"})
-createThemeCard("Neptune Deep Blue", "Derin Mavi Neptün Atmosferi", {Main="020a18", Bg="00040c", Img="6023426915", Accent="0088ff", Font="Code"})
-
--- 🪐 5 SATÜRN THEMES
-createCategoryHeader("🪐 Satürn Themes (5 Tane)")
-createThemeCard("Saturn Rings", "Dev Halkalı Satürn Gezegeni", {Main="141005", Bg="080501", Img="6023426915", Accent="ffcc44", Font="Gotham"})
-createThemeCard("Golden Orbit", "Altın Sarısı Satürn Halesi", {Main="181403", Bg="0a0800", Img="6023426915", Accent="ffee00", Font="GothamBold"})
-createThemeCard("Deep Saturn Space", "Karanlık Uzayda Satürn", {Main="080a12", Bg="020308", Img="6023426915", Accent="66aaff", Font="Code"})
-createThemeCard("Titan Shadow", "Satürn Uydusu Titan Görünümü", {Main="120a05", Bg="060301", Img="6023426915", Accent="ff8833", Font="Code"})
-createThemeCard("Gas Giant Saturn", "Mistik Gaz Bulutlu Satürn", {Main="0f0814", Bg="07020a", Img="6023426915", Accent="bb44ff", Font="Code"})
-
--- 🌙 5 MOON THEMES
-createCategoryHeader("🌙 Moon Themes (5 Tane)")
-createThemeCard("Full Moon Night", "Parlak Dolunay Gecesi", {Main="080b12", Bg="020408", Img="6023426915", Accent="ddeeff", Font="Gotham"})
-createThemeCard("Blood Moon Red", "Kırmızı Kanlı Ay Teması", {Main="180303", Bg="080000", Img="6023426915", Accent="ff2222", Font="GothamBold"})
-createThemeCard("Lunar Eclipse Dark", "Ay Tutulması Karanlığı", {Main="0a0812", Bg="030208", Img="6023426915", Accent="9966ff", Font="Code"})
-createThemeCard("Crescent Starry", "Hilal Ay & Yıldızlı Gökyüzü", {Main="050a14", Bg="01030a", Img="6023426915", Accent="44aaff", Font="Code"})
-createThemeCard("Blue Moon Aesthetic", "Gece Mavi Estetik Ay", {Main="020c18", Bg="00050d", Img="6023426915", Accent="00aaff", Font="Code"})
-
--- 🕳️ 5 BLACK HOLE THEMES
-createCategoryHeader("🕳️ Black Hole Themes (5 Tane)")
-createThemeCard("Singularity Hole", "Karanlık Yerçekimi Kara Deliği", {Main="050508", Bg="000002", Img="6023426915", Accent="6600ff", Font="Code"})
-createThemeCard("Event Horizon Glow", "Turuncu Işıklı Kara Delik", {Main="140802", Bg="0a0300", Img="6023426915", Accent="ff8800", Font="GothamBold"})
-createThemeCard("Cosmic Abyss Hole", "Derin Uzay Hiçliği", {Main="020208", Bg="000003", Img="6023426915", Accent="3388ff", Font="Code"})
-createThemeCard("Dark Matter Hole", "Mor Radyasyonlu Kara Delik", {Main="100214", Bg="06000a", Img="6023426915", Accent="cc00ff", Font="Code"})
-createThemeCard("Void Collapse Hole", "Çöken Evren Simsiyah Teması", {Main="030303", Bg="000000", Img="6023426915", Accent="ffffff", Font="Code"})
-
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
         mainFrame.Visible = not mainFrame.Visible
     end
 end)
 
-print("GhostHub V2.0 - Tüm 23 Minecraft Teması ve Diğer Kategoriler Eksiksiz Hazır!")
+-- ================================================
+-- 🗄️ ARCHIVES SEKME İÇERİĞİ VE TÜM KODLAR
+-- ================================================
+
+-- 1. ANTI / BYPASS
+addSectionHeader(pageArchives, "Anti / Bypass")
+
+local AntiDroneConn = nil
+addToggle(pageArchives, "Anti-Drone", "Drone sizi kaydıramaz, içinden geçersiniz ve hasar almazsınız.", function(state)
+    if state then
+        AntiDroneConn = RunService.Heartbeat:Connect(function()
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("drone") then
+                    if obj:IsA("BasePart") then
+                        obj.CanCollide = false
+                        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                    elseif obj:IsA("Model") then
+                        for _, p in ipairs(obj:GetDescendants()) do
+                            if p:IsA("BasePart") then
+                                p.CanCollide = false
+                                p.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if AntiDroneConn then AntiDroneConn:Disconnect() AntiDroneConn = nil end
+    end
+end)
+
+local AntiRansomConn = nil
+addToggle(pageArchives, "Anti-Ransom", "Jumpscare, fidye isteği ve Ransom hasarı engellenir.", function(state)
+    if state then
+        AntiRansomConn = RunService.Heartbeat:Connect(function()
+            local ransom = Workspace:FindFirstChild("Ransom") or Workspace:FindFirstChild("RansomEntity")
+            if ransom then
+                for _, v in ipairs(ransom:GetDescendants()) do
+                    if v:IsA("Script") or v:IsA("LocalScript") then v.Disabled = true end
+                    if v:IsA("TouchTransmitter") or v.Name:lower():find("jumpscare") then v:Destroy() end
+                end
+            end
+        end)
+    else
+        if AntiRansomConn then AntiRansomConn:Disconnect() AntiRansomConn = nil end
+    end
+end)
+
+local AntiElectricPuddleConn = nil
+addToggle(pageArchives, "Anti-ElectricPuddle", "Elektrikli suya bastığınızda hasar almazsınız.", function(state)
+    if state then
+        AntiElectricPuddleConn = RunService.Heartbeat:Connect(function()
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("electricpuddle") or obj.Name:lower():find("puddle") then
+                    for _, child in ipairs(obj:GetDescendants()) do
+                        if child:IsA("TouchTransmitter") or child:IsA("Script") then
+                            pcall(function() child:Destroy() end)
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if AntiElectricPuddleConn then AntiElectricPuddleConn:Disconnect() AntiElectricPuddleConn = nil end
+    end
+end)
+
+local AntiScribblesConn = nil
+addToggle(pageArchives, "Anti-Scribbles", "Scribbles vurmaya çalışsa bile hasar veremez.", function(state)
+    if state then
+        AntiScribblesConn = RunService.Heartbeat:Connect(function()
+            local scribbles = Workspace:FindFirstChild("Scribbles") or Workspace:FindFirstChild("ScribblesEntity")
+            if scribbles then
+                for _, part in ipairs(scribbles:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
+                    if part:IsA("TouchTransmitter") then pcall(function() part:Destroy() end) end
+                end
+            end
+        end)
+    else
+        if AntiScribblesConn then AntiScribblesConn:Disconnect() AntiScribblesConn = nil end
+    end
+end)
+
+addToggle(pageArchives, "Disable Drone-Stampede", "Drone Stampede mekaniğini sonsuza kadar durdurur.", function(state)
+    if state then
+        task.spawn(function()
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("stampede") or obj.Name:lower():find("dronestampede") then
+                    for _, scriptObj in ipairs(obj:GetDescendants()) do
+                        if scriptObj:IsA("Script") or scriptObj:IsA("LocalScript") then
+                            scriptObj.Disabled = true
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+-- Show Timer UI
+local ArchivesTimerGui, ArchivesTimerLabel = nil, nil
+addToggle(pageArchives, "Show Timer", "Archives modundaki süreyi ekranda canlı gösterir.", function(state)
+    if state then
+        ArchivesTimerGui = Instance.new("ScreenGui")
+        ArchivesTimerGui.Name = "GhostHub_ArchivesTimer"
+        ArchivesTimerGui.Parent = (gethui and gethui()) or CoreGui or playerGui
+
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0, 160, 0, 36)
+        frame.Position = UDim2.new(0.5, -80, 0.9, 0)
+        frame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+        frame.Active = true
+        frame.Draggable = true
+        frame.Parent = ArchivesTimerGui
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+
+        ArchivesTimerLabel = Instance.new("TextLabel")
+        ArchivesTimerLabel.Size = UDim2.new(1, 0, 1, 0)
+        ArchivesTimerLabel.BackgroundTransparency = 1
+        ArchivesTimerLabel.Text = "Archives Time: 00:00"
+        ArchivesTimerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        ArchivesTimerLabel.Font = Enum.Font.Code
+        ArchivesTimerLabel.TextSize = 12
+        ArchivesTimerLabel.Parent = frame
+
+        local startTime = tick()
+        task.spawn(function()
+            while ArchivesTimerGui do
+                local elapsed = math.floor(tick() - startTime)
+                local mins = math.floor(elapsed / 60)
+                local secs = elapsed % 60
+                if ArchivesTimerLabel then
+                    ArchivesTimerLabel.Text = string.format("Archives Time: %02d:%02d", mins, secs)
+                end
+                task.wait(1)
+            end
+        end)
+    else
+        if ArchivesTimerGui then ArchivesTimerGui:Destroy() ArchivesTimerGui = nil end
+    end
+end)
+
+-- 2. MISC / EXPLOITS
+addSectionHeader(pageArchives, "Misc / Exploits")
+
+addButton(pageArchives, "Skip Forgot-Me-Not", "Çiçekli odayı doğrudan atlar.", function()
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local nextDoor = Workspace:FindFirstChild("NextDoor") or Workspace:FindFirstChild("Door")
+    if nextDoor then
+        local doorPart = nextDoor:IsA("Model") and nextDoor.PrimaryPart or nextDoor
+        if doorPart then char.HumanoidRootPart.CFrame = doorPart.CFrame + Vector3.new(0, 2, 3) end
+    end
+end)
+
+addButton(pageArchives, "Guess Forgot-Me-Not", "Çiçekli odada doğru kapının yönünü bildirir.", function()
+    -- Doğru kapıyı tarayan mantık
+    for _, door in ipairs(Workspace:GetDescendants()) do
+        if door.Name:lower():find("forgotmenot") or door.Name:lower():find("flowerdoor") then
+            if door:FindFirstChild("Correct") or door:GetAttribute("IsCorrect") then
+                print("[GhostHub] Doğru Kapı Yönü: İLERİ / DOĞRU KAPI BULDUNUZ!")
+            end
+        end
+    end
+end)
+
+addButton(pageArchives, "Auto Alma", "Alma minigamesini otomatik tamamlar.", function()
+    local alma = Workspace:FindFirstChild("Alma") or Workspace:FindFirstChild("AlmaMinigame")
+    if alma then
+        local prompt = alma:FindFirstChildWhichIsA("ProximityPrompt", true)
+        if prompt then fireproximityprompt(prompt) end
+    end
+end)
+
+addToggle(pageArchives, "Auto Clear Closets", "Archives dolaplarını otomatik ve sürekli açar.", function(state)
+    if state then
+        task.spawn(function()
+            for _, closet in ipairs(Workspace:GetDescendants()) do
+                if closet.Name:lower():find("closet") or closet.Name:lower():find("wardrobe") then
+                    local prompt = closet:FindFirstChildWhichIsA("ProximityPrompt", true)
+                    if prompt then fireproximityprompt(prompt) end
+                end
+            end
+        end)
+    end
+end)
+
+-- 3. AUTOMATIC
+addSectionHeader(pageArchives, "Automatic")
+
+addButton(pageArchives, "Auto-Honcho (TP StorageBox)", "StorageBox'ları Honcho Deposit noktasına ışınlar.", function()
+    local deposit = Workspace:FindFirstChild("Deposit") or Workspace:FindFirstChild("HonchoDeposit")
+    if deposit then
+        local dPart = deposit:IsA("Model") and deposit.PrimaryPart or deposit
+        if dPart then
+            for _, box in ipairs(Workspace:GetDescendants()) do
+                if box.Name:lower():find("storagebox") or box.Name:lower():find("honchobox") then
+                    if box:IsA("Model") and box.PrimaryPart then box:SetPrimaryPartCFrame(dPart.CFrame)
+                    elseif box:IsA("BasePart") then box.CFrame = dPart.CFrame end
+                end
+            end
+        end
+    end
+end)
