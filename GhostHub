@@ -1155,3 +1155,122 @@ addButton(pageArchives, "Auto-Honcho (TP StorageBox)", "StorageBox'ları Honcho 
         end
     end
 end)
+
+-- ================================================
+-- 🏡 OUTDOORS SEKME İÇERİĞİ VE TÜM KODLAR
+-- ================================================
+
+-- 1. PROTECTION & BYPASS
+addSectionHeader(pageOutdoors, "Protection & Bypass")
+
+-- Silent Anti-Cheat Bypass Shield
+local AntiCheatBypassEnabled = false
+addToggle(pageOutdoors, "Silent Anti-Cheat Bypass", "Sessiz Anti-Cheat kalkanı. Tespit edilmeyi engeller.", function(state)
+    AntiCheatBypassEnabled = state
+    if state then
+        pcall(function()
+            local rawHook
+            rawHook = hookmetamethod(game, "__namecall", function(self, ...)
+                local method = getnamecallmethod()
+                if AntiCheatBypassEnabled and (method == "FireServer" or method == "InvokeServer") then
+                    local name = tostring(self):lower()
+                    if name:find("ban") or name:find("cheat") or name:find("detect") or name:find("flag") then
+                        return nil
+                    end
+                end
+                return rawHook(self, ...)
+            end)
+        end)
+    end
+end)
+
+addToggle(pageOutdoors, "Anti-Monument", "Monument nesnesini haritadan sonsuza kadar kaldırır.", function(state)
+    if state then
+        task.spawn(function()
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("monument") then
+                    pcall(function() obj:Destroy() end)
+                end
+            end
+        end)
+    end
+end)
+
+local GroundSpekkerConn = nil
+addToggle(pageOutdoors, "GroundSpekker God Mode", "GroundSpekker size saldıramaz veya hasar veremez.", function(state)
+    if state then
+        GroundSpekkerConn = RunService.Heartbeat:Connect(function()
+            local spekker = Workspace:FindFirstChild("GroundSpekker") or Workspace:FindFirstChild("Spekker")
+            if spekker then
+                for _, part in ipairs(spekker:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    elseif part:IsA("TouchTransmitter") then
+                        pcall(function() part:Destroy() end)
+                    end
+                end
+            end
+        end)
+    else
+        if GroundSpekkerConn then GroundSpekkerConn:Disconnect() GroundSpekkerConn = nil end
+    end
+end)
+
+addToggle(pageOutdoors, "Anti-Mandrake", "Mandrake varlığını haritadan sonsuza kadar kaldırır.", function(state)
+    if state then
+        task.spawn(function()
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("mandrake") then
+                    pcall(function() obj:Destroy() end)
+                end
+            end
+        end)
+    end
+end)
+
+-- 2. VISUALS & ESP
+addSectionHeader(pageOutdoors, "Visuals & ESP")
+
+local PathBeams = {}
+local function ClearPathESP()
+    for _, beam in ipairs(PathBeams) do
+        pcall(function() beam:Destroy() end)
+    end
+    PathBeams = {}
+end
+
+addToggle(pageOutdoors, "Eyestalk Path ESP", "Eyestalk patikasının sonuna kadar giden yeşil çizgi ESP'si.", function(state)
+    if state then
+        ClearPathESP()
+        local pathFolder = Workspace:FindFirstChild("EyestalkPath") or Workspace:FindFirstChild("Path")
+        if pathFolder then
+            local waypoints = {}
+            for _, pt in ipairs(pathFolder:GetChildren()) do
+                if pt:IsA("BasePart") then table.insert(waypoints, pt) end
+            end
+
+            -- Noktaları sırayla yeşil Beam çizgisi ile birleştir
+            for i = 1, #waypoints - 1 do
+                local p1, p2 = waypoints[i], waypoints[i + 1]
+                
+                local att0 = Instance.new("Attachment", p1)
+                local att1 = Instance.new("Attachment", p2)
+                
+                local beam = Instance.new("Beam")
+                beam.Attachment0 = att0
+                beam.Attachment1 = att1
+                beam.Color = ColorSequence.new(Color3.fromRGB(0, 255, 100)) -- Yeşil
+                beam.Width0 = 0.25 -- Az kalın çizgi
+                beam.Width1 = 0.25
+                beam.FaceCamera = true
+                beam.Parent = p1
+                
+                table.insert(PathBeams, beam)
+                table.insert(PathBeams, att0)
+                table.insert(PathBeams, att1)
+            end
+        end
+    else
+        ClearPathESP()
+    end
+end)
