@@ -1274,3 +1274,94 @@ addToggle(pageOutdoors, "Eyestalk Path ESP", "Eyestalk patikasının sonuna kada
         ClearPathESP()
     end
 end)
+
+-- ================================================
+-- 🔙 THE BACKDOORS SEKME İÇERİĞİ VE TÜM KODLAR
+-- ================================================
+
+-- 1. HUD & TIMERS
+addSectionHeader(pageBackDoors, "Timers & HUD")
+
+-- Haste Clock Time UI & Timer
+local HasteClockGui, HasteClockLabel = nil, nil
+addToggle(pageBackDoors, "Haste Clock Time", "Haste zamanını ve kalan süreyi ekranda beyaz renkte gösterir.", function(state)
+    if state then
+        HasteClockGui = Instance.new("ScreenGui")
+        HasteClockGui.Name = "GhostHub_HasteClock"
+        HasteClockGui.Parent = (gethui and gethui()) or CoreGui or playerGui
+
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0, 180, 0, 36)
+        frame.Position = UDim2.new(0.5, -90, 0.15, 0)
+        frame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+        frame.Active = true
+        frame.Draggable = true
+        frame.Parent = HasteClockGui
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+
+        HasteClockLabel = Instance.new("TextLabel")
+        HasteClockLabel.Size = UDim2.new(1, 0, 1, 0)
+        HasteClockLabel.BackgroundTransparency = 1
+        HasteClockLabel.Text = "Haste Time: 00:00"
+        HasteClockLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Beyaz renk
+        HasteClockLabel.Font = Enum.Font.Code
+        HasteClockLabel.TextSize = 12
+        HasteClockLabel.Parent = frame
+
+        local hasteStart = tick()
+        task.spawn(function()
+            while HasteClockGui do
+                local elapsed = math.floor(tick() - hasteStart)
+                local mins = math.floor(elapsed / 60)
+                local secs = elapsed % 60
+                if HasteClockLabel then
+                    HasteClockLabel.Text = string.format("Haste Time: %02d:%02d", mins, secs)
+                end
+                task.wait(1)
+            end
+        end)
+    else
+        if HasteClockGui then HasteClockGui:Destroy() HasteClockGui = nil end
+    end
+end)
+
+-- 2. BYPASS & EXPLOITS
+addSectionHeader(pageBackDoors, "Bypass & Protection")
+
+local AntiVacuumConn = nil
+addToggle(pageBackDoors, "Anti-Vacuum", "Vacuum mekanizmasının sizi içine çekmesini engeller.", function(state)
+    if state then
+        AntiVacuumConn = RunService.Heartbeat:Connect(function()
+            local char = player.Character
+            if not char then return end
+            
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                -- Vacuum'un uyguladığı dış kuvvetleri (BodyVelocity, VectorForce vb.) temizle
+                for _, child in ipairs(hrp:GetChildren()) do
+                    if child:IsA("BodyVelocity") or child:IsA("BodyForce") or child:IsA("VectorForce") or child:IsA("LinearVelocity") then
+                        if child.Name:lower():find("vacuum") or child.Name:lower():find("pull") or child.Name:lower():find("suck") then
+                            child:Destroy()
+                        end
+                    end
+                end
+            end
+
+            -- Haritadaki Vacuum nesnelerinin çekim alanlarını devre dışı bırak
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj.Name:lower():find("vacuum") or obj.Name:lower():find("suckzone") then
+                    if obj:IsA("BasePart") then
+                        obj.CanTouch = false
+                    elseif obj:IsA("Model") then
+                        for _, p in ipairs(obj:GetDescendants()) do
+                            if p:IsA("BasePart") then p.CanTouch = false end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if AntiVacuumConn then AntiVacuumConn:Disconnect() AntiVacuumConn = nil end
+    end
+end)
+
