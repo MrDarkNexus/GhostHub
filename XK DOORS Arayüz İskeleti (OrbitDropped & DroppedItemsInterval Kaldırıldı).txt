@@ -1,0 +1,571 @@
+-- // XK DOORS Arayüz İskeleti (OrbitDropped & DroppedItemsInterval Kaldırıldı)
+local LoadStart = tick()
+
+if shared.Hastelepasta then
+	return
+end
+shared.Hastelepasta = true
+
+local DarkNexusLoaderURL = "https://raw.githubusercontent.com/MrDarkNexus/DarkNexus-Rework-Edition-/refs/heads/main/DarkNexusReworkEdition"
+local GhostHubUpdatedURL = "https://raw.githubusercontent.com/MrDarkNexus/GhostHub/refs/heads/main/XK%20DOORS%20Aray%C3%BCz%20%C4%B0skeleti%20(G%C3%BCncellenmi%C5%9F%20Tam%20S%C3%BCr%C3%BCm).txt"
+
+local Sources = {
+	DarkNexusMain = DarkNexusLoaderURL,
+	ObsidianUI    = "https://raw.githubusercontent.com/DevSloPo/obsidian_UI/main/",
+	GhostUpdated  = GhostHubUpdatedURL,
+}
+
+local function SafeLoad(Url, Label)
+	local tag = tostring(Label or Url)
+
+	if type(Url) ~= "string" or #Url == 0 then
+		warn("[SafeLoad] Geçersiz URL (" .. tag .. ")")
+		return nil
+	end
+
+	local okFetch, sourceOrErr = pcall(function()
+		return game:HttpGet(Url)
+	end)
+	if not okFetch or type(sourceOrErr) ~= "string" or #sourceOrErr == 0 then
+		warn("[SafeLoad] İndirme başarısız (" .. tag .. "): " .. tostring(sourceOrErr))
+		return nil
+	end
+
+	local fn, compileErr = loadstring(sourceOrErr, "@" .. tag)
+	if not fn then
+		warn("[SafeLoad] Derleme hatası (" .. tag .. "): " .. tostring(compileErr))
+		return nil
+	end
+
+	local okRun, result = pcall(fn)
+	if not okRun then
+		warn("[SafeLoad] Çalıştırma hatası (" .. tag .. "): " .. tostring(result))
+		return nil
+	end
+
+	return result
+end
+
+getgenv().Abysall = {
+	Legit = true,
+	DarkNexusReworkEdition = Sources.DarkNexusMain,
+	GhostUpdatedURL = Sources.GhostUpdated,
+	["16Notice"] = nil,
+}
+
+local Abysall = getgenv().Abysall
+
+local Services = setmetatable({}, {
+	__index = function(_, Name)
+		local ok, svc = pcall(function()
+			return game:GetService(Name)
+		end)
+		return ok and svc or nil
+	end
+})
+
+local UILibrary      = SafeLoad(Sources.ObsidianUI .. "Library.lua", "ObsidianLibrary")
+local UIThemeManager = SafeLoad(Sources.ObsidianUI .. "addons/ThemeManager.lua", "ObsidianThemeManager")
+local UISaveManager  = SafeLoad(Sources.ObsidianUI .. "addons/SaveManager.lua", "ObsidianSaveManager")
+
+if not UILibrary then
+	warn("[XK DOORS] Obsidian UILibrary yüklenemedi, işlem durduruldu.")
+	return
+end
+
+-- // Çince -> Türkçe & English Sözlük
+local Translations = {
+	["信息"] = { tr = "Bilgi", en = "Info" },
+	["脚本信息"] = { tr = "Script Bilgisi", en = "Script Info" },
+	["本脚本为对国外开源项目的二次修改版本"] = { tr = "Bu script yabancı açık kaynaklı projelerin yeniden düzenlenmiş sürümüdür", en = "This script is a modified version of an open-source project" },
+	["原项目：Abysall Hub (Doors)"] = { tr = "Ana Proje: Abysall Hub (Doors)", en = "Original Project: Abysall Hub (Doors)" },
+	["二改/汉化：XK Hub / XoneScriptK"] = { tr = "Düzenleme/Çeviri: XK Hub / XoneScriptK", en = "Edit/Translation: XK Hub / XoneScriptK" },
+	["配置目录：Abysall/Doors"] = { tr = "Ayar Klasörü: Abysall/Doors", en = "Config Folder: Abysall/Doors" },
+	["说明"] = { tr = "Açıklama", en = "Notes" },
+	["红色标注的功能存在风险，或当前楼层不可用。"] = { tr = "Kırmızı işaretli özellikler risklidir veya mevcut katta çalışmayabilir.", en = "Red-marked features carry risk or may be unavailable on the current floor." },
+	["部分功能依赖执行器能力，不支持时会自动禁用。"] = { tr = "Bazı özellikler executor desteğine bağlıdır ve desteklenmiyorsa devre dışı kalır.", en = "Some features depend on executor support and are disabled if unsupported." },
+
+	["界面设置"] = { tr = "Arayüz Ayarları", en = "UI Settings" },
+	["菜单"] = { tr = "Menü", en = "Menu" },
+	["菜单开关"] = { tr = "Menü Tuşu", en = "Menu Toggle" },
+	["移除用户界面"] = { tr = "Arayüzü Kaldır", en = "Unload UI" },
+	["通知"] = { tr = "Bildirimler", en = "Notifications" },
+	["通知位置"] = { tr = "Bildirim Konumu", en = "Notify Side" },
+	["左"] = { tr = "Sol", en = "Left" },
+	["右"] = { tr = "Sağ", en = "Right" },
+	["界面大小"] = { tr = "Arayüz Boyutu", en = "UI Scale" },
+
+	["主要"] = { tr = "Genel", en = "General" },
+	["功能"] = { tr = "Özellikler", en = "Exploits" },
+	["视觉"] = { tr = "Görsel", en = "Visuals" },
+	["楼层"] = { tr = "Katlar", en = "Floors" },
+	["新增 - 档案馆"] = { tr = "Yeni - Arşivler", en = "New - Archives" },
+	["新增 - 楼梯间"] = { tr = "Yeni - Merdiven", en = "New - Stairwell" },
+
+	["杂项"] = { tr = "Çeşitli", en = "Misc" },
+	["再玩一次"] = { tr = "Tekrar Oyna", en = "Play Again" },
+	["返回大厅"] = { tr = "Lobiye Dön", en = "Back to Lobby" },
+	["复活"] = { tr = "Canlan", en = "Revive" },
+	["重置角色"] = { tr = "Karakteri Sıfırla", en = "Reset Character" },
+	["风险警告"] = { tr = "Risk Uyarısı", en = "Risk Warning" },
+	["红色标注的功能有风险。"] = { tr = "Kırmızı işaretli özellikler risklidir.", en = "Red-marked features carry risk." },
+
+	["调试"] = { tr = "Hata Ayıklama", en = "Debug" },
+	["梯子卡死修复"] = { tr = "Merdiven Takılma Düzeltme", en = "Fix Ladder Stuck" },
+	["获取当前楼层"] = { tr = "Mevcut Katı Yazdır", en = "Get Current Floor" },
+	["获取当前房间"] = { tr = "Mevcut Odayı Yazdır", en = "Get Current Room" },
+	["死亡"] = { tr = "Öl", en = "Die" },
+	["退出柜子"] = { tr = "Dolaptan Çık", en = "Exit Closet" },
+	["传送下一扇门"] = { tr = "Sonraki Kapıya Işınlan", en = "TP Next Door" },
+
+	["绕过 / 破解"] = { tr = "Atlatma / Kırma", en = "Bypass / Exploit" },
+	["绕过"] = { tr = "Atlatma", en = "Bypass" },
+	["操控方式"] = { tr = "Kontrol Modu", en = "Control Mode" },
+	["物品列表"] = { tr = "Eşya Listesi", en = "Item List" },
+	["移除"] = { tr = "Kaldır", en = "Remove" },
+	["音频"] = { tr = "Ses", en = "Audio" },
+
+	["相机 / 效果 / 性能"] = { tr = "Kamera / Efekt / Performans", en = "Camera / Effects / Performance" },
+	["相机"] = { tr = "Kamera", en = "Camera" },
+	["视野角度"] = { tr = "Görüş Açısı (FOV)", en = "Field of View" },
+	["X 偏移"] = { tr = "X Ofseti", en = "X Offset" },
+	["Y 偏移"] = { tr = "Y Ofseti", en = "Y Offset" },
+	["Z 偏移"] = { tr = "Z Ofseti", en = "Z Offset" },
+	["性能"] = { tr = "Performans", en = "Performance" },
+	["强度"] = { tr = "Yoğunluk", en = "Intensity" },
+	["渲染距离"] = { tr = "Çizim Mesafesi", en = "Render Distance" },
+	["效果"] = { tr = "Efektler", en = "Effects" },
+	["透明度"] = { tr = "Saydamlık", en = "Transparency" },
+
+	["实体 / 设置 / 实体节点"] = { tr = "Varlık / Ayar / Düğüm", en = "Entities / Settings / Nodes" },
+	["设置"] = { tr = "Ayarlar", en = "Settings" },
+	["实体列表"] = { tr = "Varlık Listesi", en = "Entity List" },
+	["节点透明度"] = { tr = "Düğüm Saydamlığı", en = "Node Transparency" },
+	["线条透明度"] = { tr = "Çizgi Saydamlığı", en = "Line Transparency" },
+	["线条粗细"] = { tr = "Çizgi Kalınlığı", en = "Line Thickness" },
+	["消息"] = { tr = "Mesaj", en = "Message" },
+	["已生成！"] = { tr = "Belirdi!", en = "Spawned!" },
+	["通知样式"] = { tr = "Bildirim Stili", en = "Notify Style" },
+	["音量"] = { tr = "Ses Seviyesi", en = "Volume" },
+	["测试通知"] = { tr = "Bildirim Test Et", en = "Test Notification" },
+
+	["填充透明度"] = { tr = "Dolgu Saydamlığı", en = "Fill Transparency" },
+	["描边透明度"] = { tr = "Kenar Saydamlığı", en = "Outline Transparency" },
+	["文字透明度"] = { tr = "Yazı Saydamlığı", en = "Text Transparency" },
+	["文字描边透明度"] = { tr = "Yazı Kenar Saydamlığı", en = "Text Outline Transparency" },
+	["淡出时间"] = { tr = "Solma Süresi", en = "Fade Time" },
+	["渲染上限"] = { tr = "Render Limiti", en = "Render Limit" },
+	["文字大小"] = { tr = "Yazı Boyutu", en = "Text Size" },
+	["文字字体"] = { tr = "Yazı Tipi", en = "Text Font" },
+	["追踪线起点"] = { tr = "Çizgi Başlangıcı", en = "Tracers Origin" },
+	["追踪线粗细"] = { tr = "Çizgi Kalınlığı", en = "Tracer Thickness" },
+	["箭头半径"] = { tr = "Ok Yarıçapı", en = "Arrows Radius" },
+
+	["兼容性/风险警告"] = { tr = "Uyumluluk/Risk Uyarısı", en = "Compatibility/Risk Warning" },
+	["红色标注的功能有风险 / 在当前楼层不可用。"] = { tr = "Kırmızı işaretli özellikler risklidir / mevcut katta kullanılamaz.", en = "Red-marked features carry risk / unavailable on current floor." },
+	["转向距离"] = { tr = "Dönüş Mesafesi", en = "Turn Distance" },
+	["下蹲距离"] = { tr = "Eğilme Mesafesi", en = "Duck Distance" },
+	["寻路超时"] = { tr = "Yol Bulma Zaman Aşımı", en = "Pathfind Timeout" },
+	["通关"] = { tr = "Bitirme", en = "Completion" },
+
+	["功能 / 防护"] = { tr = "Özellik / Koruma", en = "Features / Protection" },
+	["实验性"] = { tr = "Deneysel", en = "Experimental" },
+	["功能 / 防护 / 杂项"] = { tr = "Özellik / Koruma / Çeşitli", en = "Features / Protection / Misc" },
+	["传送购物车到玩家"] = { tr = "Alışveriş Arabasını Oyuncuya Çek", en = "TP Shopping Cart to Player" },
+	["购物车目标"] = { tr = "Araba Hedefi", en = "Cart Target" },
+	["刷新玩家"] = { tr = "Oyuncuları Yenile", en = "Refresh Players" },
+	["传送所有掉落物到最近的研磨机"] = { tr = "Tüm Düşenleri En Yakın Öğütücüye Çek", en = "TP All Drops to Nearest Grinder" },
+	["拾取掉落物"] = { tr = "Düşen Eşyaları Topla", en = "Bring Dropped Items" },
+}
+
+local CurrentLang = "zh"
+local TranslatableElements = {}
+
+local function GetTranslatedText(originalText, lang)
+	if lang == "zh" or type(originalText) ~= "string" then
+		return originalText
+	end
+	local entry = Translations[originalText]
+	if entry and entry[lang] then
+		return entry[lang]
+	end
+	return originalText
+end
+
+local function RegisterTranslatable(setFn, getFn)
+	table.insert(TranslatableElements, { set = setFn, get = getFn })
+end
+
+local function ApplyLanguage(lang)
+	CurrentLang = (lang == "tr" or lang == "en" or lang == "zh") and lang or "tr"
+
+	for _, item in ipairs(TranslatableElements) do
+		pcall(function()
+			local orig = item.get()
+			if type(orig) == "string" then
+				item.set(GetTranslatedText(orig, CurrentLang))
+			end
+		end)
+	end
+
+	local root = UILibrary.ScreenGui or Services.CoreGui
+	if root then
+		for _, desc in ipairs(root:GetDescendants()) do
+			if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then
+				if not desc:GetAttribute("OrigText") then
+					desc:SetAttribute("OrigText", desc.Text)
+				end
+				local origText = desc:GetAttribute("OrigText")
+				local mapped = GetTranslatedText(origText, CurrentLang)
+				if mapped ~= origText then
+					desc.Text = mapped
+				elseif CurrentLang == "zh" then
+					desc.Text = origText
+				end
+			end
+		end
+	end
+end
+
+local function WrapTextContainer(container, origText)
+	if not container then return end
+	if type(container.SetText) == "function" then
+		local current = origText
+		RegisterTranslatable(
+			function(txt) container:SetText(txt) end,
+			function() return current end
+		)
+	end
+end
+
+Abysall.Interface = {
+	Library = UILibrary,
+	ThemeManager = UIThemeManager,
+	SaveManager = UISaveManager,
+
+	ApplyInfoTab = function(Window)
+		local InfoTab = Window:AddTab("信息", "info")
+		local Left = InfoTab:AddLeftGroupbox("脚本信息", "book-open")
+		Left:AddLabel("XK DOORS", true)
+		Left:AddDivider()
+		for _, line in ipairs({
+			"本脚本为对国外开源项目的二次修改版本",
+			"原项目：Abysall Hub (Doors)",
+			"二改/汉化：XK Hub / XoneScriptK",
+			"配置目录：Abysall/Doors",
+		}) do
+			local lbl = Left:AddLabel(line, true)
+			WrapTextContainer(lbl, line)
+		end
+
+		local Right = InfoTab:AddRightGroupbox("说明", "help-circle")
+		for _, note in ipairs({
+			"红色标注的功能存在风险，或当前楼层不可用。",
+			"部分功能依赖执行器能力，不支持时会自动禁用。",
+		}) do
+			local lbl = Right:AddLabel(note, true)
+			WrapTextContainer(lbl, note)
+		end
+	end,
+
+	ApplySettingsTab = function(Window)
+		local SettingsTab = Window:AddTab("界面设置", "settings")
+		local MenuGroup = SettingsTab:AddLeftGroupbox("菜单", "wrench")
+
+		MenuGroup:AddLabel("菜单开关"):AddKeyPicker("MenuKeybind", {
+			Default = "RightShift", NoUI = true, Text = "菜单开关"
+		})
+		MenuGroup:AddDivider()
+
+		MenuGroup:AddButton({
+			Text = "Çince -> Türkçe / English",
+			Func = function()
+				local nextLang = (CurrentLang == "tr") and "en" or "tr"
+				ApplyLanguage(nextLang)
+				pcall(function()
+					local labelText = (nextLang == "tr")
+						and "Dil: Türkçe (Tekrar bas: English)"
+						or "Language: English (Press again: Türkçe)"
+					UILibrary:Notify(labelText, 4)
+				end)
+			end,
+			DoubleClick = false
+		})
+
+		MenuGroup:AddDropdown("LanguageSelect", {
+			Text = "Dil Seçimi / Language",
+			Values = { "Türkçe", "English", "中文 (Çince)" },
+			Default = 1,
+			Callback = function(Value)
+				if Value == "Türkçe" then
+					ApplyLanguage("tr")
+				elseif Value == "English" then
+					ApplyLanguage("en")
+				else
+					ApplyLanguage("zh")
+				end
+			end
+		})
+
+		MenuGroup:AddDivider()
+		MenuGroup:AddButton({
+			Text = "移除用户界面",
+			Func = function()
+				pcall(function() UILibrary:Unload() end)
+			end,
+			DoubleClick = false
+		})
+
+		local Right = SettingsTab:AddRightGroupbox("通知", "bell")
+		Right:AddDropdown("NotifySide", {
+			Values = { "左", "右" }, Default = "右", Text = "通知位置",
+			Callback = function(Value)
+				pcall(function() UILibrary:SetNotifySide(Value) end)
+			end
+		})
+		Right:AddDropdown("DPIDropdown", {
+			Values = { "25%", "50%", "75%", "100%", "125%", "150%", "175%", "200%" },
+			Default = "100%", Text = "界面大小",
+			Callback = function(Value)
+				local num = tonumber(tostring(Value):gsub("%%", ""))
+				if num then
+					pcall(function() UILibrary:SetDPIScale(num) end)
+				end
+			end
+		})
+
+		if UIThemeManager then
+			pcall(function()
+				UIThemeManager:SetLibrary(UILibrary)
+				UIThemeManager:SetFolder("Abysall")
+				UIThemeManager:ApplyToTab(SettingsTab)
+			end)
+		end
+		if UISaveManager then
+			pcall(function()
+				UISaveManager:SetLibrary(UILibrary)
+				UISaveManager:IgnoreThemeSettings()
+				UISaveManager:SetIgnoreIndexes({ "MenuKeybind" })
+				UISaveManager:SetFolder("Abysall/Doors")
+				UISaveManager:BuildConfigSection(SettingsTab)
+				UISaveManager:LoadAutoloadConfig()
+			end)
+		end
+	end,
+}
+
+Abysall.Analytics = nil
+Abysall.SavePath = "Doors/Game"
+
+local Library = Abysall.Interface.Library
+local Options = Library.Options
+local Groupboxes = {}
+local LocalPlayer = Services.Players and Services.Players.LocalPlayer
+
+local Window = Library:CreateWindow({
+	Title = "XK DOORS",
+	Footer = "XK DOORS  |  XoneScriptK Hub",
+	NotifySide = "Right",
+	ShowCustomCursor = false,
+	AutoShow = true,
+	Center = true,
+	TabPadding = 3,
+	MenuFadeTime = 0,
+	CornerRadius = 6,
+})
+
+Abysall.Interface.ApplyInfoTab(Window)
+
+local Tabs = {
+	General = Window:AddTab("主要", "house"),
+	Exploits = Window:AddTab("功能", "shield"),
+	Visuals = Window:AddTab("视觉", "eye"),
+	Floors = Window:AddTab("楼层", "earth"),
+	Archives = Window:AddTab("新增 - 档案馆", "rbxassetid://104508835882225"),
+	Stairwell = Window:AddTab("新增 - 楼梯间", "rbxassetid://80017304328364"),
+}
+
+-- // 主要 (General) -> Sadece 杂项 ve 调试
+Groupboxes.Self_Misc = Tabs.General:AddLeftGroupbox("杂项")
+Groupboxes.Self_Misc:AddButton({ Text = "再玩一次", DoubleClick = true, Func = function() end })
+Groupboxes.Self_Misc:AddButton({ Text = "返回大厅", DoubleClick = true, Func = function() end })
+Groupboxes.Self_Misc:AddButton({ Text = "复活", DoubleClick = true, Func = function() end })
+Groupboxes.Self_Misc:AddButton({ Text = "重置角色", DoubleClick = true, Func = function() end })
+
+Groupboxes.Debug = Tabs.General:AddRightGroupbox("调试")
+Groupboxes.Debug:AddButton({ Text = "梯子卡死修复", Func = function() end })
+Groupboxes.Debug:AddButton({ Text = "获取当前楼层", Func = function() end })
+Groupboxes.Debug:AddButton({ Text = "获取当前房间", Func = function() end })
+Groupboxes.Debug:AddButton({ Text = "Void", Func = function() end })
+Groupboxes.Debug:AddButton({ Text = "死亡", Func = function() end })
+Groupboxes.Debug:AddButton({ Text = "退出柜子", Func = function() end })
+Groupboxes.Debug:AddButton({ Text = "传送下一扇门", Func = function() end })
+
+-- // 功能 (Exploits)
+Groupboxes.Exploits_Bypass = Tabs.Exploits:AddLeftGroupbox("绕过 / 破解")
+Groupboxes.Exploits_BypassRight = Tabs.Exploits:AddRightGroupbox("绕过")
+Groupboxes.Exploits_BypassRight:AddDropdown("VelocityManipulationMode", {
+	Values = { "Velocity", "Pivot" }, Text = "操控方式",
+	Default = 1,
+})
+Groupboxes.Exploits_BypassRight:AddDivider()
+Groupboxes.Exploits_BypassRight:AddDropdown("InfiniteItemsList", {
+	Text = "物品列表",
+	Values = {},
+	Multi = true, AllowNull = true,
+})
+Groupboxes.Exploits_BypassRight:AddDivider()
+Groupboxes.Exploits_Remove = Tabs.Exploits:AddRightGroupbox("移除")
+Groupboxes.Exploits_Remove:AddDivider()
+Groupboxes.Exploits_Audio = Tabs.Exploits:AddLeftGroupbox("音频")
+
+-- // 视觉 (Visuals)
+Groupboxes.Visuals_LeftTab = Tabs.Visuals:AddLeftTabbox("相机 / 效果 / 性能")
+Groupboxes.Visuals_Camera = Groupboxes.Visuals_LeftTab:AddTab("相机")
+Groupboxes.Visuals_Camera:AddSlider("FieldOfView", { Text = "视野角度", Min = 1, Max = 120, Default = 70, Rounding = 0 })
+Groupboxes.Visuals_Camera:AddDivider()
+Groupboxes.Visuals_Camera:AddDivider()
+Groupboxes.Visuals_Camera:AddSlider("ThirdPersonOffsetX", { Text = "X 偏移", Min = -10, Max = 10, Default = 1.5, Rounding = 1, Compact = true })
+Groupboxes.Visuals_Camera:AddSlider("ThirdPersonOffsetY", { Text = "Y 偏移", Min = -10, Max = 10, Default = 1,   Rounding = 1, Compact = true })
+Groupboxes.Visuals_Camera:AddSlider("ThirdPersonOffsetZ", { Text = "Z 偏移", Min = -10, Max = 10, Default = 5,   Rounding = 1, Compact = true })
+Groupboxes.Visuals_Camera:AddDivider()
+Groupboxes.Visuals_Camera:AddSlider("ViewmodelOffsetX", { Text = "X 偏移", Min = -10, Max = 10, Default = 0, Rounding = 1, Compact = true })
+Groupboxes.Visuals_Camera:AddSlider("ViewmodelOffsetY", { Text = "Y 偏移", Min = -10, Max = 10, Default = 0, Rounding = 1, Compact = true })
+Groupboxes.Visuals_Camera:AddSlider("ViewmodelOffsetZ", { Text = "Z 偏移", Min = -10, Max = 10, Default = 0, Rounding = 1, Compact = true })
+
+Groupboxes.Visuals_Performance = Groupboxes.Visuals_LeftTab:AddTab("性能")
+Groupboxes.Visuals_Performance:AddSlider("LowQualityIntensity", {
+	Text = "强度", Min = 1, Max = 3, Default = 3, Rounding = 0, Compact = true
+})
+Groupboxes.Visuals_Performance:AddSlider("LowQualityDistance", {
+	Text = "渲染距离", Min = 5, Max = 500, Default = 60, Rounding = 0, Compact = true
+})
+
+Groupboxes.Visuals_Effects = Groupboxes.Visuals_LeftTab:AddTab("效果")
+Groupboxes.Visuals_Effects:AddSlider("TransparentHidingSpotsSlider", { Text = "透明度", Min = 0, Max = 1, Default = 0.5, Rounding = 2, Compact = true })
+Groupboxes.Visuals_Effects:AddDivider()
+Groupboxes.Visuals_Effects:AddDivider()
+
+Groupboxes.Visuals_RightTab     = Tabs.Visuals:AddRightTabbox("实体 / 设置 / 实体节点")
+Groupboxes.Visuals_Entities     = Groupboxes.Visuals_RightTab:AddTab("Entities")
+Groupboxes.Visuals_EntitySettings = Groupboxes.Visuals_RightTab:AddTab("设置")
+
+Groupboxes.Visuals_Entities:AddDropdown("EntityList", {
+	Text = "实体列表",
+	Values = {},
+	Multi = true, AllowNull = true
+})
+Groupboxes.Visuals_Entities:AddDivider()
+Groupboxes.Visuals_Entities:AddSlider("ShowEntityPathNodeTransparency", {
+	Text = "节点透明度", Default = 0, Min = 0, Max = 1, Rounding = 2, Compact = false
+})
+Groupboxes.Visuals_Entities:AddSlider("ShowEntityPathLineTransparency", {
+	Text = "线条透明度", Default = 0.15, Min = 0, Max = 1, Rounding = 2, Compact = false
+})
+Groupboxes.Visuals_Entities:AddSlider("ShowEntityPathLineThickness", {
+	Text = "线条粗细", Default = 0.3, Min = 0.08, Max = 1.2, Rounding = 2
+})
+Groupboxes.Visuals_Entities:AddDivider()
+Groupboxes.Visuals_Entities:AddDropdown("NotifyItemList", {
+	Text = "物品列表",
+	Values = {},
+	Multi = true, AllowNull = true
+})
+Groupboxes.Visuals_Entities:AddDivider()
+
+Groupboxes.Visuals_EntitySettings:AddInput("EntityChatMessage", { Text = "消息", Default = "已生成！", Numeric = false, Placeholder = "Message" })
+Groupboxes.Visuals_EntitySettings:AddDivider()
+Groupboxes.Visuals_EntitySettings:AddDropdown("NotifyStyle", { Text = "通知样式", Values = { "Doors", "XK", "STX", "Library" }, Default = 1 })
+Groupboxes.Visuals_EntitySettings:AddSlider("NotifySoundVolume", { Text = "音量", Min = 0, Max = 10, Default = 3, Rounding = 1 })
+Groupboxes.Visuals_EntitySettings:AddButton({ Text = "测试通知", DoubleClick = false, Func = function() end })
+
+Groupboxes.Visuals_ESP          = Tabs.Visuals:AddRightTabbox("ESP/Settings")
+Groupboxes.Visuals_ESP_Toggles  = Groupboxes.Visuals_ESP:AddTab("ESP")
+Groupboxes.Visuals_ESP_Settings = Groupboxes.Visuals_ESP:AddTab("设置")
+
+Groupboxes.Visuals_ESP_Toggles:AddDivider()
+Groupboxes.Visuals_ESP_Toggles:AddDropdown("EntityESPOptions", {
+	Text = "实体列表",
+	Values = {},
+	Multi = true,
+	AllowNull = true
+})
+
+Groupboxes.Visuals_ESP_Settings:AddDivider()
+Groupboxes.Visuals_ESP_Settings:AddSlider("ESPFillTransparency",        { Text = "填充透明度",     Min = 0, Max = 1, Default = 0.75, Rounding = 2, Compact = true })
+Groupboxes.Visuals_ESP_Settings:AddSlider("ESPOutlineTransparency",     { Text = "描边透明度",     Min = 0, Max = 1, Default = 0,    Rounding = 2, Compact = true })
+Groupboxes.Visuals_ESP_Settings:AddSlider("ESPTextTransparency",        { Text = "文字透明度",     Min = 0, Max = 1, Default = 0,    Rounding = 2, Compact = true })
+Groupboxes.Visuals_ESP_Settings:AddSlider("ESPTextOutlineTransparency", { Text = "文字描边透明度", Min = 0, Max = 1, Default = 0,    Rounding = 2, Compact = true })
+Groupboxes.Visuals_ESP_Settings:AddSlider("ESPFadeTime",                { Text = "淡出时间",         Min = 0, Max = 1, Default = 0.25, Rounding = 2, Compact = true })
+Groupboxes.Visuals_ESP_Settings:AddSlider("ESPRenderLimit",             { Text = "渲染上限",         Min = 30, Max = 240, Default = 240, Rounding = 0, Compact = true })
+Groupboxes.Visuals_ESP_Settings:AddSlider("ESPTextSize",                { Text = "文字大小",         Min = 12, Max = 24, Default = 20, Rounding = 0, Compact = true })
+Groupboxes.Visuals_ESP_Settings:AddDropdown("ESPTextFont", {
+	Text = "文字字体",
+	Values = {},
+	Default = 1
+})
+Groupboxes.Visuals_ESP_Settings:AddDivider()
+Groupboxes.Visuals_ESP_Settings:AddDropdown("ESPTracersOrigin",  { Text = "追踪线起点", Values = { "Bottom", "Center", "Top", "Mouse" }, Default = 1 })
+Groupboxes.Visuals_ESP_Settings:AddSlider("ESPTracerThickness",  { Text = "追踪线粗细", Min = 0.5, Max = 2, Default = 0.75, Rounding = 2, Compact = true })
+Groupboxes.Visuals_ESP_Settings:AddDivider()
+Groupboxes.Visuals_ESP_Settings:AddSlider("ESPArrowsRadius",     { Text = "箭头半径", Min = 100, Max = 500, Default = 250, Rounding = 0, Compact = true })
+
+-- // 楼层 (Floors) -> Risk Uyarısı Katlarda ve Katlar Kısmına Taşındı
+if Tabs.Floors.UpdateWarningBox then
+	pcall(function()
+		Tabs.Floors:UpdateWarningBox({
+			Visible = true,
+			Title = "风险警告",
+			Text = "红色标注的功能有风险 / 在当前楼层不可用。",
+		})
+	end)
+end
+
+Groupboxes.Floors_RiskWarning = Tabs.Floors:AddLeftGroupbox("风险警告")
+local riskLbl = Groupboxes.Floors_RiskWarning:AddLabel("红色标注的功能有风险 / 在当前楼层不可用。", true)
+WrapTextContainer(riskLbl, "红色标注的功能有风险 / 在当前楼层不可用。")
+
+Groupboxes.Floors_Visuals = Tabs.Floors:AddLeftGroupbox("视觉")
+Groupboxes.Floors_Completion = Tabs.Floors:AddRightGroupbox("通关")
+
+Groupboxes.Archives_Misc = Tabs.Archives:AddRightGroupbox("功能 / 防护")
+Groupboxes.Archives_Bypasses = Tabs.Archives:AddLeftGroupbox("绕过")
+Groupboxes.Archives_Experimental = Tabs.Archives:AddLeftGroupbox("实验性")
+
+Groupboxes.Stairwell_Misc = Tabs.Stairwell:AddLeftGroupbox("功能 / 防护 / 杂项")
+Groupboxes.Stairwell_Misc:AddDivider()
+Groupboxes.Stairwell_Misc:AddDivider()
+Groupboxes.Stairwell_Misc:AddDivider()
+Groupboxes.Stairwell_Misc:AddButton({ Text = "传送购物车到玩家", Func = function() end })
+
+local playerList = {}
+if Services.Players then
+	for _, plr in ipairs(Services.Players:GetPlayers()) do
+		playerList[#playerList + 1] = plr.Name
+	end
+end
+local defaultTarget = (LocalPlayer and LocalPlayer.Name) or playerList[1] or ""
+
+Groupboxes.Stairwell_Misc:AddDropdown("ShoppingCartTarget", {
+	Text = "购物车目标",
+	Values = playerList,
+	Default = defaultTarget,
+})
+Groupboxes.Stairwell_Misc:AddButton({ Text = "刷新玩家", Func = function() end })
+
+-- // 实验性 (Stairwell Experimental) -> OrbitDropped ve DroppedItemsInterval kaldırıldı
+Groupboxes.Stairwell_Experimental = Tabs.Stairwell:AddRightGroupbox("实验性")
+Groupboxes.Stairwell_Experimental:AddButton({ Text = "传送所有掉落物到最近的研磨机", Func = function() end })
+Groupboxes.Stairwell_Experimental:AddButton({ Text = "拾取掉落物", Func = function() end })
+
+Abysall.Interface.ApplySettingsTab(Window)
+
+ApplyLanguage("tr")
+
+pcall(function()
+	local elapsed = math.round((tick() - LoadStart) * 100) / 100
+	local msg = (CurrentLang == "en")
+		and ("XK DOORS Loaded (" .. elapsed .. "s)")
+		or ("XK DOORS Yüklendi (" .. elapsed .. "s)")
+	Library:Notify(msg, 5)
+end)
